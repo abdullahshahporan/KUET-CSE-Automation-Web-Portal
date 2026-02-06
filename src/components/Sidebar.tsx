@@ -81,7 +81,6 @@ export default function Sidebar({ activeItem, onMenuChange, isCollapsed, onToggl
     { id: 'course-allocation', label: 'Course Allocation', icon: BookOpen },
     { id: 'schedule', label: 'Schedule', icon: Calendar },
     { id: 'add-student', label: 'Add Student', icon: UserPlus, adminOnly: true },
-    { id: 'add-faculty', label: 'Add Faculty', icon: GraduationCap, adminOnly: true },
     { id: 'result', label: 'Result', icon: FileText },
   ];
 

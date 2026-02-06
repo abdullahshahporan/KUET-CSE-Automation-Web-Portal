@@ -4,12 +4,23 @@ import SpotlightCard from '@/components/ui/SpotlightCard';
 import { sampleFaculty } from '@/data/sampleData';
 import { Designation, Faculty } from '@/types';
 import { motion } from 'framer-motion';
+import { Plus, UserCog } from 'lucide-react';
 import { useState } from 'react';
 
 export default function FacultyInfoPage() {
   const [faculty, setFaculty] = useState<Faculty[]>(sampleFaculty);
   const [searchTerm, setSearchTerm] = useState('');
   const [filterDesignation, setFilterDesignation] = useState<string>('all');
+  const [activeTab, setActiveTab] = useState<'view' | 'add'>('view');
+  const [showForm, setShowForm] = useState(false);
+  const [formData, setFormData] = useState({
+    name: '',
+    email: '',
+    phone: '',
+    designation: 'Lecturer' as Designation,
+    officeRoom: '',
+    experience: 0,
+  });
 
   const filteredFaculty = faculty.filter(f => {
     const matchesSearch = f.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
@@ -17,6 +28,23 @@ export default function FacultyInfoPage() {
     const matchesDesignation = filterDesignation === 'all' || f.designation === filterDesignation;
     return matchesSearch && matchesDesignation;
   });
+
+  const handleSubmit = (e: React.FormEvent) => {
+    e.preventDefault();
+    const newFaculty: Faculty = {
+      id: `F${Date.now()}`,
+      ...formData,
+      department: 'Computer Science & Engineering',
+      assignedCourses: [],
+    };
+    setFaculty(prev => [newFaculty, ...prev]);
+    setFormData({ name: '', email: '', phone: '', designation: 'Lecturer', officeRoom: '', experience: 0 });
+    setShowForm(false);
+  };
+
+  const handleDelete = (id: string) => {
+    setFaculty(prev => prev.filter(f => f.id !== id));
+  };
 
   const getDesignationColor = (designation: Designation) => {
     switch (designation) {
@@ -30,42 +58,77 @@ export default function FacultyInfoPage() {
 
   return (
     <div className="space-y-6">
-      {/* Header */}
-      <div className="flex items-center justify-between">
+      {/* Header with Tabs */}
+      <motion.div 
+        initial={{ opacity: 0, y: -20 }}
+        animate={{ opacity: 1, y: 0 }}
+        className="flex flex-col md:flex-row md:items-center justify-between gap-4"
+      >
         <div>
-          <h1 className="text-2xl font-bold text-white">Faculty Information</h1>
+          <h1 className="text-2xl font-bold text-white">Faculty Management</h1>
           <p className="text-white/60 mt-1">View and manage faculty members</p>
         </div>
-        <div className="text-sm text-white/50">
-          Total: {faculty.length} faculty members
+        
+        {/* Tab Navigation */}
+        <div className="flex bg-[#0d0d1a] border border-[#392e4e] rounded-full p-1">
+          <button
+            onClick={() => setActiveTab('view')}
+            className={`px-5 py-2.5 rounded-full text-sm font-medium transition-all flex items-center gap-2 ${
+              activeTab === 'view' 
+                ? 'bg-[#8400ff] text-white shadow-lg shadow-[#8400ff]/25' 
+                : 'text-white/60 hover:text-white'
+            }`}
+          >
+            <UserCog className="w-4 h-4" />
+            View Faculty
+          </button>
+          <button
+            onClick={() => setActiveTab('add')}
+            className={`px-5 py-2.5 rounded-full text-sm font-medium transition-all flex items-center gap-2 ${
+              activeTab === 'add' 
+                ? 'bg-[#8400ff] text-white shadow-lg shadow-[#8400ff]/25' 
+                : 'text-white/60 hover:text-white'
+            }`}
+          >
+            <Plus className="w-4 h-4" />
+            Add Faculty
+          </button>
         </div>
-      </div>
+      </motion.div>
 
-      {/* Filters */}
-      <div className="flex flex-col sm:flex-row gap-4">
-        <div className="flex-1">
-          <input
-            type="text"
-            placeholder="Search by name or email..."
-            value={searchTerm}
-            onChange={(e) => setSearchTerm(e.target.value)}
-            className="w-full px-4 py-2 border border-[#392e4e] rounded-lg bg-white/5 text-white placeholder-white/40 focus:ring-2 focus:ring-[#8400ff] focus:border-transparent"
-          />
-        </div>
-        <select
-          value={filterDesignation}
-          onChange={(e) => setFilterDesignation(e.target.value)}
-          className="px-4 py-2 border border-[#392e4e] rounded-lg bg-white/5 text-white focus:ring-2 focus:ring-[#8400ff] focus:border-transparent"
-        >
-          <option value="all" className="bg-[#0d0d1a]">All Designations</option>
-          <option value="Professor" className="bg-[#0d0d1a]">Professor</option>
-          <option value="Associate Professor" className="bg-[#0d0d1a]">Associate Professor</option>
-          <option value="Assistant Professor" className="bg-[#0d0d1a]">Assistant Professor</option>
-          <option value="Lecturer" className="bg-[#0d0d1a]">Lecturer</option>
-        </select>
-      </div>
+      {/* Content based on active tab */}
+      {activeTab === 'view' ? (
+        <>
+          {/* Filters */}
+          <motion.div 
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 0.1 }}
+            className="flex flex-col sm:flex-row gap-4"
+          >
+            <div className="flex-1">
+              <input
+                type="text"
+                placeholder="Search by name or email..."
+                value={searchTerm}
+                onChange={(e) => setSearchTerm(e.target.value)}
+                className="w-full px-4 py-2 border border-[#392e4e] rounded-lg bg-[#0d0d1a] text-white placeholder:text-white/40 focus:border-[#8400ff] focus:outline-none focus:ring-1 focus:ring-[#8400ff]"
+              />
+            </div>
+            <select
+              value={filterDesignation}
+              onChange={(e) => setFilterDesignation(e.target.value)}
+              className="px-4 py-2 border border-[#392e4e] rounded-lg bg-[#0d0d1a] text-white focus:border-[#8400ff] focus:outline-none"
+            >
+              <option value="all">All Designations</option>
+              <option value="Professor">Professor</option>
+              <option value="Associate Professor">Associate Professor</option>
+              <option value="Assistant Professor">Assistant Professor</option>
+              <option value="Lecturer">Lecturer</option>
+            </select>
+          </motion.div>
 
-      {/* Faculty Grid */}
+          {/* Faculty Grid */}
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
         {filteredFaculty.map((member, index) => (
           <motion.div
@@ -137,6 +200,108 @@ export default function FacultyInfoPage() {
           </motion.div>
         ))}
       </div>
+        </>
+      ) : (
+        /* Add Faculty Form */
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: 0.1 }}
+          className="max-w-2xl mx-auto"
+        >
+          <SpotlightCard className="p-6" spotlightColor="rgba(132, 0, 255, 0.15)">
+            <h2 className="text-xl font-bold text-white mb-6">Add New Faculty Member</h2>
+            <form onSubmit={handleSubmit} className="space-y-4">
+              <div>
+                <label className="block text-sm font-medium text-white/70 mb-1">Full Name</label>
+                <input
+                  type="text"
+                  value={formData.name}
+                  onChange={(e) => setFormData({ ...formData, name: e.target.value })}
+                  className="w-full px-4 py-2 border border-[#392e4e] rounded-lg bg-[#060010] text-white focus:border-[#8400ff] focus:outline-none focus:ring-1 focus:ring-[#8400ff]"
+                  required
+                />
+              </div>
+              <div>
+                <label className="block text-sm font-medium text-white/70 mb-1">Email</label>
+                <input
+                  type="email"
+                  value={formData.email}
+                  onChange={(e) => setFormData({ ...formData, email: e.target.value })}
+                  placeholder="name@cse.kuet.ac.bd"
+                  className="w-full px-4 py-2 border border-[#392e4e] rounded-lg bg-[#060010] text-white placeholder:text-white/40 focus:border-[#8400ff] focus:outline-none focus:ring-1 focus:ring-[#8400ff]"
+                  required
+                />
+              </div>
+              <div className="grid grid-cols-2 gap-4">
+                <div>
+                  <label className="block text-sm font-medium text-white/70 mb-1">Phone</label>
+                  <input
+                    type="tel"
+                    value={formData.phone}
+                    onChange={(e) => setFormData({ ...formData, phone: e.target.value })}
+                    className="w-full px-4 py-2 border border-[#392e4e] rounded-lg bg-[#060010] text-white focus:border-[#8400ff] focus:outline-none focus:ring-1 focus:ring-[#8400ff]"
+                  />
+                </div>
+                <div>
+                  <label className="block text-sm font-medium text-white/70 mb-1">Designation</label>
+                  <select
+                    value={formData.designation}
+                    onChange={(e) => setFormData({ ...formData, designation: e.target.value as Designation })}
+                    className="w-full px-4 py-2 border border-[#392e4e] rounded-lg bg-[#060010] text-white focus:border-[#8400ff] focus:outline-none focus:ring-1 focus:ring-[#8400ff]"
+                  >
+                    <option value="Professor">Professor</option>
+                    <option value="Associate Professor">Associate Professor</option>
+                    <option value="Assistant Professor">Assistant Professor</option>
+                    <option value="Lecturer">Lecturer</option>
+                  </select>
+                </div>
+              </div>
+              <div className="grid grid-cols-2 gap-4">
+                <div>
+                  <label className="block text-sm font-medium text-white/70 mb-1">Office Room</label>
+                  <input
+                    type="text"
+                    value={formData.officeRoom}
+                    onChange={(e) => setFormData({ ...formData, officeRoom: e.target.value })}
+                    placeholder="e.g., Room 301"
+                    className="w-full px-4 py-2 border border-[#392e4e] rounded-lg bg-[#060010] text-white placeholder:text-white/40 focus:border-[#8400ff] focus:outline-none focus:ring-1 focus:ring-[#8400ff]"
+                  />
+                </div>
+                <div>
+                  <label className="block text-sm font-medium text-white/70 mb-1">Experience (Years)</label>
+                  <input
+                    type="number"
+                    value={formData.experience}
+                    onChange={(e) => setFormData({ ...formData, experience: parseInt(e.target.value) || 0 })}
+                    min="0"
+                    className="w-full px-4 py-2 border border-[#392e4e] rounded-lg bg-[#060010] text-white focus:border-[#8400ff] focus:outline-none focus:ring-1 focus:ring-[#8400ff]"
+                  />
+                </div>
+              </div>
+              <div className="flex gap-3 pt-4">
+                <motion.button
+                  whileHover={{ scale: 1.02 }}
+                  whileTap={{ scale: 0.98 }}
+                  type="button"
+                  onClick={() => setFormData({ name: '', email: '', phone: '', designation: 'Lecturer', officeRoom: '', experience: 0 })}
+                  className="flex-1 px-4 py-2 border border-[#392e4e] rounded-full text-white/70 hover:bg-white/5"
+                >
+                  Reset
+                </motion.button>
+                <motion.button
+                  whileHover={{ scale: 1.02 }}
+                  whileTap={{ scale: 0.98 }}
+                  type="submit"
+                  className="flex-1 px-4 py-2 bg-gradient-to-r from-[#8400ff] to-[#a855f7] text-white rounded-full"
+                >
+                  Add Faculty
+                </motion.button>
+              </div>
+            </form>
+          </SpotlightCard>
+        </motion.div>
+      )}
     </div>
   );
 }
