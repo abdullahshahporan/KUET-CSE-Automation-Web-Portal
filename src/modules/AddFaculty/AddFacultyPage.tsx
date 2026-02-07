@@ -1,58 +1,149 @@
 "use client";
 
 import SpotlightCard from '@/components/ui/SpotlightCard';
-import { sampleFaculty } from '@/data/sampleData';
-import { Designation, Faculty } from '@/types';
+import { TeacherDesignation, TeacherWithAuth } from '@/lib/supabase';
+import { addTeacher, getAllTeachers, deleteTeacher } from '@/services/teacherService';
 import { motion } from 'framer-motion';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
+import { Loader2, AlertCircle } from 'lucide-react';
 
 export default function AddFacultyPage() {
-  const [faculty, setFaculty] = useState<Faculty[]>(sampleFaculty);
+  const [teachers, setTeachers] = useState<TeacherWithAuth[]>([]);
   const [showForm, setShowForm] = useState(false);
   const [searchTerm, setSearchTerm] = useState('');
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+  const [success, setSuccess] = useState<string | null>(null);
   const [formData, setFormData] = useState({
-    name: '',
+    full_name: '',
     email: '',
     phone: '',
-    designation: 'Lecturer' as Designation,
-    officeRoom: '',
-    experience: 0,
+    designation: 'LECTURER' as TeacherDesignation,
   });
 
-  const filteredFaculty = faculty.filter(f =>
-    f.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-    f.email.toLowerCase().includes(searchTerm.toLowerCase())
+  // Load teachers on mount
+  useEffect(() => {
+    loadTeachers();
+  }, []);
+
+  const loadTeachers = async () => {
+    setLoading(true);
+    const data = await getAllTeachers();
+    setTeachers(data);
+    setLoading(false);
+  };
+
+  const filteredTeachers = teachers.filter(t =>
+    t.full_name.toLowerCase().includes(searchTerm.toLowerCase()) ||
+    t.profile.email.toLowerCase().includes(searchTerm.toLowerCase())
   );
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    const newFaculty: Faculty = {
-      id: `F${Date.now()}`,
-      ...formData,
-      department: 'Computer Science & Engineering',
-      assignedCourses: [],
-    };
-    setFaculty(prev => [newFaculty, ...prev]);
-    setFormData({ name: '', email: '', phone: '', designation: 'Lecturer', officeRoom: '', experience: 0 });
-    setShowForm(false);
+    setLoading(true);
+    setError(null);
+    setSuccess(null);
+
+    const result = await addTeacher(formData);
+
+    if (result.success) {
+      // Show the generated password to the admin
+      if (result.generatedPassword) {
+        const copyPassword = () => {
+          navigator.clipboard.writeText(result.generatedPassword!);
+          alert('Password copied to clipboard!');
+        };
+        
+        const showCopyOption = confirm(
+          `✅ Teacher added successfully!\n\n` +
+          `📧 Email: ${formData.email}\n` +
+          `🔑 Password: ${result.generatedPassword}\n\n` +
+          `⚠️ IMPORTANT: This password will only be shown once!\n` +
+          `Please save it and share it with the teacher.\n\n` +
+          `Click OK to copy password to clipboard, or Cancel to continue.`
+        );
+        
+        if (showCopyOption) {
+          copyPassword();
+        }
+      }
+      
+      setSuccess('Teacher added successfully!');
+      setFormData({ full_name: '', email: '', phone: '', designation: 'LECTURER' });
+      setShowForm(false);
+      await loadTeachers();
+      setTimeout(() => setSuccess(null), 3000);
+    } else {
+      setError(result.error || 'Failed to add teacher');
+    }
+
+    setLoading(false);
   };
 
-  const handleDelete = (id: string) => {
-    setFaculty(prev => prev.filter(f => f.id !== id));
+  const handleDelete = async (userId: string) => {
+    if (!confirm('Are you sure you want to deactivate this teacher?')) return;
+
+    setLoading(true);
+    const result = await deleteTeacher(userId);
+
+    if (result.success) {
+      setSuccess('Teacher deactivated successfully!');
+      await loadTeachers();
+      setTimeout(() => setSuccess(null), 3000);
+    } else {
+      setError(result.error || 'Failed to deactivate teacher');
+    }
+
+    setLoading(false);
   };
 
-  const getDesignationColor = (designation: Designation) => {
+  const getDesignationColor = (designation: TeacherDesignation) => {
     switch (designation) {
-      case 'Professor': return 'bg-[#8400ff]/20 text-[#a855f7] border border-[#8400ff]/30';
-      case 'Associate Professor': return 'bg-[#00e5ff]/20 text-[#00e5ff] border border-[#00e5ff]/30';
-      case 'Assistant Professor': return 'bg-emerald-500/20 text-emerald-400 border border-emerald-500/30';
-      case 'Lecturer': return 'bg-amber-500/20 text-amber-400 border border-amber-500/30';
+      case 'PROFESSOR': return 'bg-[#8400ff]/20 text-[#a855f7] border border-[#8400ff]/30';
+      case 'ASSOCIATE_PROFESSOR': return 'bg-[#00e5ff]/20 text-[#00e5ff] border border-[#00e5ff]/30';
+      case 'ASSISTANT_PROFESSOR': return 'bg-emerald-500/20 text-emerald-400 border border-emerald-500/30';
+      case 'LECTURER': return 'bg-amber-500/20 text-amber-400 border border-amber-500/30';
       default: return 'bg-white/10 text-white/60';
+    }
+  };
+
+  const getDesignationLabel = (designation: TeacherDesignation) => {
+    switch (designation) {
+      case 'PROFESSOR': return 'Professor';
+      case 'ASSOCIATE_PROFESSOR': return 'Associate Professor';
+      case 'ASSISTANT_PROFESSOR': return 'Assistant Professor';
+      case 'LECTURER': return 'Lecturer';
+      default: return designation;
     }
   };
 
   return (
     <div className="space-y-6">
+      {/* Success/Error Messages */}
+      {success && (
+        <motion.div
+          initial={{ opacity: 0, y: -20 }}
+          animate={{ opacity: 1, y: 0 }}
+          className="bg-emerald-500/20 border border-emerald-500/30 text-emerald-400 px-4 py-3 rounded-lg flex items-center gap-2"
+        >
+          <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
+          </svg>
+          {success}
+        </motion.div>
+      )}
+
+      {error && (
+        <motion.div
+          initial={{ opacity: 0, y: -20 }}
+          animate={{ opacity: 1, y: 0 }}
+          className="bg-red-500/20 border border-red-500/30 text-red-400 px-4 py-3 rounded-lg flex items-center gap-2"
+        >
+          <AlertCircle className="w-5 h-5" />
+          {error}
+        </motion.div>
+      )}
+
       {/* Header */}
       <motion.div 
         initial={{ opacity: 0, y: -20 }}
@@ -90,10 +181,11 @@ export default function AddFacultyPage() {
                 <label className="block text-sm font-medium text-[#5D4E37] dark:text-white/70 mb-1">Full Name</label>
                 <input
                   type="text"
-                  value={formData.name}
-                  onChange={(e) => setFormData({ ...formData, name: e.target.value })}
+                  value={formData.full_name}
+                  onChange={(e) => setFormData({ ...formData, full_name: e.target.value })}
                   className="w-full px-4 py-2 border border-[#DCC5B2] dark:border-[#392e4e] rounded-lg bg-[#FAF7F3] dark:bg-[#060010] text-[#5D4E37] dark:text-white focus:border-[#D9A299] dark:focus:border-[#8400ff] focus:outline-none focus:ring-1 focus:ring-[#D9A299] dark:focus:ring-[#8400ff]"
                   required
+                  disabled={loading}
                 />
               </div>
               <div>
@@ -105,6 +197,7 @@ export default function AddFacultyPage() {
                   placeholder="name@cse.kuet.ac.bd"
                   className="w-full px-4 py-2 border border-[#DCC5B2] dark:border-[#392e4e] rounded-lg bg-[#FAF7F3] dark:bg-[#060010] text-[#5D4E37] dark:text-white placeholder:text-[#8B7355] dark:placeholder:text-white/40 focus:border-[#D9A299] dark:focus:border-[#8400ff] focus:outline-none focus:ring-1 focus:ring-[#D9A299] dark:focus:ring-[#8400ff]"
                   required
+                  disabled={loading}
                 />
               </div>
               <div className="grid grid-cols-2 gap-4">
@@ -114,43 +207,25 @@ export default function AddFacultyPage() {
                     type="tel"
                     value={formData.phone}
                     onChange={(e) => setFormData({ ...formData, phone: e.target.value })}
-                    className="w-full px-4 py-2 border border-[#DCC5B2] dark:border-[#392e4e] rounded-lg bg-[#FAF7F3] dark:bg-[#060010] text-[#5D4E37] dark:text-white focus:border-[#D9A299] dark:focus:border-[#8400ff] focus:outline-none focus:ring-1 focus:ring-[#D9A299] dark:focus:ring-[#8400ff]"
+                    placeholder="e.g., 01712345678"
+                    className="w-full px-4 py-2 border border-[#DCC5B2] dark:border-[#392e4e] rounded-lg bg-[#FAF7F3] dark:bg-[#060010] text-[#5D4E37] dark:text-white placeholder:text-[#8B7355] dark:placeholder:text-white/40 focus:border-[#D9A299] dark:focus:border-[#8400ff] focus:outline-none focus:ring-1 focus:ring-[#D9A299] dark:focus:ring-[#8400ff]"
+                    disabled={loading}
+                    required
                   />
                 </div>
                 <div>
                   <label className="block text-sm font-medium text-[#5D4E37] dark:text-white/70 mb-1">Designation</label>
                   <select
                     value={formData.designation}
-                    onChange={(e) => setFormData({ ...formData, designation: e.target.value as Designation })}
+                    onChange={(e) => setFormData({ ...formData, designation: e.target.value as TeacherDesignation })}
                     className="w-full px-4 py-2 border border-[#DCC5B2] dark:border-[#392e4e] rounded-lg bg-[#FAF7F3] dark:bg-[#060010] text-[#5D4E37] dark:text-white focus:border-[#D9A299] dark:focus:border-[#8400ff] focus:outline-none focus:ring-1 focus:ring-[#D9A299] dark:focus:ring-[#8400ff]"
+                    disabled={loading}
                   >
-                    <option value="Professor">Professor</option>
-                    <option value="Associate Professor">Associate Professor</option>
-                    <option value="Assistant Professor">Assistant Professor</option>
-                    <option value="Lecturer">Lecturer</option>
+                    <option value="PROFESSOR">Professor</option>
+                    <option value="ASSOCIATE_PROFESSOR">Associate Professor</option>
+                    <option value="ASSISTANT_PROFESSOR">Assistant Professor</option>
+                    <option value="LECTURER">Lecturer</option>
                   </select>
-                </div>
-              </div>
-              <div className="grid grid-cols-2 gap-4">
-                <div>
-                  <label className="block text-sm font-medium text-[#5D4E37] dark:text-white/70 mb-1">Office Room</label>
-                  <input
-                    type="text"
-                    value={formData.officeRoom}
-                    onChange={(e) => setFormData({ ...formData, officeRoom: e.target.value })}
-                    placeholder="e.g., Room 301"
-                    className="w-full px-4 py-2 border border-[#DCC5B2] dark:border-[#392e4e] rounded-lg bg-[#FAF7F3] dark:bg-[#060010] text-[#5D4E37] dark:text-white placeholder:text-[#8B7355] dark:placeholder:text-white/40 focus:border-[#D9A299] dark:focus:border-[#8400ff] focus:outline-none focus:ring-1 focus:ring-[#D9A299] dark:focus:ring-[#8400ff]"
-                  />
-                </div>
-                <div>
-                  <label className="block text-sm font-medium text-[#5D4E37] dark:text-white/70 mb-1">Experience (Years)</label>
-                  <input
-                    type="number"
-                    value={formData.experience}
-                    onChange={(e) => setFormData({ ...formData, experience: parseInt(e.target.value) || 0 })}
-                    min="0"
-                    className="w-full px-4 py-2 border border-[#DCC5B2] dark:border-[#392e4e] rounded-lg bg-[#FAF7F3] dark:bg-[#060010] text-[#5D4E37] dark:text-white focus:border-[#D9A299] dark:focus:border-[#8400ff] focus:outline-none focus:ring-1 focus:ring-[#D9A299] dark:focus:ring-[#8400ff]"
-                  />
                 </div>
               </div>
               <div className="flex gap-3 pt-4">
@@ -160,6 +235,7 @@ export default function AddFacultyPage() {
                   type="button"
                   onClick={() => setShowForm(false)}
                   className="flex-1 px-4 py-2 border border-[#DCC5B2] dark:border-[#392e4e] rounded-full text-[#5D4E37] dark:text-white/70 hover:bg-[#F0E4D3] dark:hover:bg-white/5"
+                  disabled={loading}
                 >
                   Cancel
                 </motion.button>
@@ -167,9 +243,17 @@ export default function AddFacultyPage() {
                   whileHover={{ scale: 1.02 }}
                   whileTap={{ scale: 0.98 }}
                   type="submit"
-                  className="flex-1 px-4 py-2 bg-gradient-to-r from-[#D9A299] to-[#DCC5B2] dark:from-[#8400ff] dark:to-[#a855f7] text-white rounded-full"
+                  className="flex-1 px-4 py-2 bg-gradient-to-r from-[#D9A299] to-[#DCC5B2] dark:from-[#8400ff] dark:to-[#a855f7] text-white rounded-full flex items-center justify-center gap-2"
+                  disabled={loading}
                 >
-                  Add Faculty
+                  {loading ? (
+                    <>
+                      <Loader2 className="w-4 h-4 animate-spin" />
+                      Adding...
+                    </>
+                  ) : (
+                    'Add Faculty'
+                  )}
                 </motion.button>
               </div>
             </form>
@@ -200,76 +284,86 @@ export default function AddFacultyPage() {
       >
         <SpotlightCard spotlightColor="rgba(217, 162, 153, 0.2)">
           <div className="overflow-x-auto">
-            <table className="w-full">
-              <thead className="bg-[#F0E4D3] dark:bg-[#060010]/50 border-b border-[#DCC5B2] dark:border-[#392e4e]">
-                <tr>
-                  <th className="px-6 py-4 text-left text-xs font-semibold text-[#5D4E37] dark:text-white/60 uppercase">Name</th>
-                  <th className="px-6 py-4 text-left text-xs font-semibold text-[#5D4E37] dark:text-white/60 uppercase">Email</th>
-                  <th className="px-6 py-4 text-left text-xs font-semibold text-[#5D4E37] dark:text-white/60 uppercase">Designation</th>
-                  <th className="px-6 py-4 text-left text-xs font-semibold text-[#5D4E37] dark:text-white/60 uppercase">Experience</th>
-                  <th className="px-6 py-4 text-left text-xs font-semibold text-[#5D4E37] dark:text-white/60 uppercase">Courses</th>
-                  <th className="px-6 py-4 text-left text-xs font-semibold text-[#5D4E37] dark:text-white/60 uppercase">Actions</th>
-                </tr>
-              </thead>
-              <tbody className="divide-y divide-[#DCC5B2]/50 dark:divide-[#392e4e]/50">
-                {filteredFaculty.map((member, index) => (
-                  <motion.tr 
-                    key={member.id} 
-                    initial={{ opacity: 0 }}
-                    animate={{ opacity: 1 }}
-                    transition={{ delay: index * 0.03 }}
-                    className="hover:bg-[#F0E4D3] dark:hover:bg-[#8400ff]/5 transition-colors"
-                  >
-                    <td className="px-6 py-4">
-                      <div className="flex items-center gap-3">
-                        <div className="w-10 h-10 rounded-full bg-gradient-to-br from-[#D9A299] to-[#DCC5B2] dark:from-[#8400ff] dark:to-[#00e5ff] flex items-center justify-center text-white font-bold text-sm">
-                          {member.name.split(' ').map(n => n[0]).join('').slice(0, 2)}
+            {loading && teachers.length === 0 ? (
+              <div className="flex items-center justify-center py-12">
+                <Loader2 className="w-8 h-8 animate-spin text-[#D9A299] dark:text-[#8400ff]" />
+              </div>
+            ) : filteredTeachers.length === 0 ? (
+              <div className="text-center py-12 text-[#8B7355] dark:text-white/60">
+                No teachers found. Add your first teacher to get started.
+              </div>
+            ) : (
+              <table className="w-full">
+                <thead className="bg-[#F0E4D3] dark:bg-[#060010]/50 border-b border-[#DCC5B2] dark:border-[#392e4e]">
+                  <tr>
+                    <th className="px-6 py-4 text-left text-xs font-semibold text-[#5D4E37] dark:text-white/60 uppercase">Name</th>
+                    <th className="px-6 py-4 text-left text-xs font-semibold text-[#5D4E37] dark:text-white/60 uppercase">Email</th>
+                    <th className="px-6 py-4 text-left text-xs font-semibold text-[#5D4E37] dark:text-white/60 uppercase">Phone</th>
+                    <th className="px-6 py-4 text-left text-xs font-semibold text-[#5D4E37] dark:text-white/60 uppercase">Designation</th>
+                    <th className="px-6 py-4 text-left text-xs font-semibold text-[#5D4E37] dark:text-white/60 uppercase">Teacher ID</th>
+                    <th className="px-6 py-4 text-left text-xs font-semibold text-[#5D4E37] dark:text-white/60 uppercase">Status</th>
+                    <th className="px-6 py-4 text-left text-xs font-semibold text-[#5D4E37] dark:text-white/60 uppercase">Actions</th>
+                  </tr>
+                </thead>
+                <tbody className="divide-y divide-[#DCC5B2]/50 dark:divide-[#392e4e]/50">
+                  {filteredTeachers.map((teacher, index) => (
+                    <motion.tr 
+                      key={teacher.user_id} 
+                      initial={{ opacity: 0 }}
+                      animate={{ opacity: 1 }}
+                      transition={{ delay: index * 0.03 }}
+                      className="hover:bg-[#F0E4D3] dark:hover:bg-[#8400ff]/5 transition-colors"
+                    >
+                      <td className="px-6 py-4">
+                        <div className="flex items-center gap-3">
+                          <div className="w-10 h-10 rounded-full bg-gradient-to-br from-[#D9A299] to-[#DCC5B2] dark:from-[#8400ff] dark:to-[#00e5ff] flex items-center justify-center text-white font-bold text-sm">
+                            {teacher.full_name.split(' ').map(n => n[0]).join('').slice(0, 2)}
+                          </div>
+                          <span className="font-medium text-[#5D4E37] dark:text-white">{teacher.full_name}</span>
                         </div>
-                        <span className="font-medium text-[#5D4E37] dark:text-white">{member.name}</span>
-                      </div>
-                    </td>
-                    <td className="px-6 py-4 text-[#8B7355] dark:text-white/60">{member.email}</td>
-                    <td className="px-6 py-4">
-                      <span className={`px-2.5 py-1 rounded-full text-xs font-medium ${getDesignationColor(member.designation)}`}>
-                        {member.designation}
-                      </span>
-                    </td>
-                    <td className="px-6 py-4 text-[#8B7355] dark:text-white/60">{member.experience} years</td>
-                    <td className="px-6 py-4">
-                      <div className="flex flex-wrap gap-1">
-                        {member.assignedCourses.slice(0, 2).map((course) => (
-                          <span key={course} className="px-2 py-0.5 bg-[#F0E4D3] dark:bg-[#392e4e] text-[#5D4E37] dark:text-white/70 rounded text-xs">
-                            {course}
+                      </td>
+                      <td className="px-6 py-4 text-[#8B7355] dark:text-white/60">{teacher.profile.email}</td>
+                      <td className="px-6 py-4 text-[#8B7355] dark:text-white/60">{teacher.phone}</td>
+                      <td className="px-6 py-4">
+                        <span className={`px-2.5 py-1 rounded-full text-xs font-medium ${getDesignationColor(teacher.designation)}`}>
+                          {getDesignationLabel(teacher.designation)}
+                        </span>
+                      </td>
+                      <td className="px-6 py-4 text-[#8B7355] dark:text-white/60 font-mono text-sm">{teacher.teacher_uid}</td>
+                      <td className="px-6 py-4">
+                        {teacher.profile.is_active ? (
+                          <span className="px-2.5 py-1 rounded-full text-xs font-medium bg-emerald-500/20 text-emerald-400 border border-emerald-500/30">
+                            Active
                           </span>
-                        ))}
-                        {member.assignedCourses.length > 2 && (
-                          <span className="px-2 py-0.5 bg-[#F0E4D3] dark:bg-[#392e4e] text-[#5D4E37] dark:text-white/70 rounded text-xs">
-                            +{member.assignedCourses.length - 2}
+                        ) : (
+                          <span className="px-2.5 py-1 rounded-full text-xs font-medium bg-red-500/20 text-red-400 border border-red-500/30">
+                            Inactive
                           </span>
                         )}
-                      </div>
-                    </td>
-                    <td className="px-6 py-4">
-                      <div className="flex items-center gap-2">
-                        <button className="p-2 text-[#D9A299] dark:text-[#00e5ff] hover:bg-[#D9A299]/10 dark:hover:bg-[#00e5ff]/10 rounded-lg transition-colors">
-                          <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
-                          </svg>
-                        </button>
-                        <button
-                          onClick={() => handleDelete(member.id)}
-                          className="p-2 text-red-400 hover:bg-red-400/10 rounded-lg transition-colors"
-                        >
-                          <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
-                          </svg>
-                        </button>
-                      </div>
-                    </td>
-                  </motion.tr>
-                ))}
-              </tbody>
-            </table>
+                      </td>
+                      <td className="px-6 py-4">
+                        <div className="flex items-center gap-2">
+                          <button className="p-2 text-[#D9A299] dark:text-[#00e5ff] hover:bg-[#D9A299]/10 dark:hover:bg-[#00e5ff]/10 rounded-lg transition-colors">
+                            <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
+                            </svg>
+                          </button>
+                          <button
+                            onClick={() => handleDelete(teacher.user_id)}
+                            className="p-2 text-red-400 hover:bg-red-400/10 rounded-lg transition-colors"
+                            disabled={loading}
+                          >
+                            <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
+                            </svg>
+                          </button>
+                        </div>
+                      </td>
+                    </motion.tr>
+                  ))}
+                </tbody>
+              </table>
+            )}
           </div>
         </SpotlightCard>
       </motion.div>

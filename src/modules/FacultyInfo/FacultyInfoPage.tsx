@@ -1,63 +1,131 @@
 "use client";
 
 import SpotlightCard from '@/components/ui/SpotlightCard';
-import { sampleFaculty } from '@/data/sampleData';
-import { Designation, Faculty } from '@/types';
+import { TeacherDesignation, TeacherWithAuth } from '@/lib/supabase';
+import { addTeacher, getAllTeachers, deleteTeacher } from '@/services/teacherService';
 import { motion } from 'framer-motion';
-import { Plus, UserCog } from 'lucide-react';
-import { useState } from 'react';
+import { Plus, UserCog, Loader2, AlertCircle } from 'lucide-react';
+import { useEffect, useState } from 'react';
 
 export default function FacultyInfoPage() {
-  const [faculty, setFaculty] = useState<Faculty[]>(sampleFaculty);
+  const [teachers, setTeachers] = useState<TeacherWithAuth[]>([]);
   const [searchTerm, setSearchTerm] = useState('');
   const [filterDesignation, setFilterDesignation] = useState<string>('all');
   const [activeTab, setActiveTab] = useState<'view' | 'add'>('view');
-  const [showForm, setShowForm] = useState(false);
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+  const [success, setSuccess] = useState<string | null>(null);
   const [formData, setFormData] = useState({
-    name: '',
+    full_name: '',
     email: '',
     phone: '',
-    designation: 'Lecturer' as Designation,
-    officeRoom: '',
-    experience: 0,
+    designation: 'LECTURER' as TeacherDesignation,
   });
 
-  const filteredFaculty = faculty.filter(f => {
-    const matchesSearch = f.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-                          f.email.toLowerCase().includes(searchTerm.toLowerCase());
-    const matchesDesignation = filterDesignation === 'all' || f.designation === filterDesignation;
+  // Load teachers on mount
+  useEffect(() => {
+    loadTeachers();
+  }, []);
+
+  const loadTeachers = async () => {
+    setLoading(true);
+    const data = await getAllTeachers();
+    setTeachers(data);
+    setLoading(false);
+  };
+
+  const filteredTeachers = teachers.filter(t => {
+    const matchesSearch = t.full_name.toLowerCase().includes(searchTerm.toLowerCase()) ||
+                          t.profile.email.toLowerCase().includes(searchTerm.toLowerCase());
+    const matchesDesignation = filterDesignation === 'all' || t.designation === filterDesignation;
     return matchesSearch && matchesDesignation;
   });
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    const newFaculty: Faculty = {
-      id: `F${Date.now()}`,
-      ...formData,
-      department: 'Computer Science & Engineering',
-      assignedCourses: [],
-    };
-    setFaculty(prev => [newFaculty, ...prev]);
-    setFormData({ name: '', email: '', phone: '', designation: 'Lecturer', officeRoom: '', experience: 0 });
-    setShowForm(false);
+    setLoading(true);
+    setError(null);
+    setSuccess(null);
+
+    const result = await addTeacher(formData);
+
+    if (result.success) {
+      setSuccess('Teacher added successfully!');
+      setFormData({ full_name: '', email: '', phone: '', designation: 'LECTURER' });
+      setActiveTab('view'); // Switch to view tab
+      await loadTeachers();
+      setTimeout(() => setSuccess(null), 3000);
+    } else {
+      setError(result.error || 'Failed to add teacher');
+    }
+
+    setLoading(false);
   };
 
-  const handleDelete = (id: string) => {
-    setFaculty(prev => prev.filter(f => f.id !== id));
+  const handleDelete = async (userId: string) => {
+    if (!confirm('Are you sure you want to deactivate this teacher?')) return;
+
+    setLoading(true);
+    const result = await deleteTeacher(userId);
+
+    if (result.success) {
+      setSuccess('Teacher deactivated successfully!');
+      await loadTeachers();
+      setTimeout(() => setSuccess(null), 3000);
+    } else {
+      setError(result.error || 'Failed to deactivate teacher');
+    }
+
+    setLoading(false);
   };
 
-  const getDesignationColor = (designation: Designation) => {
+  const getDesignationColor = (designation: TeacherDesignation) => {
     switch (designation) {
-      case 'Professor': return 'bg-[#8400ff]/20 text-[#a855f7] border border-[#8400ff]/30';
-      case 'Associate Professor': return 'bg-[#00e5ff]/20 text-[#00e5ff] border border-[#00e5ff]/30';
-      case 'Assistant Professor': return 'bg-emerald-500/20 text-emerald-400 border border-emerald-500/30';
-      case 'Lecturer': return 'bg-amber-500/20 text-amber-400 border border-amber-500/30';
+      case 'PROFESSOR': return 'bg-[#8400ff]/20 text-[#a855f7] border border-[#8400ff]/30';
+      case 'ASSOCIATE_PROFESSOR': return 'bg-[#00e5ff]/20 text-[#00e5ff] border border-[#00e5ff]/30';
+      case 'ASSISTANT_PROFESSOR': return 'bg-emerald-500/20 text-emerald-400 border border-emerald-500/30';
+      case 'LECTURER': return 'bg-amber-500/20 text-amber-400 border border-amber-500/30';
       default: return 'bg-white/10 text-white/70 border border-white/20';
+    }
+  };
+
+  const getDesignationLabel = (designation: TeacherDesignation) => {
+    switch (designation) {
+      case 'PROFESSOR': return 'Professor';
+      case 'ASSOCIATE_PROFESSOR': return 'Associate Professor';
+      case 'ASSISTANT_PROFESSOR': return 'Assistant Professor';
+      case 'LECTURER': return 'Lecturer';
+      default: return designation;
     }
   };
 
   return (
     <div className="space-y-6">
+      {/* Success/Error Messages */}
+      {success && (
+        <motion.div
+          initial={{ opacity: 0, y: -20 }}
+          animate={{ opacity: 1, y: 0 }}
+          className="bg-emerald-500/20 border border-emerald-500/30 text-emerald-400 px-4 py-3 rounded-lg flex items-center gap-2"
+        >
+          <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
+          </svg>
+          {success}
+        </motion.div>
+      )}
+
+      {error && (
+        <motion.div
+          initial={{ opacity: 0, y: -20 }}
+          animate={{ opacity: 1, y: 0 }}
+          className="bg-red-500/20 border border-red-500/30 text-red-400 px-4 py-3 rounded-lg flex items-center gap-2"
+        >
+          <AlertCircle className="w-5 h-5" />
+          {error}
+        </motion.div>
+      )}
+
       {/* Header with Tabs */}
       <motion.div 
         initial={{ opacity: 0, y: -20 }}
@@ -121,85 +189,86 @@ export default function FacultyInfoPage() {
               className="px-4 py-2 border border-[#DCC5B2] dark:border-[#392e4e] rounded-lg bg-[#FAF7F3] dark:bg-[#0d0d1a] text-[#5D4E37] dark:text-white focus:border-[#D9A299] dark:focus:border-[#8400ff] focus:outline-none"
             >
               <option value="all">All Designations</option>
-              <option value="Professor">Professor</option>
-              <option value="Associate Professor">Associate Professor</option>
-              <option value="Assistant Professor">Assistant Professor</option>
-              <option value="Lecturer">Lecturer</option>
+              <option value="PROFESSOR">Professor</option>
+              <option value="ASSOCIATE_PROFESSOR">Associate Professor</option>
+              <option value="ASSISTANT_PROFESSOR">Assistant Professor</option>
+              <option value="LECTURER">Lecturer</option>
             </select>
           </motion.div>
 
           {/* Faculty Grid */}
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-        {filteredFaculty.map((member, index) => (
-          <motion.div
-            key={member.id}
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: index * 0.05 }}
-          >
-            <SpotlightCard className="rounded-xl p-5 border border-[#DCC5B2] dark:border-[#392e4e] h-full" spotlightColor="rgba(217, 162, 153, 0.2)">
-              <div className="flex items-start gap-4">
-                <div className="w-16 h-16 rounded-full bg-gradient-to-br from-[#D9A299] to-[#DCC5B2] flex items-center justify-center text-white text-xl font-bold">
-                  {member.name.split(' ').map(n => n[0]).join('').slice(0, 2)}
-                </div>
-                <div className="flex-1">
-                  <h3 className="font-semibold text-[#5D4E37] dark:text-white">{member.name}</h3>
-                  <span className={`inline-block px-2 py-0.5 rounded-full text-xs font-medium mt-1 ${getDesignationColor(member.designation)}`}>
-                    {member.designation}
-                  </span>
-                </div>
-              </div>
-              
-              <div className="mt-4 space-y-2 text-sm">
-                <div className="flex items-center gap-2 text-[#8B7355] dark:text-white/60">
-                  <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />
-                  </svg>
-                  <span className="truncate">{member.email}</span>
-                </div>
-                {member.phone && (
-                  <div className="flex items-center gap-2 text-[#8B7355] dark:text-white/60">
-                    <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 5a2 2 0 012-2h3.28a1 1 0 01.948.684l1.498 4.493a1 1 0 01-.502 1.21l-2.257 1.13a11.042 11.042 0 005.516 5.516l1.13-2.257a1 1 0 011.21-.502l4.493 1.498a1 1 0 01.684.949V19a2 2 0 01-2 2h-1C9.716 21 3 14.284 3 6V5z" />
-                    </svg>
-                    <span>{member.phone}</span>
-                  </div>
-                )}
-                {member.officeRoom && (
-                  <div className="flex items-center gap-2 text-[#8B7355] dark:text-white/60">
-                    <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4" />
-                    </svg>
-                    <span>{member.officeRoom}</span>
-                  </div>
-                )}
-                <div className="flex items-center gap-2 text-[#8B7355] dark:text-white/60">
-                  <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
-                  </svg>
-                  <span>{member.experience} years experience</span>
-                </div>
-              </div>
-
-              {member.assignedCourses.length > 0 && (
-                <div className="mt-4 pt-4 border-t border-[#DCC5B2] dark:border-[#392e4e]">
-                  <p className="text-xs text-[#8B7355] dark:text-white/40 mb-2">Assigned Courses:</p>
-                  <div className="flex flex-wrap gap-1">
-                    {member.assignedCourses.map((course) => (
-                      <span
-                        key={course}
-                        className="px-2 py-0.5 bg-[#F0E4D3] dark:bg-white/5 text-[#5D4E37] dark:text-white/70 rounded text-xs border border-[#DCC5B2] dark:border-[#392e4e]"
-                      >
-                        {course}
-                      </span>
-                    ))}
-                  </div>
-                </div>
-              )}
-            </SpotlightCard>
-          </motion.div>
-        ))}
-      </div>
+          {loading && teachers.length === 0 ? (
+            <div className="flex items-center justify-center py-12">
+              <Loader2 className="w-8 h-8 animate-spin text-[#D9A299] dark:text-[#8400ff]" />
+            </div>
+          ) : filteredTeachers.length === 0 ? (
+            <div className="text-center py-12 text-[#8B7355] dark:text-white/60">
+              No teachers found. {filterDesignation !== 'all' || searchTerm ? 'Try adjusting your filters.' : 'Add your first teacher to get started.'}
+            </div>
+          ) : (
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+              {filteredTeachers.map((teacher, index) => (
+                <motion.div
+                  key={teacher.user_id}
+                  initial={{ opacity: 0, y: 20 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ delay: index * 0.05 }}
+                >
+                  <SpotlightCard className="rounded-xl p-5 border border-[#DCC5B2] dark:border-[#392e4e] h-full" spotlightColor="rgba(217, 162, 153, 0.2)">
+                    <div className="flex items-start gap-4">
+                      <div className="w-16 h-16 rounded-full bg-gradient-to-br from-[#D9A299] to-[#DCC5B2] flex items-center justify-center text-white text-xl font-bold">
+                        {teacher.full_name.split(' ').map(n => n[0]).join('').slice(0, 2)}
+                      </div>
+                      <div className="flex-1">
+                        <h3 className="font-semibold text-[#5D4E37] dark:text-white">{teacher.full_name}</h3>
+                        <span className={`inline-block px-2 py-0.5 rounded-full text-xs font-medium mt-1 ${getDesignationColor(teacher.designation)}`}>
+                          {getDesignationLabel(teacher.designation)}
+                        </span>
+                      </div>
+                    </div>
+                    
+                    <div className="mt-4 space-y-2 text-sm">
+                      <div className="flex items-center gap-2 text-[#8B7355] dark:text-white/60">
+                        <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />
+                        </svg>
+                        <span className="truncate">{teacher.profile.email}</span>
+                      </div>
+                      {teacher.phone && (
+                        <div className="flex items-center gap-2 text-[#8B7355] dark:text-white/60">
+                          <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 5a2 2 0 012-2h3.28a1 1 0 01.948.684l1.498 4.493a1 1 0 01-.502 1.21l-2.257 1.13a11.042 11.042 0 005.516 5.516l1.13-2.257a1 1 0 011.21-.502l4.493 1.498a1 1 0 01.684.949V19a2 2 0 01-2 2h-1C9.716 21 3 14.284 3 6V5z" />
+                          </svg>
+                          <span>{teacher.phone}</span>
+                        </div>
+                      )}
+                      <div className="flex items-center gap-2 text-[#8B7355] dark:text-white/60">
+                        <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10 6H5a2 2 0 00-2 2v9a2 2 0 002 2h14a2 2 0 002-2V8a2 2 0 00-2-2h-5m-4 0V5a2 2 0 114 0v1m-4 0a2 2 0 104 0m-5 8a2 2 0 100-4 2 2 0 000 4zm0 0c1.306 0 2.417.835 2.83 2M9 14a3.001 3.001 0 00-2.83 2M15 11h3m-3 4h2" />
+                        </svg>
+                        <span className="font-mono text-xs">{teacher.teacher_uid}</span>
+                      </div>
+                      {teacher.profile.is_active ? (
+                        <div className="flex items-center gap-2 text-emerald-500">
+                          <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
+                          </svg>
+                          <span className="text-xs">Active</span>
+                        </div>
+                      ) : (
+                        <div className="flex items-center gap-2 text-red-400">
+                          <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10 14l2-2m0 0l2-2m-2 2l-2-2m2 2l2 2m7-2a9 9 0 11-18 0 9 9 0 0118 0z" />
+                          </svg>
+                          <span className="text-xs">Inactive</span>
+                        </div>
+                      )}
+                    </div>
+                  </SpotlightCard>
+                </motion.div>
+              ))}
+            </div>
+          )}
         </>
       ) : (
         /* Add Faculty Form */
@@ -216,10 +285,11 @@ export default function FacultyInfoPage() {
                 <label className="block text-sm font-medium text-white/70 mb-1">Full Name</label>
                 <input
                   type="text"
-                  value={formData.name}
-                  onChange={(e) => setFormData({ ...formData, name: e.target.value })}
+                  value={formData.full_name}
+                  onChange={(e) => setFormData({ ...formData, full_name: e.target.value })}
                   className="w-full px-4 py-2 border border-[#392e4e] rounded-lg bg-[#060010] text-white focus:border-[#8400ff] focus:outline-none focus:ring-1 focus:ring-[#8400ff]"
                   required
+                  disabled={loading}
                 />
               </div>
               <div>
@@ -231,6 +301,7 @@ export default function FacultyInfoPage() {
                   placeholder="name@cse.kuet.ac.bd"
                   className="w-full px-4 py-2 border border-[#392e4e] rounded-lg bg-[#060010] text-white placeholder:text-white/40 focus:border-[#8400ff] focus:outline-none focus:ring-1 focus:ring-[#8400ff]"
                   required
+                  disabled={loading}
                 />
               </div>
               <div className="grid grid-cols-2 gap-4">
@@ -240,43 +311,25 @@ export default function FacultyInfoPage() {
                     type="tel"
                     value={formData.phone}
                     onChange={(e) => setFormData({ ...formData, phone: e.target.value })}
-                    className="w-full px-4 py-2 border border-[#392e4e] rounded-lg bg-[#060010] text-white focus:border-[#8400ff] focus:outline-none focus:ring-1 focus:ring-[#8400ff]"
+                    placeholder="e.g., 01712345678"
+                    className="w-full px-4 py-2 border border-[#392e4e] rounded-lg bg-[#060010] text-white placeholder:text-white/40 focus:border-[#8400ff] focus:outline-none focus:ring-1 focus:ring-[#8400ff]"
+                    disabled={loading}
+                    required
                   />
                 </div>
                 <div>
                   <label className="block text-sm font-medium text-white/70 mb-1">Designation</label>
                   <select
                     value={formData.designation}
-                    onChange={(e) => setFormData({ ...formData, designation: e.target.value as Designation })}
+                    onChange={(e) => setFormData({ ...formData, designation: e.target.value as TeacherDesignation })}
                     className="w-full px-4 py-2 border border-[#392e4e] rounded-lg bg-[#060010] text-white focus:border-[#8400ff] focus:outline-none focus:ring-1 focus:ring-[#8400ff]"
+                    disabled={loading}
                   >
-                    <option value="Professor">Professor</option>
-                    <option value="Associate Professor">Associate Professor</option>
-                    <option value="Assistant Professor">Assistant Professor</option>
-                    <option value="Lecturer">Lecturer</option>
+                    <option value="PROFESSOR">Professor</option>
+                    <option value="ASSOCIATE_PROFESSOR">Associate Professor</option>
+                    <option value="ASSISTANT_PROFESSOR">Assistant Professor</option>
+                    <option value="LECTURER">Lecturer</option>
                   </select>
-                </div>
-              </div>
-              <div className="grid grid-cols-2 gap-4">
-                <div>
-                  <label className="block text-sm font-medium text-white/70 mb-1">Office Room</label>
-                  <input
-                    type="text"
-                    value={formData.officeRoom}
-                    onChange={(e) => setFormData({ ...formData, officeRoom: e.target.value })}
-                    placeholder="e.g., Room 301"
-                    className="w-full px-4 py-2 border border-[#392e4e] rounded-lg bg-[#060010] text-white placeholder:text-white/40 focus:border-[#8400ff] focus:outline-none focus:ring-1 focus:ring-[#8400ff]"
-                  />
-                </div>
-                <div>
-                  <label className="block text-sm font-medium text-white/70 mb-1">Experience (Years)</label>
-                  <input
-                    type="number"
-                    value={formData.experience}
-                    onChange={(e) => setFormData({ ...formData, experience: parseInt(e.target.value) || 0 })}
-                    min="0"
-                    className="w-full px-4 py-2 border border-[#392e4e] rounded-lg bg-[#060010] text-white focus:border-[#8400ff] focus:outline-none focus:ring-1 focus:ring-[#8400ff]"
-                  />
                 </div>
               </div>
               <div className="flex gap-3 pt-4">
@@ -284,8 +337,9 @@ export default function FacultyInfoPage() {
                   whileHover={{ scale: 1.02 }}
                   whileTap={{ scale: 0.98 }}
                   type="button"
-                  onClick={() => setFormData({ name: '', email: '', phone: '', designation: 'Lecturer', officeRoom: '', experience: 0 })}
+                  onClick={() => setFormData({ full_name: '', email: '', phone: '', designation: 'LECTURER' })}
                   className="flex-1 px-4 py-2 border border-[#392e4e] rounded-full text-white/70 hover:bg-white/5"
+                  disabled={loading}
                 >
                   Reset
                 </motion.button>
@@ -293,9 +347,17 @@ export default function FacultyInfoPage() {
                   whileHover={{ scale: 1.02 }}
                   whileTap={{ scale: 0.98 }}
                   type="submit"
-                  className="flex-1 px-4 py-2 bg-gradient-to-r from-[#8400ff] to-[#a855f7] text-white rounded-full"
+                  className="flex-1 px-4 py-2 bg-gradient-to-r from-[#8400ff] to-[#a855f7] text-white rounded-full flex items-center justify-center gap-2"
+                  disabled={loading}
                 >
-                  Add Faculty
+                  {loading ? (
+                    <>
+                      <Loader2 className="w-4 h-4 animate-spin" />
+                      Adding...
+                    </>
+                  ) : (
+                    'Add Faculty'
+                  )}
                 </motion.button>
               </div>
             </form>
