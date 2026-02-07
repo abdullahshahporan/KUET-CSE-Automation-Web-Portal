@@ -2,10 +2,11 @@
 
 import SpotlightCard from '@/components/ui/SpotlightCard';
 import { TeacherDesignation, TeacherWithAuth } from '@/lib/supabase';
-import { addTeacher, getAllTeachers, deleteTeacher } from '@/services/teacherService';
-import { motion } from 'framer-motion';
-import { Plus, UserCog, Loader2, AlertCircle } from 'lucide-react';
+import { addTeacher, getAllTeachers, deleteTeacher, resetTeacherPassword, updateTeacherProfile } from '@/services/teacherService';
+import { motion, AnimatePresence } from 'framer-motion';
+import { Plus, UserCog, Loader2, AlertCircle, X, Check, Key } from 'lucide-react';
 import { useEffect, useState } from 'react';
+import FacultyCard from './FacultyCard';
 
 export default function FacultyInfoPage() {
   const [teachers, setTeachers] = useState<TeacherWithAuth[]>([]);
@@ -15,6 +16,9 @@ export default function FacultyInfoPage() {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [success, setSuccess] = useState<string | null>(null);
+  const [editingTeacher, setEditingTeacher] = useState<TeacherWithAuth | null>(null);
+  const [editFormData, setEditFormData] = useState({ full_name: '', phone: '', designation: 'LECTURER' as TeacherDesignation });
+  const [passwordPopup, setPasswordPopup] = useState<{ show: boolean; password: string; teacherName: string }>({ show: false, password: '', teacherName: '' });
   const [formData, setFormData] = useState({
     full_name: '',
     email: '',
@@ -79,24 +83,48 @@ export default function FacultyInfoPage() {
     setLoading(false);
   };
 
-  const getDesignationColor = (designation: TeacherDesignation) => {
-    switch (designation) {
-      case 'PROFESSOR': return 'bg-[#8400ff]/20 text-[#a855f7] border border-[#8400ff]/30';
-      case 'ASSOCIATE_PROFESSOR': return 'bg-[#00e5ff]/20 text-[#00e5ff] border border-[#00e5ff]/30';
-      case 'ASSISTANT_PROFESSOR': return 'bg-emerald-500/20 text-emerald-400 border border-emerald-500/30';
-      case 'LECTURER': return 'bg-amber-500/20 text-amber-400 border border-amber-500/30';
-      default: return 'bg-white/10 text-white/70 border border-white/20';
+  const handleCopyPassword = async (teacher: TeacherWithAuth) => {
+    setLoading(true);
+    const result = await resetTeacherPassword(teacher.user_id);
+    setLoading(false);
+
+    if (result.success && result.newPassword) {
+      setPasswordPopup({
+        show: true,
+        password: result.newPassword,
+        teacherName: teacher.full_name,
+      });
+    } else {
+      setError(result.error || 'Failed to reset password');
+      setTimeout(() => setError(null), 3000);
     }
   };
 
-  const getDesignationLabel = (designation: TeacherDesignation) => {
-    switch (designation) {
-      case 'PROFESSOR': return 'Professor';
-      case 'ASSOCIATE_PROFESSOR': return 'Associate Professor';
-      case 'ASSISTANT_PROFESSOR': return 'Assistant Professor';
-      case 'LECTURER': return 'Lecturer';
-      default: return designation;
+  const handleEditProfile = (teacher: TeacherWithAuth) => {
+    setEditingTeacher(teacher);
+    setEditFormData({
+      full_name: teacher.full_name,
+      phone: teacher.phone,
+      designation: teacher.designation,
+    });
+  };
+
+  const handleUpdateProfile = async () => {
+    if (!editingTeacher) return;
+    setLoading(true);
+    setError(null);
+
+    const result = await updateTeacherProfile(editingTeacher.user_id, editFormData);
+
+    if (result.success) {
+      setSuccess('Profile updated successfully!');
+      setEditingTeacher(null);
+      await loadTeachers();
+      setTimeout(() => setSuccess(null), 3000);
+    } else {
+      setError(result.error || 'Failed to update profile');
     }
+    setLoading(false);
   };
 
   return (
@@ -208,64 +236,13 @@ export default function FacultyInfoPage() {
           ) : (
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
               {filteredTeachers.map((teacher, index) => (
-                <motion.div
+                <FacultyCard
                   key={teacher.user_id}
-                  initial={{ opacity: 0, y: 20 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  transition={{ delay: index * 0.05 }}
-                >
-                  <SpotlightCard className="rounded-xl p-5 border border-[#DCC5B2] dark:border-[#392e4e] h-full" spotlightColor="rgba(217, 162, 153, 0.2)">
-                    <div className="flex items-start gap-4">
-                      <div className="w-16 h-16 rounded-full bg-gradient-to-br from-[#D9A299] to-[#DCC5B2] flex items-center justify-center text-white text-xl font-bold">
-                        {teacher.full_name.split(' ').map(n => n[0]).join('').slice(0, 2)}
-                      </div>
-                      <div className="flex-1">
-                        <h3 className="font-semibold text-[#5D4E37] dark:text-white">{teacher.full_name}</h3>
-                        <span className={`inline-block px-2 py-0.5 rounded-full text-xs font-medium mt-1 ${getDesignationColor(teacher.designation)}`}>
-                          {getDesignationLabel(teacher.designation)}
-                        </span>
-                      </div>
-                    </div>
-                    
-                    <div className="mt-4 space-y-2 text-sm">
-                      <div className="flex items-center gap-2 text-[#8B7355] dark:text-white/60">
-                        <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />
-                        </svg>
-                        <span className="truncate">{teacher.profile.email}</span>
-                      </div>
-                      {teacher.phone && (
-                        <div className="flex items-center gap-2 text-[#8B7355] dark:text-white/60">
-                          <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 5a2 2 0 012-2h3.28a1 1 0 01.948.684l1.498 4.493a1 1 0 01-.502 1.21l-2.257 1.13a11.042 11.042 0 005.516 5.516l1.13-2.257a1 1 0 011.21-.502l4.493 1.498a1 1 0 01.684.949V19a2 2 0 01-2 2h-1C9.716 21 3 14.284 3 6V5z" />
-                          </svg>
-                          <span>{teacher.phone}</span>
-                        </div>
-                      )}
-                      <div className="flex items-center gap-2 text-[#8B7355] dark:text-white/60">
-                        <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10 6H5a2 2 0 00-2 2v9a2 2 0 002 2h14a2 2 0 002-2V8a2 2 0 00-2-2h-5m-4 0V5a2 2 0 114 0v1m-4 0a2 2 0 104 0m-5 8a2 2 0 100-4 2 2 0 000 4zm0 0c1.306 0 2.417.835 2.83 2M9 14a3.001 3.001 0 00-2.83 2M15 11h3m-3 4h2" />
-                        </svg>
-                        <span className="font-mono text-xs">{teacher.teacher_uid}</span>
-                      </div>
-                      {teacher.profile.is_active ? (
-                        <div className="flex items-center gap-2 text-emerald-500">
-                          <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
-                          </svg>
-                          <span className="text-xs">Active</span>
-                        </div>
-                      ) : (
-                        <div className="flex items-center gap-2 text-red-400">
-                          <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10 14l2-2m0 0l2-2m-2 2l-2-2m2 2l2 2m7-2a9 9 0 11-18 0 9 9 0 0118 0z" />
-                          </svg>
-                          <span className="text-xs">Inactive</span>
-                        </div>
-                      )}
-                    </div>
-                  </SpotlightCard>
-                </motion.div>
+                  teacher={teacher}
+                  index={index}
+                  onEditProfile={handleEditProfile}
+                  onCopyPassword={handleCopyPassword}
+                />
               ))}
             </div>
           )}
@@ -364,6 +341,141 @@ export default function FacultyInfoPage() {
           </SpotlightCard>
         </motion.div>
       )}
+
+      {/* Edit Profile Modal */}
+      <AnimatePresence>
+        {editingTeacher && (
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-sm"
+            onClick={() => setEditingTeacher(null)}
+          >
+            <motion.div
+              initial={{ scale: 0.9, opacity: 0 }}
+              animate={{ scale: 1, opacity: 1 }}
+              exit={{ scale: 0.9, opacity: 0 }}
+              className="bg-[#1a1a2e] border border-white/10 rounded-2xl p-6 w-full max-w-md shadow-2xl"
+              onClick={(e) => e.stopPropagation()}
+            >
+              <div className="flex items-center justify-between mb-6">
+                <h3 className="text-lg font-semibold text-white">Edit Profile</h3>
+                <button onClick={() => setEditingTeacher(null)} className="text-white/50 hover:text-white">
+                  <X className="w-5 h-5" />
+                </button>
+              </div>
+
+              <div className="space-y-4">
+                <div>
+                  <label className="block text-sm text-white/60 mb-1">Full Name</label>
+                  <input
+                    type="text"
+                    value={editFormData.full_name}
+                    onChange={(e) => setEditFormData({ ...editFormData, full_name: e.target.value })}
+                    className="w-full px-4 py-2 rounded-lg bg-white/5 border border-white/10 text-white focus:outline-none focus:ring-2 focus:ring-[#8400ff]/50"
+                  />
+                </div>
+                <div>
+                  <label className="block text-sm text-white/60 mb-1">Phone</label>
+                  <input
+                    type="text"
+                    value={editFormData.phone}
+                    onChange={(e) => setEditFormData({ ...editFormData, phone: e.target.value })}
+                    className="w-full px-4 py-2 rounded-lg bg-white/5 border border-white/10 text-white focus:outline-none focus:ring-2 focus:ring-[#8400ff]/50"
+                  />
+                </div>
+                <div>
+                  <label className="block text-sm text-white/60 mb-1">Designation</label>
+                  <select
+                    value={editFormData.designation}
+                    onChange={(e) => setEditFormData({ ...editFormData, designation: e.target.value as TeacherDesignation })}
+                    className="w-full px-4 py-2 rounded-lg bg-white/5 border border-white/10 text-white focus:outline-none focus:ring-2 focus:ring-[#8400ff]/50"
+                  >
+                    <option value="LECTURER">Lecturer</option>
+                    <option value="ASSISTANT_PROFESSOR">Assistant Professor</option>
+                    <option value="ASSOCIATE_PROFESSOR">Associate Professor</option>
+                    <option value="PROFESSOR">Professor</option>
+                  </select>
+                </div>
+              </div>
+
+              <div className="flex gap-3 mt-6">
+                <button
+                  onClick={() => setEditingTeacher(null)}
+                  className="flex-1 px-4 py-2 rounded-full border border-white/20 text-white/70 hover:bg-white/5 transition-colors"
+                >
+                  Cancel
+                </button>
+                <button
+                  onClick={handleUpdateProfile}
+                  disabled={loading}
+                  className="flex-1 px-4 py-2 rounded-full bg-gradient-to-r from-[#8400ff] to-[#a855f7] text-white flex items-center justify-center gap-2 disabled:opacity-50"
+                >
+                  {loading ? <Loader2 className="w-4 h-4 animate-spin" /> : <Check className="w-4 h-4" />}
+                  Save Changes
+                </button>
+              </div>
+            </motion.div>
+          </motion.div>
+        )}
+      </AnimatePresence>
+
+      {/* Password Popup Modal */}
+      <AnimatePresence>
+        {passwordPopup.show && (
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-sm"
+            onClick={() => setPasswordPopup({ show: false, password: '', teacherName: '' })}
+          >
+            <motion.div
+              initial={{ scale: 0.9, opacity: 0 }}
+              animate={{ scale: 1, opacity: 1 }}
+              exit={{ scale: 0.9, opacity: 0 }}
+              className="bg-[#1a1a2e] border border-white/10 rounded-2xl p-6 w-full max-w-sm shadow-2xl"
+              onClick={(e) => e.stopPropagation()}
+            >
+              <div className="flex items-center justify-between mb-4">
+                <h3 className="text-lg font-semibold text-white">New Password</h3>
+                <button
+                  onClick={() => setPasswordPopup({ show: false, password: '', teacherName: '' })}
+                  className="text-white/50 hover:text-white"
+                >
+                  <X className="w-5 h-5" />
+                </button>
+              </div>
+
+              <p className="text-white/60 text-sm mb-2">
+                Password for <span className="text-white font-medium">{passwordPopup.teacherName}</span>
+              </p>
+
+              <div className="bg-white/5 border border-white/10 rounded-lg p-4 mb-3 flex items-center justify-between">
+                <span className="font-mono text-2xl tracking-widest text-[#a855f7]">{passwordPopup.password}</span>
+              </div>
+
+              <p className="text-amber-400/80 text-xs mb-4">
+                ⚠ This is a NEW password. The old password has been replaced.
+              </p>
+
+              <button
+                onClick={() => {
+                  navigator.clipboard.writeText(passwordPopup.password);
+                  setSuccess('Password copied to clipboard!');
+                  setTimeout(() => setSuccess(null), 2000);
+                  setPasswordPopup({ show: false, password: '', teacherName: '' });
+                }}
+                className="w-full px-4 py-2 rounded-full bg-gradient-to-r from-[#8400ff] to-[#a855f7] text-white flex items-center justify-center gap-2"
+              >
+                <Key className="w-4 h-4" />
+                Copy to Clipboard
+              </button>
+            </motion.div>
+          </motion.div>
+        )}
+      </AnimatePresence>
     </div>
   );
 }

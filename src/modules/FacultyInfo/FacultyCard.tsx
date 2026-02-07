@@ -1,0 +1,157 @@
+"use client";
+
+import SpotlightCard from '@/components/ui/SpotlightCard';
+import { TeacherDesignation, TeacherWithAuth } from '@/lib/supabase';
+import { motion, AnimatePresence } from 'framer-motion';
+import { MoreVertical, Edit, RefreshCw, Key } from 'lucide-react';
+import { useRef, useEffect, useState } from 'react';
+
+interface FacultyCardProps {
+  teacher: TeacherWithAuth;
+  index: number;
+  onEditProfile: (teacher: TeacherWithAuth) => void;
+  onCopyPassword: (teacher: TeacherWithAuth) => void;
+}
+
+const getDesignationColor = (designation: TeacherDesignation) => {
+  switch (designation) {
+    case 'PROFESSOR': return 'bg-[#8400ff]/20 text-[#a855f7] border border-[#8400ff]/30';
+    case 'ASSOCIATE_PROFESSOR': return 'bg-[#00e5ff]/20 text-[#00e5ff] border border-[#00e5ff]/30';
+    case 'ASSISTANT_PROFESSOR': return 'bg-emerald-500/20 text-emerald-400 border border-emerald-500/30';
+    case 'LECTURER': return 'bg-amber-500/20 text-amber-400 border border-amber-500/30';
+    default: return 'bg-white/10 text-white/70 border border-white/20';
+  }
+};
+
+const getDesignationLabel = (designation: TeacherDesignation) => {
+  switch (designation) {
+    case 'PROFESSOR': return 'Professor';
+    case 'ASSOCIATE_PROFESSOR': return 'Associate Professor';
+    case 'ASSISTANT_PROFESSOR': return 'Assistant Professor';
+    case 'LECTURER': return 'Lecturer';
+    default: return designation;
+  }
+};
+
+export default function FacultyCard({ teacher, index, onEditProfile, onCopyPassword }: FacultyCardProps) {
+  const [menuOpen, setMenuOpen] = useState(false);
+  const menuRef = useRef<HTMLDivElement>(null);
+
+  // Close menu on outside click
+  useEffect(() => {
+    const handleClickOutside = (e: MouseEvent) => {
+      if (menuRef.current && !menuRef.current.contains(e.target as Node)) {
+        setMenuOpen(false);
+      }
+    };
+    document.addEventListener('mousedown', handleClickOutside);
+    return () => document.removeEventListener('mousedown', handleClickOutside);
+  }, []);
+
+  return (
+    <motion.div
+      key={teacher.user_id}
+      initial={{ opacity: 0, y: 20 }}
+      animate={{ opacity: 1, y: 0 }}
+      transition={{ delay: index * 0.05 }}
+    >
+      <SpotlightCard className="rounded-xl p-5 border border-[#DCC5B2] dark:border-[#392e4e] h-full" spotlightColor="rgba(217, 162, 153, 0.2)">
+        <div className="flex items-start gap-4">
+          <div className="w-16 h-16 rounded-full bg-gradient-to-br from-[#D9A299] to-[#DCC5B2] flex items-center justify-center text-white text-xl font-bold">
+            {teacher.full_name.split(' ').map(n => n[0]).join('').slice(0, 2)}
+          </div>
+          <div className="flex-1 min-w-0">
+            <h3 className="font-semibold text-[#5D4E37] dark:text-white">{teacher.full_name}</h3>
+            <span className={`inline-block px-2 py-0.5 rounded-full text-xs font-medium mt-1 ${getDesignationColor(teacher.designation)}`}>
+              {getDesignationLabel(teacher.designation)}
+            </span>
+          </div>
+          {/* 3-dot menu */}
+          <div className="relative" ref={menuRef}>
+            <button
+              onClick={(e) => {
+                e.stopPropagation();
+                setMenuOpen(!menuOpen);
+              }}
+              className="p-1.5 rounded-lg text-[#8B7355] dark:text-white/40 hover:text-[#5D4E37] dark:hover:text-white hover:bg-[#F0E4D3] dark:hover:bg-white/10 transition-colors"
+            >
+              <MoreVertical className="w-5 h-5" />
+            </button>
+            <AnimatePresence>
+              {menuOpen && (
+                <motion.div
+                  initial={{ opacity: 0, scale: 0.95, y: -5 }}
+                  animate={{ opacity: 1, scale: 1, y: 0 }}
+                  exit={{ opacity: 0, scale: 0.95, y: -5 }}
+                  transition={{ duration: 0.15 }}
+                  className="absolute right-0 top-full mt-1 w-48 bg-[#FAF7F3] dark:bg-[#1a1a2e] border border-[#DCC5B2] dark:border-[#392e4e] rounded-xl shadow-xl z-50 overflow-hidden"
+                >
+                  <button
+                    onClick={() => { setMenuOpen(false); onEditProfile(teacher); }}
+                    className="w-full flex items-center gap-3 px-4 py-3 text-sm text-[#5D4E37] dark:text-white/80 hover:bg-[#F0E4D3] dark:hover:bg-white/5 transition-colors"
+                  >
+                    <Edit className="w-4 h-4 text-[#D9A299] dark:text-[#8400ff]" />
+                    Edit Profile
+                  </button>
+                  <button
+                    onClick={() => { setMenuOpen(false); onEditProfile(teacher); }}
+                    className="w-full flex items-center gap-3 px-4 py-3 text-sm text-[#5D4E37] dark:text-white/80 hover:bg-[#F0E4D3] dark:hover:bg-white/5 transition-colors"
+                  >
+                    <RefreshCw className="w-4 h-4 text-[#00e5ff]" />
+                    Update Profile
+                  </button>
+                  <div className="border-t border-[#DCC5B2]/50 dark:border-[#392e4e]/50" />
+                  <button
+                    onClick={() => { setMenuOpen(false); onCopyPassword(teacher); }}
+                    className="w-full flex items-center gap-3 px-4 py-3 text-sm text-[#5D4E37] dark:text-white/80 hover:bg-[#F0E4D3] dark:hover:bg-white/5 transition-colors"
+                  >
+                    <Key className="w-4 h-4 text-amber-400" />
+                    Copy Password
+                  </button>
+                </motion.div>
+              )}
+            </AnimatePresence>
+          </div>
+        </div>
+
+        <div className="mt-4 space-y-2 text-sm">
+          <div className="flex items-center gap-2 text-[#8B7355] dark:text-white/60">
+            <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />
+            </svg>
+            <span className="truncate">{teacher.profile.email}</span>
+          </div>
+          {teacher.phone && (
+            <div className="flex items-center gap-2 text-[#8B7355] dark:text-white/60">
+              <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 5a2 2 0 012-2h3.28a1 1 0 01.948.684l1.498 4.493a1 1 0 01-.502 1.21l-2.257 1.13a11.042 11.042 0 005.516 5.516l1.13-2.257a1 1 0 011.21-.502l4.493 1.498a1 1 0 01.684.949V19a2 2 0 01-2 2h-1C9.716 21 3 14.284 3 6V5z" />
+              </svg>
+              <span>{teacher.phone}</span>
+            </div>
+          )}
+          <div className="flex items-center gap-2 text-[#8B7355] dark:text-white/60">
+            <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10 6H5a2 2 0 00-2 2v9a2 2 0 002 2h14a2 2 0 002-2V8a2 2 0 00-2-2h-5m-4 0V5a2 2 0 114 0v1m-4 0a2 2 0 104 0m-5 8a2 2 0 100-4 2 2 0 000 4zm0 0c1.306 0 2.417.835 2.83 2M9 14a3.001 3.001 0 00-2.83 2M15 11h3m-3 4h2" />
+            </svg>
+            <span className="font-mono text-xs">{teacher.teacher_uid}</span>
+          </div>
+          {teacher.profile.is_active ? (
+            <div className="flex items-center gap-2 text-emerald-500">
+              <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
+              </svg>
+              <span className="text-xs">Active</span>
+            </div>
+          ) : (
+            <div className="flex items-center gap-2 text-red-400">
+              <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10 14l2-2m0 0l2-2m-2 2l-2-2m2 2l2 2m7-2a9 9 0 11-18 0 9 9 0 0118 0z" />
+              </svg>
+              <span className="text-xs">Inactive</span>
+            </div>
+          )}
+        </div>
+      </SpotlightCard>
+    </motion.div>
+  );
+}

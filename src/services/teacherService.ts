@@ -92,3 +92,51 @@ export async function searchTeachers(query: string): Promise<TeacherWithAuth[]> 
   console.warn('searchTeachers not yet implemented with API');
   return [];
 }
+
+/**
+ * Reset a teacher's password - generates a new 6-digit password
+ * Returns the new plain text password for the admin to share
+ */
+export async function resetTeacherPassword(userId: string): Promise<{ success: boolean; newPassword?: string; error?: string }> {
+  try {
+    const response = await fetch('/api/teachers', {
+      method: 'PATCH',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ userId, action: 'reset_password' }),
+    });
+
+    const result = await response.json();
+    return result;
+  } catch (error: any) {
+    console.error('Error resetting password:', error);
+    return {
+      success: false,
+      error: error.message || 'Failed to reset password',
+    };
+  }
+}
+
+/**
+ * Update teacher profile data (name, phone, designation)
+ */
+export async function updateTeacherProfile(
+  userId: string,
+  updates: { full_name?: string; phone?: string; designation?: TeacherDesignation }
+): Promise<{ success: boolean; error?: string }> {
+  try {
+    const response = await fetch('/api/teachers', {
+      method: 'PATCH',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ userId, action: 'update_profile', ...updates }),
+    });
+
+    const result = await response.json();
+    return result;
+  } catch (error: any) {
+    console.error('Error updating teacher profile:', error);
+    return {
+      success: false,
+      error: error.message || 'Failed to update teacher profile',
+    };
+  }
+}
