@@ -146,3 +146,72 @@ export async function DELETE(request: NextRequest) {
     );
   }
 }
+
+export async function PATCH(request: NextRequest) {
+  try {
+    if (!isSupabaseConfigured()) {
+      return NextResponse.json(
+        { success: false, error: 'Supabase is not configured' },
+        { status: 500 }
+      );
+    }
+
+    const body = await request.json();
+    const { userId, action, full_name, phone, designation } = body;
+
+    if (!userId) {
+      return NextResponse.json(
+        { success: false, error: 'User ID is required' },
+        { status: 400 }
+      );
+    }
+
+    // Reset password: generate new 6-digit password and return it
+    if (action === 'reset_password') {
+      const newPassword = generateTeacherPassword();
+      const passwordHash = await hashPassword(newPassword);
+
+      const { error } = await supabase
+        .from('profiles')
+        .update({ password_hash: passwordHash })
+        .eq('user_id', userId);
+
+      if (error) throw error;
+
+      return NextResponse.json({
+        success: true,
+        newPassword,
+      });
+    }
+
+    // Update profile: update teacher data
+    if (action === 'update_profile') {
+      const teacherUpdates: Record<string, string> = {};
+      if (full_name) teacherUpdates.full_name = full_name;
+      if (phone) teacherUpdates.phone = phone;
+      if (designation) teacherUpdates.designation = designation;
+
+      if (Object.keys(teacherUpdates).length > 0) {
+        const { error } = await supabase
+          .from('teachers')
+          .update(teacherUpdates)
+          .eq('user_id', userId);
+
+        if (error) throw error;
+      }
+
+      return NextResponse.json({ success: true });
+    }
+
+    return NextResponse.json(
+      { success: false, error: 'Invalid action' },
+      { status: 400 }
+    );
+  } catch (error: any) {
+    console.error('Error updating teacher:', error);
+    return NextResponse.json(
+      { success: false, error: error.message || 'Failed to update teacher' },
+      { status: 500 }
+    );
+  }
+}
