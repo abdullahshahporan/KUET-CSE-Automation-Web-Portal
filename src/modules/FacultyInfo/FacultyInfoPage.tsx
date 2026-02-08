@@ -4,7 +4,7 @@ import SpotlightCard from '@/components/ui/SpotlightCard';
 import { TeacherDesignation, TeacherWithAuth } from '@/lib/supabase';
 import { addTeacher, getAllTeachers, deleteTeacher, resetTeacherPassword, updateTeacherProfile, toggleTeacherLeave } from '@/services/teacherService';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Plus, UserCog, Loader2, AlertCircle, X, Check, Key, Upload } from 'lucide-react';
+import { Plus, UserCog, Loader2, AlertCircle, X, Check, Key, Upload, UserX } from 'lucide-react';
 import { useEffect, useState } from 'react';
 import FacultyCard from './FacultyCard';
 import AddFacultyCSV from '@/modules/AddFaculty/AddFacultyCSV';
@@ -21,8 +21,7 @@ export default function FacultyInfoPage() {
   const [editingTeacher, setEditingTeacher] = useState<TeacherWithAuth | null>(null);
   const [editFormData, setEditFormData] = useState({ full_name: '', phone: '', designation: 'LECTURER' as TeacherDesignation });
   const [passwordPopup, setPasswordPopup] = useState<{ show: boolean; password: string; teacherName: string }>({ show: false, password: '', teacherName: '' });
-  const [leaveModal, setLeaveModal] = useState<{ show: boolean; teacher: TeacherWithAuth | null }>({ show: false, teacher: null });
-  const [leaveReason, setLeaveReason] = useState('');
+
   const [formData, setFormData] = useState({
     full_name: '',
     email: '',
@@ -54,7 +53,15 @@ export default function FacultyInfoPage() {
                           t.profile.email.toLowerCase().includes(searchTerm.toLowerCase());
     const matchesDesignation = filterDesignation === 'all' || t.designation === filterDesignation;
     return matchesSearch && matchesDesignation;
-  }).sort((a, b) => (designationRank[a.designation] ?? 9) - (designationRank[b.designation] ?? 9));
+  }).sort((a, b) => {
+    // On-leave teachers always go to the bottom
+    if (a.is_on_leave !== b.is_on_leave) return a.is_on_leave ? 1 : -1;
+    // Within same leave status, sort by designation rank
+    return (designationRank[a.designation] ?? 9) - (designationRank[b.designation] ?? 9);
+  });
+
+  const activeTeachers = filteredTeachers.filter(t => !t.is_on_leave);
+  const onLeaveTeachers = filteredTeachers.filter(t => t.is_on_leave);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -139,33 +146,11 @@ export default function FacultyInfoPage() {
   };
 
   const handleToggleLeave = async (teacher: TeacherWithAuth) => {
-    if (teacher.is_on_leave) {
-      // Mark as present directly
-      setLoading(true);
-      const result = await toggleTeacherLeave(teacher.user_id, false);
-      if (result.success) {
-        setSuccess(`${teacher.full_name} marked as present.`);
-        await loadTeachers();
-        setTimeout(() => setSuccess(null), 3000);
-      } else {
-        setError(result.error || 'Failed to update leave status');
-        setTimeout(() => setError(null), 3000);
-      }
-      setLoading(false);
-    } else {
-      // Show modal for leave reason
-      setLeaveModal({ show: true, teacher });
-      setLeaveReason('');
-    }
-  };
-
-  const handleConfirmLeave = async () => {
-    if (!leaveModal.teacher) return;
     setLoading(true);
-    const result = await toggleTeacherLeave(leaveModal.teacher.user_id, true, leaveReason || undefined);
+    const isOnLeave = !teacher.is_on_leave;
+    const result = await toggleTeacherLeave(teacher.user_id, isOnLeave);
     if (result.success) {
-      setSuccess(`${leaveModal.teacher.full_name} marked as on leave.`);
-      setLeaveModal({ show: false, teacher: null });
+      setSuccess(`${teacher.full_name} marked as ${isOnLeave ? 'on leave' : 'present'}.`);
       await loadTeachers();
       setTimeout(() => setSuccess(null), 3000);
     } else {
@@ -282,17 +267,53 @@ export default function FacultyInfoPage() {
               No teachers found. {filterDesignation !== 'all' || searchTerm ? 'Try adjusting your filters.' : 'Add your first teacher to get started.'}
             </div>
           ) : (
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-              {filteredTeachers.map((teacher, index) => (
-                <FacultyCard
-                  key={teacher.user_id}
-                  teacher={teacher}
-                  index={index}
-                  onEditProfile={handleEditProfile}
-                  onCopyPassword={handleCopyPassword}
-                  onToggleLeave={handleToggleLeave}
-                />
-              ))}
+            <div className="space-y-6">
+              {/* Active Teachers */}
+              {activeTeachers.length > 0 && (
+                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+                  {activeTeachers.map((teacher, index) => (
+                    <FacultyCard
+                      key={teacher.user_id}
+                      teacher={teacher}
+                      index={index}
+                      onUpdate={handleEditProfile}
+                      onToggleLeave={handleToggleLeave}
+                      onDelete={(t) => handleDelete(t.user_id)}
+                    />
+                  ))}
+                </div>
+              )}
+
+              {/* On Leave Separator & Section */}
+              {onLeaveTeachers.length > 0 && (
+                <>
+                  <div className="flex items-center gap-3 pt-2">
+                    <div className="flex-1 h-px bg-amber-500/30" />
+                    <div className="flex items-center gap-2 px-4 py-1.5 rounded-full bg-amber-500/10 border border-amber-500/20">
+                      <UserX className="w-4 h-4 text-amber-500" />
+                      <span className="text-sm font-medium text-amber-500">
+                        On Leave ({onLeaveTeachers.length})
+                      </span>
+                    </div>
+                    <div className="flex-1 h-px bg-amber-500/30" />
+                  </div>
+                  <p className="text-center text-xs text-[#8B7355] dark:text-amber-500/60 -mt-3">
+                    These teachers cannot be assigned to any course
+                  </p>
+                  <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 opacity-75">
+                    {onLeaveTeachers.map((teacher, index) => (
+                      <FacultyCard
+                        key={teacher.user_id}
+                        teacher={teacher}
+                        index={index}
+                        onUpdate={handleEditProfile}
+                        onToggleLeave={handleToggleLeave}
+                        onDelete={(t) => handleDelete(t.user_id)}
+                      />
+                    ))}
+                  </div>
+                </>
+              )}
             </div>
           )}
         </>
@@ -563,74 +584,7 @@ export default function FacultyInfoPage() {
         )}
       </AnimatePresence>
 
-      {/* Leave Reason Modal */}
-      <AnimatePresence>
-        {leaveModal.show && leaveModal.teacher && (
-          <motion.div
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            exit={{ opacity: 0 }}
-            className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-sm"
-            onClick={() => setLeaveModal({ show: false, teacher: null })}
-          >
-            <motion.div
-              initial={{ scale: 0.9, opacity: 0 }}
-              animate={{ scale: 1, opacity: 1 }}
-              exit={{ scale: 0.9, opacity: 0 }}
-              className="bg-[#FAF7F3] dark:bg-[#1a1a2e] border border-[#DCC5B2] dark:border-white/10 rounded-2xl p-6 w-full max-w-sm shadow-2xl"
-              onClick={(e) => e.stopPropagation()}
-            >
-              <div className="flex items-center justify-between mb-4">
-                <h3 className="text-lg font-semibold text-[#5D4E37] dark:text-white">Mark as On Leave</h3>
-                <button
-                  onClick={() => setLeaveModal({ show: false, teacher: null })}
-                  className="text-[#8B7355] dark:text-white/50 hover:text-[#5D4E37] dark:hover:text-white"
-                >
-                  <X className="w-5 h-5" />
-                </button>
-              </div>
 
-              <p className="text-[#8B7355] dark:text-white/60 text-sm mb-4">
-                Mark <span className="text-[#5D4E37] dark:text-white font-medium">{leaveModal.teacher.full_name}</span> as on leave. They will not be available for course assignment.
-              </p>
-
-              <div className="mb-4">
-                <label className="block text-sm font-medium text-[#5D4E37] dark:text-white/80 mb-2">Leave Reason (optional)</label>
-                <select
-                  value={leaveReason}
-                  onChange={(e) => setLeaveReason(e.target.value)}
-                  className="w-full px-4 py-2.5 rounded-lg bg-white dark:bg-white/5 border border-[#DCC5B2] dark:border-white/10 text-[#5D4E37] dark:text-white focus:ring-2 focus:ring-amber-500/50 focus:border-amber-500 transition-all"
-                >
-                  <option value="">Select reason...</option>
-                  <option value="Study Leave">Study Leave</option>
-                  <option value="Sick Leave">Sick Leave</option>
-                  <option value="Sabbatical">Sabbatical</option>
-                  <option value="Maternity Leave">Maternity Leave</option>
-                  <option value="Personal Leave">Personal Leave</option>
-                  <option value="Deputation">Deputation</option>
-                </select>
-              </div>
-
-              <div className="flex gap-3">
-                <button
-                  onClick={() => setLeaveModal({ show: false, teacher: null })}
-                  className="flex-1 px-4 py-2 rounded-full border border-[#DCC5B2] dark:border-white/20 text-[#8B7355] dark:text-white/70 hover:bg-[#F0E4D3] dark:hover:bg-white/5 transition-colors"
-                >
-                  Cancel
-                </button>
-                <button
-                  onClick={handleConfirmLeave}
-                  disabled={loading}
-                  className="flex-1 px-4 py-2 rounded-full bg-gradient-to-r from-amber-500 to-amber-600 text-white flex items-center justify-center gap-2 disabled:opacity-50"
-                >
-                  {loading ? <Loader2 className="w-4 h-4 animate-spin" /> : null}
-                  Confirm Leave
-                </button>
-              </div>
-            </motion.div>
-          </motion.div>
-        )}
-      </AnimatePresence>
     </div>
   );
 }
