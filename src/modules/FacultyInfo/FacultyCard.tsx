@@ -3,15 +3,16 @@
 import SpotlightCard from '@/components/ui/SpotlightCard';
 import { TeacherDesignation, TeacherWithAuth } from '@/lib/supabase';
 import { motion, AnimatePresence } from 'framer-motion';
-import { MoreVertical, Edit, RefreshCw, Key, UserX, UserCheck } from 'lucide-react';
-import { useRef, useEffect, useState } from 'react';
+import { MoreVertical, Edit, UserX, UserCheck, Trash2 } from 'lucide-react';
+import { useRef, useEffect, useState, useCallback } from 'react';
+import { createPortal } from 'react-dom';
 
 interface FacultyCardProps {
   teacher: TeacherWithAuth;
   index: number;
-  onEditProfile: (teacher: TeacherWithAuth) => void;
-  onCopyPassword: (teacher: TeacherWithAuth) => void;
+  onUpdate: (teacher: TeacherWithAuth) => void;
   onToggleLeave: (teacher: TeacherWithAuth) => void;
+  onDelete: (teacher: TeacherWithAuth) => void;
 }
 
 const getDesignationColor = (designation: TeacherDesignation) => {
@@ -34,20 +35,92 @@ const getDesignationLabel = (designation: TeacherDesignation) => {
   }
 };
 
-export default function FacultyCard({ teacher, index, onEditProfile, onCopyPassword, onToggleLeave }: FacultyCardProps) {
+export default function FacultyCard({ teacher, index, onUpdate, onToggleLeave, onDelete }: FacultyCardProps) {
   const [menuOpen, setMenuOpen] = useState(false);
+  const buttonRef = useRef<HTMLButtonElement>(null);
   const menuRef = useRef<HTMLDivElement>(null);
+  const [menuPos, setMenuPos] = useState({ top: 0, left: 0 });
 
-  // Close menu on outside click
+  const closeMenu = useCallback(() => setMenuOpen(false), []);
+
+  // Close on outside click or scroll
   useEffect(() => {
+    if (!menuOpen) return;
     const handleClickOutside = (e: MouseEvent) => {
-      if (menuRef.current && !menuRef.current.contains(e.target as Node)) {
-        setMenuOpen(false);
+      if (
+        menuRef.current && !menuRef.current.contains(e.target as Node) &&
+        buttonRef.current && !buttonRef.current.contains(e.target as Node)
+      ) {
+        closeMenu();
       }
     };
+    const handleScroll = () => closeMenu();
     document.addEventListener('mousedown', handleClickOutside);
-    return () => document.removeEventListener('mousedown', handleClickOutside);
-  }, []);
+    window.addEventListener('scroll', handleScroll, true);
+    return () => {
+      document.removeEventListener('mousedown', handleClickOutside);
+      window.removeEventListener('scroll', handleScroll, true);
+    };
+  }, [menuOpen, closeMenu]);
+
+  const toggleMenu = (e: React.MouseEvent) => {
+    e.stopPropagation();
+    e.preventDefault();
+    if (!menuOpen && buttonRef.current) {
+      const rect = buttonRef.current.getBoundingClientRect();
+      setMenuPos({ top: rect.bottom + 4, left: rect.right - 192 });
+    }
+    setMenuOpen(prev => !prev);
+  };
+
+  // Portal-based dropdown menu rendered at document body level
+  const dropdownMenu = menuOpen
+    ? createPortal(
+        <AnimatePresence>
+          <motion.div
+            ref={menuRef}
+            initial={{ opacity: 0, scale: 0.95, y: -5 }}
+            animate={{ opacity: 1, scale: 1, y: 0 }}
+            exit={{ opacity: 0, scale: 0.95, y: -5 }}
+            transition={{ duration: 0.15 }}
+            style={{ position: 'fixed', top: menuPos.top, left: menuPos.left, zIndex: 9999 }}
+            className="w-48 bg-[#FAF7F3] dark:bg-[#1a1a2e] border border-[#DCC5B2] dark:border-[#392e4e] rounded-xl shadow-xl overflow-hidden"
+          >
+            <button
+              onClick={() => { closeMenu(); onUpdate(teacher); }}
+              className="w-full flex items-center gap-3 px-4 py-3 text-sm text-[#5D4E37] dark:text-white/80 hover:bg-[#F0E4D3] dark:hover:bg-white/5 transition-colors"
+            >
+              <Edit className="w-4 h-4 text-[#D9A299] dark:text-[#8400ff]" />
+              Update Profile
+            </button>
+            <div className="border-t border-[#DCC5B2]/50 dark:border-[#392e4e]/50" />
+            <button
+              onClick={() => { closeMenu(); onToggleLeave(teacher); }}
+              className={`w-full flex items-center gap-3 px-4 py-3 text-sm transition-colors ${
+                teacher.is_on_leave
+                  ? 'text-emerald-600 dark:text-emerald-400 hover:bg-emerald-50 dark:hover:bg-emerald-500/10'
+                  : 'text-amber-600 dark:text-amber-400 hover:bg-amber-50 dark:hover:bg-amber-500/10'
+              }`}
+            >
+              {teacher.is_on_leave ? (
+                <><UserCheck className="w-4 h-4" /> Mark as Present</>
+              ) : (
+                <><UserX className="w-4 h-4" /> Mark as On Leave</>
+              )}
+            </button>
+            <div className="border-t border-[#DCC5B2]/50 dark:border-[#392e4e]/50" />
+            <button
+              onClick={() => { closeMenu(); onDelete(teacher); }}
+              className="w-full flex items-center gap-3 px-4 py-3 text-sm text-red-500 dark:text-red-400 hover:bg-red-50 dark:hover:bg-red-500/10 transition-colors"
+            >
+              <Trash2 className="w-4 h-4" />
+              Delete
+            </button>
+          </motion.div>
+        </AnimatePresence>,
+        document.body
+      )
+    : null;
 
   return (
     <motion.div
@@ -75,65 +148,15 @@ export default function FacultyCard({ teacher, index, onEditProfile, onCopyPassw
             </div>
           </div>
           {/* 3-dot menu */}
-          <div className="relative" ref={menuRef}>
+          <div className="relative">
             <button
-              onClick={(e) => {
-                e.stopPropagation();
-                setMenuOpen(!menuOpen);
-              }}
+              ref={buttonRef}
+              onClick={toggleMenu}
               className="p-1.5 rounded-lg text-[#8B7355] dark:text-white/40 hover:text-[#5D4E37] dark:hover:text-white hover:bg-[#F0E4D3] dark:hover:bg-white/10 transition-colors"
             >
               <MoreVertical className="w-5 h-5" />
             </button>
-            <AnimatePresence>
-              {menuOpen && (
-                <motion.div
-                  initial={{ opacity: 0, scale: 0.95, y: -5 }}
-                  animate={{ opacity: 1, scale: 1, y: 0 }}
-                  exit={{ opacity: 0, scale: 0.95, y: -5 }}
-                  transition={{ duration: 0.15 }}
-                  className="absolute right-0 top-full mt-1 w-48 bg-[#FAF7F3] dark:bg-[#1a1a2e] border border-[#DCC5B2] dark:border-[#392e4e] rounded-xl shadow-xl z-50 overflow-hidden"
-                >
-                  <button
-                    onClick={() => { setMenuOpen(false); onEditProfile(teacher); }}
-                    className="w-full flex items-center gap-3 px-4 py-3 text-sm text-[#5D4E37] dark:text-white/80 hover:bg-[#F0E4D3] dark:hover:bg-white/5 transition-colors"
-                  >
-                    <Edit className="w-4 h-4 text-[#D9A299] dark:text-[#8400ff]" />
-                    Edit Profile
-                  </button>
-                  <button
-                    onClick={() => { setMenuOpen(false); onEditProfile(teacher); }}
-                    className="w-full flex items-center gap-3 px-4 py-3 text-sm text-[#5D4E37] dark:text-white/80 hover:bg-[#F0E4D3] dark:hover:bg-white/5 transition-colors"
-                  >
-                    <RefreshCw className="w-4 h-4 text-[#00e5ff]" />
-                    Update Profile
-                  </button>
-                  <div className="border-t border-[#DCC5B2]/50 dark:border-[#392e4e]/50" />
-                  <button
-                    onClick={() => { setMenuOpen(false); onCopyPassword(teacher); }}
-                    className="w-full flex items-center gap-3 px-4 py-3 text-sm text-[#5D4E37] dark:text-white/80 hover:bg-[#F0E4D3] dark:hover:bg-white/5 transition-colors"
-                  >
-                    <Key className="w-4 h-4 text-amber-400" />
-                    Copy Password
-                  </button>
-                  <div className="border-t border-[#DCC5B2]/50 dark:border-[#392e4e]/50" />
-                  <button
-                    onClick={() => { setMenuOpen(false); onToggleLeave(teacher); }}
-                    className={`w-full flex items-center gap-3 px-4 py-3 text-sm transition-colors ${
-                      teacher.is_on_leave
-                        ? 'text-emerald-600 dark:text-emerald-400 hover:bg-emerald-50 dark:hover:bg-emerald-500/10'
-                        : 'text-amber-600 dark:text-amber-400 hover:bg-amber-50 dark:hover:bg-amber-500/10'
-                    }`}
-                  >
-                    {teacher.is_on_leave ? (
-                      <><UserCheck className="w-4 h-4" /> Mark as Present</>
-                    ) : (
-                      <><UserX className="w-4 h-4" /> Mark as On Leave</>
-                    )}
-                  </button>
-                </motion.div>
-              )}
-            </AnimatePresence>
+            {dropdownMenu}
           </div>
         </div>
 
@@ -161,7 +184,7 @@ export default function FacultyCard({ teacher, index, onEditProfile, onCopyPassw
           {teacher.is_on_leave ? (
             <div className="flex items-center gap-2 text-amber-500">
               <UserX className="w-4 h-4" />
-              <span className="text-xs">On Leave{teacher.leave_reason ? ` — ${teacher.leave_reason}` : ''}</span>
+              <span className="text-xs">On Leave</span>
             </div>
           ) : teacher.profile.is_active ? (
             <div className="flex items-center gap-2 text-emerald-500">
