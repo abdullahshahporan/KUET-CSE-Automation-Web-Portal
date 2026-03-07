@@ -48,9 +48,10 @@ export default function TVDisplayPage() {
       if (error) throw error;
       const { data } = cmsSupabase.storage.from('cms-images').getPublicUrl(path);
       setEventFormData(prev => ({ ...prev, [field]: data.publicUrl }));
-    } catch (err) {
+    } catch (err: unknown) {
+      const msg = err instanceof Error ? err.message : (err as { message?: string })?.message ?? String(err);
       console.error('Image upload failed:', err);
-      alert('Image upload failed. Please try again.');
+      alert(`Image upload failed: ${msg}`);
     } finally {
       setUploading(prev => ({ ...prev, [field]: false }));
     }
