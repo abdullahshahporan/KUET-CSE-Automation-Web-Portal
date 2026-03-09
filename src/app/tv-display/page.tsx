@@ -1,11 +1,11 @@
-﻿'use client';
+'use client';
 
 // ==========================================
-// Public TV Display Page â€” /tv-display
-// Left (58%): Liquid glass event cards, wider
-// Right (42%): Time-aware live room schedule
-//   â€¢ Current period â€” all rooms active NOW
-//   â€¢ Next 2 upcoming periods, auto-slides every 20 s
+// Public TV Display Page - /tv-display
+// Left (68%): Liquid glass event cards, wider
+// Right (32%): Time-aware live room schedule
+//   - Current period - all rooms active NOW
+//   - Next 2 upcoming periods, auto-slides every 20 s
 // No auth required. Polls every 30 s.
 // ==========================================
 
@@ -15,8 +15,8 @@ import type { CmsTvAnnouncement, CmsTvEvent, CmsTvTicker } from '@/types/cms';
 import type { DBRoutineSlotWithDetails } from '@/types/database';
 import { AnimatePresence, motion } from 'framer-motion';
 import {
-  Calendar, ChevronLeft, ChevronRight, Clock,
-  GraduationCap, MapPin, Monitor, Radio, User, Zap,
+    Calendar, ChevronLeft, ChevronRight, Clock,
+    GraduationCap, MapPin, Monitor, Radio, User, Zap,
 } from 'lucide-react';
 import Image from 'next/image';
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
@@ -200,7 +200,7 @@ export default function TvDisplayPublicPage() {
         </div>
       </header>
 
-      {/* â•â•â•â•â•â•â•â•â•â•â• MAIN CONTENT â€” 2 PANELS â•â•â•â•â•â•â•â•â•â•â• */}
+      {/* â•â•â•â•â•â•â•â•â•â•â• MAIN CONTENT - 2 PANELS â•â•â•â•â•â•â•â•â•â•â• */}
       <main className="flex-1 min-h-0 flex overflow-hidden">
 
         {/* â”€â”€â”€â”€â”€ LEFT PANEL: News & Events (58%) â”€â”€â”€â”€â”€ */}
@@ -250,8 +250,8 @@ export default function TvDisplayPublicPage() {
         </section>
 
         {/* â”€â”€â”€â”€â”€ RIGHT PANEL: Live Room Schedule (42%) â”€â”€â”€â”€â”€ */}
-        <section className="flex-[42] min-w-0 flex flex-col p-4 pl-2 overflow-hidden gap-3">
-          <h2 className="flex-shrink-0 text-sm font-black tracking-[0.2em] uppercase" style={{ color: C.gold }}>
+        <section className="flex-[32] min-w-0 flex flex-col p-4 pl-2 overflow-hidden gap-2">
+          <h2 className="flex-shrink-0 text-xs font-black tracking-[0.18em] uppercase" style={{ color: C.gold }}>
             Live Room Schedule
           </h2>
 
@@ -264,28 +264,28 @@ export default function TvDisplayPublicPage() {
               border: `1px solid ${currentPeriod ? 'rgba(0,200,150,0.3)' : C.border}`,
             }}>
             {/* Header row */}
-            <div className="flex-shrink-0 px-5 py-3 flex items-center gap-3"
+            <div className="flex-shrink-0 px-3 py-2 flex items-center gap-2"
               style={{ borderBottom: '1px solid rgba(255,255,255,0.08)' }}>
               {currentPeriod ? (
                 <>
-                  <span className="flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-black tracking-widest uppercase"
+                  <span className="flex items-center gap-1 px-2 py-0.5 rounded-full text-[10px] font-black tracking-widest uppercase"
                     style={{ background: 'rgba(255,193,7,0.2)', color: C.gold, border: '1px solid rgba(255,193,7,0.4)' }}>
-                    <span className="w-2 h-2 rounded-full animate-pulse" style={{ background: C.gold }} />
+                    <span className="w-1.5 h-1.5 rounded-full animate-pulse" style={{ background: C.gold }} />
                     NOW
                   </span>
-                  <span className="text-base font-mono font-bold" style={{ color: C.white }}>
-                    {formatTime12(currentPeriod.start_time)} â€“ {formatTime12(currentPeriod.end_time)}
+                  <span className="text-xs font-mono font-bold" style={{ color: C.white }}>
+                    {formatTime12(currentPeriod.start_time)} - {formatTime12(currentPeriod.end_time)}
                   </span>
                 </>
               ) : (
                 <>
-                  <span className="flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-black tracking-widest uppercase"
+                  <span className="flex items-center gap-1 px-2 py-0.5 rounded-full text-[10px] font-black tracking-widest uppercase"
                     style={{ background: 'rgba(255,255,255,0.07)', color: C.textMuted, border: `1px solid ${C.border}` }}>
                     <Clock className="w-3 h-3" />
                     BETWEEN CLASSES
                   </span>
                   {upcomingPeriods[0] && (
-                    <span className="text-sm font-mono" style={{ color: C.textMuted }}>
+                    <span className="text-xs font-mono" style={{ color: C.textMuted }}>
                       Next: {formatTime12(upcomingPeriods[0].start_time)}
                     </span>
                   )}
@@ -294,33 +294,28 @@ export default function TvDisplayPublicPage() {
             </div>
 
             {/* Slot rows */}
-            <div className="flex-1 min-h-0 overflow-hidden flex flex-col p-3 gap-2">
+            <div className="flex-1 min-h-0 overflow-hidden flex flex-col p-2 gap-1.5">
               {currentPeriod ? (
                 currentPeriod.slots.map(slot => (
-                  <div key={slot.id} className="flex-1 min-h-0 flex items-center gap-3 px-4 py-2 rounded-xl"
+                  <div key={slot.id} className="flex items-center gap-2 px-2 py-1.5 rounded-lg"
                     style={{ background: 'rgba(255,255,255,0.06)', border: '1px solid rgba(255,255,255,0.08)' }}>
-                    <span className="flex-shrink-0 px-3 py-1.5 rounded-lg text-sm font-black tabular-nums"
-                      style={{ background: C.gold, color: C.navyDark, minWidth: '3.5rem', textAlign: 'center' }}>
+                    <span className="flex-shrink-0 px-2 py-0.5 rounded text-xs font-black tabular-nums"
+                      style={{ background: C.gold, color: C.navyDark, minWidth: '2.5rem', textAlign: 'center' }}>
                       {slot.room_number}
                     </span>
-                    <div className="flex-1 min-w-0">
-                      <p className="font-bold text-white truncate text-base">
-                        {slot.course_offerings?.courses?.code || 'â€”'}
-                      </p>
-                      <p className="text-xs truncate" style={{ color: C.textMuted }}>
-                        {slot.course_offerings?.courses?.title || ''}
-                      </p>
-                    </div>
-                    <span className="flex-shrink-0 text-xs font-medium text-right"
-                      style={{ color: 'rgba(255,255,255,0.7)', maxWidth: '8rem' }}>
+                    <span className="font-bold text-white truncate text-sm">
+                      {slot.course_offerings?.courses?.code || '-'}
+                    </span>
+                    <span className="flex-shrink-0 text-[11px] ml-auto text-right truncate"
+                      style={{ color: 'rgba(255,255,255,0.7)', maxWidth: '7rem' }}>
                       {slot.course_offerings?.teachers?.full_name || ''}
                     </span>
                   </div>
                 ))
               ) : (
                 <div className="flex-1 flex items-center justify-center flex-col gap-2">
-                  <Clock className="w-10 h-10" style={{ color: C.textDim }} />
-                  <p className="text-sm" style={{ color: C.textDim }}>
+                  <Clock className="w-8 h-8" style={{ color: C.textDim }} />
+                  <p className="text-xs" style={{ color: C.textDim }}>
                     {upcomingPeriods.length === 0 ? 'No more classes today' : 'Rooms vacant'}
                   </p>
                 </div>
@@ -331,9 +326,9 @@ export default function TvDisplayPublicPage() {
           {/* â”€â”€ UPCOMING PERIODS (bottom ~45%, slides every 20 s) â”€â”€ */}
           <div className="flex-[45] min-h-0 rounded-2xl overflow-hidden flex flex-col"
             style={{ background: C.navyLight, border: `1px solid rgba(0,121,107,0.25)` }}>
-            <div className="flex-shrink-0 px-5 py-2.5 flex items-center justify-between"
+            <div className="flex-shrink-0 px-3 py-2 flex items-center justify-between"
               style={{ borderBottom: `1px solid ${C.border}` }}>
-              <span className="text-xs font-black tracking-[0.18em] uppercase" style={{ color: C.tealLight }}>
+              <span className="text-[10px] font-black tracking-[0.18em] uppercase" style={{ color: C.tealLight }}>
                 Upcoming
               </span>
               {upcomingPeriods.length > 1 && (
@@ -362,30 +357,29 @@ export default function TvDisplayPublicPage() {
                       exit={{ opacity: 0, y: -16 }}
                       transition={{ duration: 0.3 }}
                       className="h-full flex flex-col p-3 gap-2">
-                      <div className="flex-shrink-0 flex items-center gap-2 mb-1">
-                        <Clock className="w-3.5 h-3.5" style={{ color: C.tealLight }} />
-                        <span className="text-sm font-mono font-bold" style={{ color: C.white }}>
-                          {formatTime12(period.start_time)} â€“ {formatTime12(period.end_time)}
+                      <div className="flex-shrink-0 flex items-center gap-2">
+                        <Clock className="w-3 h-3" style={{ color: C.tealLight }} />
+                        <span className="text-xs font-mono font-bold" style={{ color: C.white }}>
+                          {formatTime12(period.start_time)} - {formatTime12(period.end_time)}
                         </span>
                         <span className="ml-auto text-[10px] font-bold tracking-wider" style={{ color: C.textDim }}>
                           {num}/{upcomingPeriods.length}
                         </span>
                       </div>
                       {period.slots.map(slot => (
-                        <div key={slot.id} className="flex-1 min-h-0 flex items-center gap-3 px-3 py-1.5 rounded-xl"
+                        <div key={slot.id} className="flex items-center gap-2 px-2 py-1 rounded-lg"
                           style={{ background: 'rgba(255,255,255,0.04)', border: '1px solid rgba(255,255,255,0.06)' }}>
-                          <span className="flex-shrink-0 px-2.5 py-1 rounded-lg text-xs font-black"
-                            style={{ background: 'rgba(0,121,107,0.35)', color: C.tealLight, border: '1px solid rgba(0,121,107,0.5)', minWidth: '3rem', textAlign: 'center' }}>
+                          <span className="flex-shrink-0 px-2 py-0.5 rounded text-[11px] font-black"
+                            style={{ background: 'rgba(0,121,107,0.35)', color: C.tealLight, border: '1px solid rgba(0,121,107,0.5)', minWidth: '2.5rem', textAlign: 'center' }}>
                             {slot.room_number}
                           </span>
-                          <div className="flex-1 min-w-0">
-                            <p className="text-sm font-bold text-white truncate">
-                              {slot.course_offerings?.courses?.code || 'â€”'}
-                            </p>
-                            <p className="text-[11px] truncate" style={{ color: C.textMuted }}>
-                              {slot.course_offerings?.teachers?.full_name || ''}
-                            </p>
-                          </div>
+                          <span className="text-xs font-bold text-white truncate">
+                            {slot.course_offerings?.courses?.code || '-'}
+                          </span>
+                          <span className="flex-shrink-0 text-[10px] ml-auto text-right truncate"
+                            style={{ color: C.textMuted, maxWidth: '6rem' }}>
+                            {slot.course_offerings?.teachers?.full_name || ''}
+                          </span>
                         </div>
                       ))}
                     </motion.div>
@@ -475,10 +469,10 @@ export default function TvDisplayPublicPage() {
 
 
 // â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
-// EventCard â€” Liquid Glass 3D Design
-// â€¢ Full-card image fills entire background
-// â€¢ Speaker info floats as glass panel at TOP
-// â€¢ Title/content floats as glass panel at BOTTOM
+// EventCard - Liquid Glass 3D Design
+// - Full-card image fills entire background
+// - Speaker info floats as glass panel at TOP
+// - Title/content floats as glass panel at BOTTOM
 // â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
 
 function EventCard({ event }: { event: CmsTvEvent }) {
@@ -555,8 +549,8 @@ function EventCard({ event }: { event: CmsTvEvent }) {
       </div>
 
       {/* â”€â”€ BOTTOM GLASS PANEL: Title + content + footer â”€â”€ */}
-      <div className="absolute bottom-0 left-0 right-0 z-10 p-4">
-        <div className="rounded-2xl p-5"
+      <div className="absolute bottom-0 left-0 right-0 z-10 p-3">
+        <div className="rounded-2xl px-4 py-3"
           style={{
             background: 'rgba(6,14,28,0.55)',
             backdropFilter: 'blur(20px) saturate(180%)',
@@ -566,14 +560,14 @@ function EventCard({ event }: { event: CmsTvEvent }) {
           }}>
 
           {event.subtitle && (
-            <p className="text-sm font-medium mb-1" style={{ color: 'rgba(255,255,255,0.6)', textShadow: '0 1px 4px rgba(0,0,0,0.5)' }}>
+            <p className="text-xs font-medium mb-0.5" style={{ color: 'rgba(255,255,255,0.6)', textShadow: '0 1px 4px rgba(0,0,0,0.5)' }}>
               {event.subtitle}
             </p>
           )}
 
-          <h3 className="font-black leading-tight mb-2"
+          <h3 className="font-black leading-tight mb-1"
             style={{
-              fontSize: '2rem',
+              fontSize: '1.5rem',
               color: '#ffffff',
               textShadow: '0 2px 12px rgba(0,0,0,0.6), 0 0 40px rgba(0,200,160,0.15)',
               letterSpacing: '-0.01em',
@@ -582,13 +576,13 @@ function EventCard({ event }: { event: CmsTvEvent }) {
           </h3>
 
           {event.description && (
-            <p className="text-sm leading-relaxed line-clamp-2 mb-3"
+            <p className="text-xs leading-relaxed line-clamp-2 mb-2"
               style={{ color: 'rgba(255,255,255,0.6)', textShadow: '0 1px 4px rgba(0,0,0,0.4)' }}>
               {event.description}
             </p>
           )}
 
-          <div className="flex items-center gap-5 pt-3 flex-wrap" style={{ borderTop: '1px solid rgba(255,255,255,0.1)' }}>
+          <div className="flex items-center gap-4 pt-2 flex-wrap" style={{ borderTop: '1px solid rgba(255,255,255,0.1)' }}>
             {event.event_date && (
               <span className="flex items-center gap-1.5 text-xs font-semibold" style={{ color: 'rgba(255,255,255,0.85)' }}>
                 <Calendar className="w-3.5 h-3.5 flex-shrink-0" style={{ color: C.gold }} />
@@ -618,7 +612,7 @@ function EventCard({ event }: { event: CmsTvEvent }) {
 // â”€â”€ Helpers â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 
 function formatTime12(time: string | null | undefined): string {
-  if (!time) return 'â€”';
+  if (!time) return '-';
   const [h, m] = time.split(':').map(Number);
   const period = h >= 12 ? 'PM' : 'AM';
   return `${h % 12 || 12}:${String(m).padStart(2, '0')} ${period}`;
