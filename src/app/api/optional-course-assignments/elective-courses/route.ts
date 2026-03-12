@@ -59,7 +59,7 @@ export async function GET(request: NextRequest) {
           elective_group: entry.elective_group || null,
         };
       })
-      .sort((a: { code: string }, b: { code: string }) => a.code.localeCompare(b.code));
+      .sort((a, b) => String(a.code).localeCompare(String(b.code)));
 
     return NextResponse.json(result);
   } catch (error: unknown) {
