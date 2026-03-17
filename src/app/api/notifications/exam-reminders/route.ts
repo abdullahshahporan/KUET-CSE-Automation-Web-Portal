@@ -51,10 +51,12 @@ function getFutureDhaka(daysAhead: number): string {
 }
 
 function isAuthorized(request: NextRequest): boolean {
-  const requiredKey = process.env.NOTIFICATION_CRON_KEY;
-  if (!requiredKey) return true;
+  const requiredKey = process.env.NOTIFICATION_CRON_KEY || process.env.CRON_SECRET;
+  if (!requiredKey) return false;
 
-  const providedKey = request.headers.get('x-notification-cron-key') || new URL(request.url).searchParams.get('key');
+  const authorization = request.headers.get('authorization');
+  const bearerToken = authorization?.startsWith('Bearer ') ? authorization.slice(7).trim() : null;
+  const providedKey = request.headers.get('x-notification-cron-key') || bearerToken || new URL(request.url).searchParams.get('key');
   return providedKey === requiredKey;
 }
 

@@ -3,10 +3,12 @@ import { NextRequest, NextResponse } from 'next/server';
 import { dispatchPendingPushNotifications } from '@/lib/pushDispatch';
 
 function isAuthorized(request: NextRequest): boolean {
-  const key = process.env.NOTIFICATION_CRON_KEY;
-  if (!key) return true;
+  const key = process.env.NOTIFICATION_CRON_KEY || process.env.CRON_SECRET;
+  if (!key) return false;
 
-  const provided = request.headers.get('x-notification-cron-key') || new URL(request.url).searchParams.get('key');
+  const authorization = request.headers.get('authorization');
+  const bearerToken = authorization?.startsWith('Bearer ') ? authorization.slice(7).trim() : null;
+  const provided = request.headers.get('x-notification-cron-key') || bearerToken || new URL(request.url).searchParams.get('key');
   return provided === key;
 }
 
