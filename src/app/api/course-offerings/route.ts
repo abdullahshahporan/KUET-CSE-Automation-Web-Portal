@@ -9,6 +9,7 @@ import { isSupabaseConfigured, supabase } from '@/lib/supabase';
 import { badRequest, conflict, guardSupabase, internalError, noContent, ok } from '@/lib/apiResponse';
 import { requireField, requireFields } from '@/lib/validators';
 import { COURSE_OFFERING_WITH_DETAILS } from '@/lib/queryConstants';
+import { notifyTeacherCourseAssigned } from '@/lib/notifications';
 
 // ── Helpers ────────────────────────────────────────────
 
@@ -122,6 +123,24 @@ export async function POST(request: NextRequest) {
       .single();
 
     if (error) throw error;
+
+    // Send notification to the teacher about the new course assignment
+    try {
+      const courses = (data as Record<string, unknown>).courses as { code?: string; title?: string } | null;
+      const courseCode = courses?.code ?? 'Unknown';
+      const courseTitle = courses?.title ?? courseCode;
+      await notifyTeacherCourseAssigned({
+        teacherUserId: teacher_user_id,
+        courseCode,
+        courseTitle,
+        term: resolvedTerm,
+        section: section ?? null,
+      });
+    } catch (notifErr) {
+      // Non-critical: log but don't fail the assignment
+      console.error('[course-offerings] Failed to send assignment notification:', notifErr);
+    }
+
     return ok(data);
   } catch (error: unknown) {
     return internalError(extractErrorMessage(error, 'Failed to assign teacher'));
@@ -155,6 +174,27 @@ export async function PATCH(request: NextRequest) {
       .single();
 
     if (error) throw error;
+
+    // Notify new teacher if teacher assignment changed
+    if (teacher_user_id) {
+      try {
+        const courses = (data as Record<string, unknown>).courses as { code?: string; title?: string } | null;
+        const courseCode = courses?.code ?? 'Unknown';
+        const courseTitle = courses?.title ?? courseCode;
+        const term = (data as Record<string, unknown>).term as string ?? '';
+        const sec = (data as Record<string, unknown>).section as string | null;
+        await notifyTeacherCourseAssigned({
+          teacherUserId: teacher_user_id,
+          courseCode,
+          courseTitle,
+          term,
+          section: sec,
+        });
+      } catch (notifErr) {
+        console.error('[course-offerings] Failed to send reassignment notification:', notifErr);
+      }
+    }
+
     return ok(data);
   } catch (error: unknown) {
     return internalError(extractErrorMessage(error, 'Failed to update offering'));

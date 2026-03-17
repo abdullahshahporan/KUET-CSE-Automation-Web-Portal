@@ -658,3 +658,30 @@ export function notifyOptionalCourseAssigned(opts: {
     metadata: { course_code: opts.courseCode },
   });
 }
+
+export function notifyTeacherCourseAssigned(opts: {
+  teacherUserId: string;
+  courseCode: string;
+  courseTitle: string;
+  term: string;
+  section?: string | null;
+  assignedBy?: string | null;
+}): Promise<void> {
+  const sectionLabel = opts.section?.trim() ? ` (Section ${opts.section.trim()})` : '';
+  return createNotification({
+    type: 'announcement',
+    title: `New Course Assigned — ${opts.courseCode}`,
+    body: `You have been assigned to teach ${opts.courseCode}: ${opts.courseTitle} for Term ${opts.term}${sectionLabel}.`,
+    target_type: 'USER',
+    target_value: opts.teacherUserId,
+    created_by: opts.assignedBy ?? null,
+    created_by_role: 'ADMIN',
+    metadata: {
+      course_code: opts.courseCode,
+      course_title: opts.courseTitle,
+      term: opts.term,
+      ...(opts.section?.trim() ? { section: opts.section.trim() } : {}),
+    },
+    dedupeKey: `course-assigned:${opts.teacherUserId}:${opts.courseCode}:${opts.term}`,
+  });
+}
