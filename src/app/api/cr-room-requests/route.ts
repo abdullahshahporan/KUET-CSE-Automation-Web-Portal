@@ -3,10 +3,10 @@
 // Handles CR room request CRUD and admin approval
 // ==========================================
 
-import { badRequest, guardSupabase, internalError, ok, notFound } from '@/lib/apiResponse';
+import { badRequest, guardSupabase, internalError, ok } from '@/lib/apiResponse';
+import { notifyCRRoomAllocated, notifyCRRoomRequestSubmitted } from '@/lib/notifications';
 import { isSupabaseConfigured, supabase } from '@/lib/supabase';
 import { requireFields } from '@/lib/validators';
-import { notifyCRRoomAllocated, notifyCRRoomRequestSubmitted } from '@/lib/notifications';
 import { NextRequest, NextResponse } from 'next/server';
 
 // ── GET /api/cr-room-requests ──────────────────────────

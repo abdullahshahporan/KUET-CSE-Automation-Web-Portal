@@ -3,10 +3,10 @@
 // Returns schedule slots for a specific teacher
 // ==========================================
 
-import { NextRequest, NextResponse } from 'next/server';
-import { supabase, isSupabaseConfigured } from '@/lib/supabase';
 import { badRequest, guardSupabase, internalError } from '@/lib/apiResponse';
 import { notifyAttendanceMarkingReminder, notifyCourseAnomalyAlert } from '@/lib/notifications';
+import { isSupabaseConfigured, supabase } from '@/lib/supabase';
+import { NextRequest, NextResponse } from 'next/server';
 
 function extractError(error: unknown, fallback: string): string {
   return error instanceof Error ? error.message : fallback;

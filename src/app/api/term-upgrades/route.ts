@@ -5,8 +5,8 @@
 // ==========================================
 
 import { badRequest, conflict, created, guardSupabase, internalError, noContent, notFound, ok } from '@/lib/apiResponse';
-import { TERM_UPGRADE_WITH_STUDENT } from '@/lib/queryConstants';
 import { notifyTermUpgrade } from '@/lib/notifications';
+import { TERM_UPGRADE_WITH_STUDENT } from '@/lib/queryConstants';
 import { isSupabaseConfigured, supabase } from '@/lib/supabase';
 import { requireFields, validateUUID } from '@/lib/validators';
 import { NextRequest, NextResponse } from 'next/server';
