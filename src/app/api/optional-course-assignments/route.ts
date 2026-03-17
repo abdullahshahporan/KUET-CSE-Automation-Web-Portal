@@ -6,10 +6,16 @@
 import { badRequest, created, guardSupabase, internalError, noContent } from '@/lib/apiResponse';
 import { notifyOptionalCourseAssigned } from '@/lib/notifications';
 import { isSupabaseConfigured, supabase } from '@/lib/supabase';
+import { validateUUID } from '@/lib/validators';
 import { NextRequest, NextResponse } from 'next/server';
 
 function extractErrorMessage(error: unknown, fallback: string): string {
-  return error instanceof Error ? error.message : fallback;
+  if (error instanceof Error) return error.message;
+  if (error && typeof error === 'object' && 'message' in error) {
+    const message = (error as { message?: unknown }).message;
+    if (typeof message === 'string' && message.trim()) return message;
+  }
+  return fallback;
 }
 
 // ── GET /api/optional-course-assignments ───────────────
@@ -74,6 +80,10 @@ export async function POST(request: NextRequest) {
     const body = await request.json();
     const { student_user_ids, offering_id, assigned_by } = body;
 
+    const validAssignedBy = typeof assigned_by === 'string' && validateUUID(assigned_by).valid
+      ? assigned_by
+      : null;
+
     // Validate
     if (!offering_id) return badRequest('offering_id is required');
     if (!student_user_ids || !Array.isArray(student_user_ids) || student_user_ids.length === 0) {
@@ -95,7 +105,7 @@ export async function POST(request: NextRequest) {
     const rows = student_user_ids.map((sid: string) => ({
       student_user_id: sid,
       offering_id,
-      assigned_by: assigned_by || null,
+      assigned_by: validAssignedBy,
     }));
 
     const { data, error } = await supabase
@@ -120,7 +130,7 @@ export async function POST(request: NextRequest) {
         studentUserId: resolvedAssignment.student_user_id as string,
         courseCode: ocCode,
         courseTitle: ocTitle,
-        assignedBy: assigned_by ?? null,
+        assignedBy: validAssignedBy,
       });
     }
 
