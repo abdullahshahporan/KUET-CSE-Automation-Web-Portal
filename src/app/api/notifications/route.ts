@@ -3,10 +3,10 @@
 // Handles fetching, creating, and marking notifications as read
 // ==========================================
 
-import { NextRequest, NextResponse } from 'next/server';
+import { badRequest, created, guardSupabase, internalError, noContent } from '@/lib/apiResponse';
 import { isSupabaseConfigured, supabase } from '@/lib/supabase';
-import { badRequest, created, guardSupabase, internalError, noContent, ok } from '@/lib/apiResponse';
 import { requireFields } from '@/lib/validators';
+import { NextRequest, NextResponse } from 'next/server';
 
 // ── Types ──────────────────────────────────────────────────────────────────────
 

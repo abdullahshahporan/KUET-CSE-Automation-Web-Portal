@@ -195,6 +195,15 @@ async function markOutboxFailed(outboxId: string, attempts: number, message: str
 
 export async function dispatchPendingPushNotifications(batchSize = 40): Promise<{ processed: number; sent: number; failed: number }> {
   const nowIso = new Date().toISOString();
+
+  // Reset rows stuck in 'processing' for more than 5 minutes (server crash recovery)
+  const staleThreshold = new Date(Date.now() - 5 * 60 * 1000).toISOString();
+  await db
+    .from('notification_push_outbox')
+    .update({ status: 'pending', updated_at: nowIso })
+    .eq('status', 'processing')
+    .lt('updated_at', staleThreshold);
+
   const { data, error } = await db
     .from('notification_push_outbox')
     .select(`

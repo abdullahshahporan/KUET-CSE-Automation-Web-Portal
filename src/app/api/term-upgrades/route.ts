@@ -5,8 +5,8 @@
 // ==========================================
 
 import { badRequest, conflict, created, guardSupabase, internalError, noContent, notFound, ok } from '@/lib/apiResponse';
-import { TERM_UPGRADE_WITH_STUDENT } from '@/lib/queryConstants';
 import { notifyTermUpgrade } from '@/lib/notifications';
+import { TERM_UPGRADE_WITH_STUDENT } from '@/lib/queryConstants';
 import { isSupabaseConfigured, supabase } from '@/lib/supabase';
 import { requireFields, validateUUID } from '@/lib/validators';
 import { NextRequest, NextResponse } from 'next/server';
@@ -15,6 +15,15 @@ import { NextRequest, NextResponse } from 'next/server';
 
 function extractErrorMessage(error: unknown, fallback: string): string {
   return error instanceof Error ? error.message : fallback;
+}
+
+async function triggerPushDispatch(): Promise<void> {
+  try {
+    const { dispatchPendingPushNotifications } = await import('@/lib/pushDispatch');
+    await dispatchPendingPushNotifications(100);
+  } catch (error) {
+    console.error('[term-upgrades] immediate push dispatch failed:', error);
+  }
 }
 
 const VALID_REVIEW_STATUSES = ['approved', 'rejected'] as const;
@@ -165,6 +174,8 @@ export async function PATCH(request: NextRequest) {
       newTerm: status === 'approved' ? upgradeRequest.requested_term as string : undefined,
       remarks: admin_remarks ?? undefined,
     });
+
+    await triggerPushDispatch();
 
     return ok({ status });
   } catch (error: unknown) {

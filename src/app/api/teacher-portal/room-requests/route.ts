@@ -3,11 +3,11 @@
 // Handles teacher room booking requests
 // ==========================================
 
-import { NextRequest, NextResponse } from 'next/server';
-import { supabase, isSupabaseConfigured } from '@/lib/supabase';
 import { badRequest, guardSupabase, internalError, ok } from '@/lib/apiResponse';
-import { requireFields, runValidations } from '@/lib/validators';
 import { notifyTeacherRoomApproved, notifyTeacherRoomRejected } from '@/lib/notifications';
+import { isSupabaseConfigured, supabase } from '@/lib/supabase';
+import { requireFields, runValidations } from '@/lib/validators';
+import { NextRequest, NextResponse } from 'next/server';
 
 function extractError(error: unknown, fallback: string): string {
   return error instanceof Error ? error.message : fallback;
