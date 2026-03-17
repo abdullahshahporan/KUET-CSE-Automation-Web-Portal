@@ -147,21 +147,43 @@ export async function createNotification(input: CreateNotificationInput): Promis
       }
     }
 
-    const { error } = await notificationClient.from('notifications').insert({
-      type: input.type,
-      title: input.title,
-      body: input.body,
-      target_type: targetType,
-      target_value: targetValue,
-      target_year_term: targetYearTerm,
-      created_by: createdBy,
-      created_by_role: createdByRole,
-      metadata,
-      expires_at: input.expires_at ?? input.expiresAt ?? null,
-    });
+    const { data: inserted, error } = await notificationClient
+      .from('notifications')
+      .insert({
+        type: input.type,
+        title: input.title,
+        body: input.body,
+        target_type: targetType,
+        target_value: targetValue,
+        target_year_term: targetYearTerm,
+        created_by: createdBy,
+        created_by_role: createdByRole,
+        metadata,
+        expires_at: input.expires_at ?? input.expiresAt ?? null,
+      })
+      .select('id')
+      .maybeSingle();
 
     if (error) {
       console.error('[NotificationHelper] Failed to create notification:', error.message);
+      return;
+    }
+
+    if (inserted?.id) {
+      // Explicitly enqueue to outbox (safety net in case DB trigger is not installed)
+      await notificationClient
+        .from('notification_push_outbox')
+        .upsert({ notification_id: inserted.id, status: 'pending' }, { onConflict: 'notification_id', ignoreDuplicates: true });
+
+      // Trigger immediate push dispatch (does not wait for Vercel cron)
+      void (async () => {
+        try {
+          const { dispatchPendingPushNotifications } = await import('./pushDispatch');
+          await dispatchPendingPushNotifications(10);
+        } catch (dispatchErr) {
+          console.error('[NotificationHelper] Immediate push dispatch failed:', dispatchErr);
+        }
+      })();
     }
   } catch (err) {
     console.error('[NotificationHelper] Unexpected error:', err);
