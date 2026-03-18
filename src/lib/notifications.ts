@@ -89,6 +89,7 @@ function cleanText(value: string | null | undefined): string | null {
   return trimmed ? trimmed : null;
 }
 
+
 export function buildStudentAudience(context: {
   courseCode: string;
   term?: string | null;
@@ -190,6 +191,7 @@ export async function createNotification(input: CreateNotificationInput): Promis
   }
 }
 
+
 export async function getOfferingNotificationContext(offeringId: string): Promise<OfferingNotificationContext | null> {
   const { data, error } = await notificationClient
     .from('course_offerings')
@@ -244,6 +246,7 @@ export async function getStudentUsersByRolls(rolls: string[]): Promise<Map<strin
   }
   return result;
 }
+
 
 export function notifyCRRoomAllocated(opts: {
   createdBy: string;
@@ -623,46 +626,6 @@ export function notifyTermUpgrade(opts: {
   });
 }
 
-export function notifyGeoAttendanceOpened(opts: {
-  teacherUserId: string;
-  courseCode: string;
-  term: string;
-  section?: string | null;
-  roomNumber?: string | null;
-  durationMinutes: number;
-  endTime: string;
-}): Promise<void> {
-  const normalizedTerm = opts.term.trim();
-  const rawSection = opts.section?.trim() ?? '';
-  const extractedSection = (() => {
-    if (!rawSection) return null;
-    const single = rawSection.match(/^[A-Za-z]$/);
-    if (single) return single[0].toUpperCase();
-    const named = rawSection.match(/section\s+([A-Za-z])/i);
-    if (named) return named[1].toUpperCase();
-    return null;
-  })();
-
-  const targetType: NotificationTargetType = extractedSection ? 'SECTION' : 'YEAR_TERM';
-  const targetValue = extractedSection ?? normalizedTerm;
-  const sectionLabel = opts.section ? ` (Section ${opts.section})` : '';
-  return createNotification({
-    type: 'geo_attendance_open',
-    title: `Attendance Open — ${opts.courseCode}${sectionLabel}`,
-    body: `Your attendance for ${opts.courseCode} is now open. Submit within ${opts.durationMinutes} minutes (before ${opts.endTime}).`,
-    target_type: targetType,
-    target_value: targetValue,
-    target_year_term: extractedSection ? normalizedTerm : undefined,
-    created_by: opts.teacherUserId,
-    created_by_role: 'TEACHER',
-    metadata: {
-      course_code: opts.courseCode,
-      ...(opts.roomNumber ? { room_number: opts.roomNumber } : {}),
-      duration_minutes: opts.durationMinutes,
-    },
-  });
-}
-
 export function notifyOptionalCourseAssigned(opts: {
   studentUserId: string;
   courseCode: string;
@@ -705,5 +668,100 @@ export function notifyTeacherCourseAssigned(opts: {
       ...(opts.section?.trim() ? { section: opts.section.trim() } : {}),
     },
     dedupeKey: `course-assigned:${opts.teacherUserId}:${opts.courseCode}:${opts.term}`,
+  });
+}
+
+// ── Notify teacher when their class schedule changes (web or mobile) ──────────
+export function notifyTeacherScheduleChanged(opts: {
+  teacherUserId: string;
+  courseCode: string;
+  courseTitle: string;
+  changeType: 'class_cancelled' | 'class_rescheduled' | 'makeup_class' | 'new_schedule';
+  dayLabel?: string;
+  startTime?: string;
+  endTime?: string;
+  room?: string;
+  scheduleDate?: string;
+}): Promise<void> {
+  const loc = opts.room ? `, Room ${opts.room}` : '';
+  const time = opts.startTime ? `, ${opts.startTime}–${opts.endTime}` : '';
+  const when = opts.scheduleDate
+    ? ` on ${opts.scheduleDate}`
+    : opts.dayLabel
+      ? ` on ${opts.dayLabel}`
+      : '';
+
+  const payloads: Record<string, { title: string; body: string }> = {
+    class_cancelled: {
+      title: `Class Cancelled — ${opts.courseCode}`,
+      body: `Your ${opts.courseCode} (${opts.courseTitle}) class${when}${time}${loc} has been cancelled.`,
+    },
+    class_rescheduled: {
+      title: `Schedule Updated — ${opts.courseCode}`,
+      body: `Your ${opts.courseCode} (${opts.courseTitle}) class has been rescheduled${when}${time}${loc}.`,
+    },
+    makeup_class: {
+      title: `Makeup Class Scheduled — ${opts.courseCode}`,
+      body: `A makeup class for ${opts.courseCode} (${opts.courseTitle}) has been scheduled${when}${time}${loc}.`,
+    },
+    new_schedule: {
+      title: `New Class Scheduled — ${opts.courseCode}`,
+      body: `A new class slot for ${opts.courseCode} (${opts.courseTitle}) has been added${when}${time}${loc}.`,
+    },
+  };
+
+  const payload = payloads[opts.changeType] ?? payloads.class_rescheduled;
+  const notifType: NotificationType =
+    opts.changeType === 'new_schedule' ? 'makeup_class' : opts.changeType;
+
+  return createNotification({
+    type: notifType,
+    title: payload.title,
+    body: payload.body,
+    target_type: 'USER',
+    target_value: opts.teacherUserId,
+    created_by: null,
+    created_by_role: 'SYSTEM',
+    metadata: {
+      course_code: opts.courseCode,
+      course_title: opts.courseTitle,
+      ...(opts.room ? { room_number: opts.room } : {}),
+      ...(opts.startTime ? { start_time: opts.startTime, end_time: opts.endTime } : {}),
+    },
+    dedupeKey: `teacher-schedule-${opts.changeType}:${opts.teacherUserId}:${opts.courseCode}:${opts.scheduleDate ?? opts.dayLabel ?? 'weekly'}:${opts.startTime ?? ''}`,
+  });
+}
+
+// ── Notify students when a new course offering is created/updated ──────────────
+export function notifyStudentCourseAssigned(opts: {
+  courseCode: string;
+  courseTitle: string;
+  teacherName?: string | null;
+  term: string;
+  section?: string | null;
+  assignedBy?: string | null;
+}): Promise<void> {
+  const audience = buildStudentAudience({
+    courseCode: opts.courseCode,
+    term: opts.term,
+    section: opts.section,
+  });
+  const teacherPart = opts.teacherName?.trim() ? ` — taught by ${opts.teacherName.trim()}` : '';
+  return createNotification({
+    type: 'announcement',
+    title: `Course Available — ${opts.courseCode}`,
+    body: `${opts.courseTitle}${teacherPart} has been added to your curriculum for Term ${opts.term}.`,
+    target_type: audience.targetType,
+    target_value: audience.targetValue,
+    target_year_term: audience.targetYearTerm,
+    created_by: opts.assignedBy ?? null,
+    created_by_role: 'ADMIN',
+    metadata: {
+      course_code: opts.courseCode,
+      course_title: opts.courseTitle,
+      term: opts.term,
+      ...(opts.section?.trim() ? { section: opts.section.trim() } : {}),
+    },
+    dedupeKey: `student-course-assigned:${opts.courseCode}:${opts.term}:${opts.section?.trim() ?? 'all'}`,
   });
 }
