@@ -7,7 +7,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { supabase, isSupabaseConfigured } from '@/lib/supabase';
 import { badRequest, guardSupabase, internalError } from '@/lib/apiResponse';
-import { notifyGeoAttendanceOpened } from '@/lib/notifications';
+import { notifyGeoAttendanceRoomOpened } from '@/lib/geoAttendanceNotifications';
 
 function extractError(error: unknown, fallback: string): string {
   return error instanceof Error ? error.message : fallback;
@@ -71,7 +71,7 @@ export async function POST(request: NextRequest) {
     const courseType = (courseRow?.course_type || 'theory').toLowerCase();
     const courseCode = courseRow?.code || null;
     const offeringTerm = offering.term as string | null;
-    const resolvedSection = (section || offering.batch || null) as string | null;
+    const resolvedSection = (section || null) as string | null;
     const maxRooms = courseType === 'lab' ? MAX_LAB_ROOMS : MAX_THEORY_ROOMS;
 
     // Count currently active rooms for this teacher
@@ -137,14 +137,16 @@ export async function POST(request: NextRequest) {
         ? end_time
         : endDate.toLocaleTimeString('en-GB', { hour: '2-digit', minute: '2-digit' });
 
-      await notifyGeoAttendanceOpened({
+      await notifyGeoAttendanceRoomOpened({
         teacherUserId: teacher_user_id,
+        offeringId: offering_id,
         courseCode,
         term: offeringTerm,
         section: resolvedSection,
         roomNumber: room_number || null,
         durationMinutes: computedDuration,
         endTime: endLabel,
+        roomId: data.id,
       });
     }
 

@@ -5,7 +5,7 @@
 // ==========================================
 
 import { badRequest, conflict, guardSupabase, internalError, noContent, notFound, ok } from '@/lib/apiResponse';
-import { buildStudentAudience, createNotification } from '@/lib/notifications';
+import { buildStudentAudience, createNotification, notifyTeacherScheduleChanged } from '@/lib/notifications';
 import { ROUTINE_SLOT_WITH_DETAILS } from '@/lib/queryConstants';
 import { isSupabaseConfigured, supabase } from '@/lib/supabase';
 import { requireField, requireFields } from '@/lib/validators';
@@ -95,6 +95,49 @@ async function sendStudentScheduleNotification(
     },
     dedupeKey: `${type}:${slot.id}:${normalizeValue(slot.valid_from) || 'weekly'}:${startTime}:${endTime}:${room}`,
   });
+}
+
+/** Notify the teacher who owns the offering about their schedule change. */
+async function sendTeacherScheduleNotification(
+  type: 'class_cancelled' | 'class_rescheduled' | 'makeup_class' | 'new_schedule',
+  slot: Record<string, unknown>,
+) {
+  try {
+    const offeringId = slot.offering_id as string | null;
+    if (!offeringId) return;
+
+    // Fetch teacher_user_id from course_offerings (not included in ROUTINE_SLOT_WITH_DETAILS)
+    const { data: offeringRow } = await supabase
+      .from('course_offerings')
+      .select('teacher_user_id')
+      .eq('id', offeringId)
+      .maybeSingle();
+
+    const teacherUserId = offeringRow?.teacher_user_id as string | null;
+    if (!teacherUserId) return;
+
+    const offering = slot.course_offerings as { term?: string; courses?: { code?: string; title?: string } } | null;
+    const courseCode = offering?.courses?.code?.trim();
+    if (!courseCode) return;
+
+    const courseTitle = offering?.courses?.title?.trim() || courseCode;
+    const dayIndex = typeof slot.day_of_week === 'number' ? slot.day_of_week : Number(slot.day_of_week ?? -1);
+    const dayLabel = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'][dayIndex] ?? 'the updated day';
+
+    await notifyTeacherScheduleChanged({
+      teacherUserId,
+      courseCode,
+      courseTitle,
+      changeType: type,
+      dayLabel,
+      startTime: normalizeValue(slot.start_time) ?? undefined,
+      endTime: normalizeValue(slot.end_time) ?? undefined,
+      room: normalizeValue(slot.room_number) ?? undefined,
+      scheduleDate: normalizeValue(slot.valid_from) ?? undefined,
+    });
+  } catch (err) {
+    console.error('[routine-slots] Failed to send teacher schedule notification:', err);
+  }
 }
 
 /** Derive term from course code digits (e.g., "CSE 3201" → "3-2"). */
@@ -350,10 +393,14 @@ export async function POST(request: NextRequest) {
       .single();
 
     if (error) throw error;
-    await sendStudentScheduleNotification(
-      data.valid_from ? 'makeup_class' : 'class_rescheduled',
-      data as unknown as Record<string, unknown>,
-    );
+    const scheduleType = data.valid_from ? 'makeup_class' : 'new_schedule';
+    await Promise.all([
+      sendStudentScheduleNotification(
+        data.valid_from ? 'makeup_class' : 'class_rescheduled',
+        data as unknown as Record<string, unknown>,
+      ),
+      sendTeacherScheduleNotification(scheduleType, data as unknown as Record<string, unknown>),
+    ]);
     return ok(data);
   } catch (error: unknown) {
     return internalError(extractErrorMessage(error, 'Failed to add routine slot'));
@@ -424,7 +471,10 @@ export async function PATCH(request: NextRequest) {
     ].some((key) => (existingSlot as Record<string, unknown>)[key] !== (data as Record<string, unknown>)[key]);
 
     if (changedSchedule) {
-      await sendStudentScheduleNotification('class_rescheduled', data as unknown as Record<string, unknown>);
+      await Promise.all([
+        sendStudentScheduleNotification('class_rescheduled', data as unknown as Record<string, unknown>),
+        sendTeacherScheduleNotification('class_rescheduled', data as unknown as Record<string, unknown>),
+      ]);
     }
     return ok(data);
   } catch (error: unknown) {
@@ -455,7 +505,10 @@ export async function DELETE(request: NextRequest) {
     const { error } = await supabase.from('routine_slots').delete().eq('id', id);
     if (error) throw error;
 
-    await sendStudentScheduleNotification('class_cancelled', existingSlot as unknown as Record<string, unknown>);
+    await Promise.all([
+      sendStudentScheduleNotification('class_cancelled', existingSlot as unknown as Record<string, unknown>),
+      sendTeacherScheduleNotification('class_cancelled', existingSlot as unknown as Record<string, unknown>),
+    ]);
     return noContent();
   } catch (error: unknown) {
     return internalError(extractErrorMessage(error, 'Failed to delete routine slot'));

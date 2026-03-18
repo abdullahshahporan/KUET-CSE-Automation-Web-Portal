@@ -9,7 +9,7 @@ import { isSupabaseConfigured, supabase } from '@/lib/supabase';
 import { badRequest, conflict, guardSupabase, internalError, noContent, ok } from '@/lib/apiResponse';
 import { requireField, requireFields } from '@/lib/validators';
 import { COURSE_OFFERING_WITH_DETAILS } from '@/lib/queryConstants';
-import { notifyTeacherCourseAssigned } from '@/lib/notifications';
+import { notifyTeacherCourseAssigned, notifyStudentCourseAssigned } from '@/lib/notifications';
 
 // ── Helpers ────────────────────────────────────────────
 
@@ -129,13 +129,24 @@ export async function POST(request: NextRequest) {
       const courses = (data as Record<string, unknown>).courses as { code?: string; title?: string } | null;
       const courseCode = courses?.code ?? 'Unknown';
       const courseTitle = courses?.title ?? courseCode;
-      await notifyTeacherCourseAssigned({
-        teacherUserId: teacher_user_id,
-        courseCode,
-        courseTitle,
-        term: resolvedTerm,
-        section: section ?? null,
-      });
+      const teachers = (data as Record<string, unknown>).teachers as { full_name?: string } | null;
+      const teacherName = teachers?.full_name ?? null;
+      await Promise.all([
+        notifyTeacherCourseAssigned({
+          teacherUserId: teacher_user_id,
+          courseCode,
+          courseTitle,
+          term: resolvedTerm,
+          section: section ?? null,
+        }),
+        notifyStudentCourseAssigned({
+          courseCode,
+          courseTitle,
+          teacherName,
+          term: resolvedTerm,
+          section: section ?? null,
+        }),
+      ]);
     } catch (notifErr) {
       // Non-critical: log but don't fail the assignment
       console.error('[course-offerings] Failed to send assignment notification:', notifErr);
@@ -183,13 +194,24 @@ export async function PATCH(request: NextRequest) {
         const courseTitle = courses?.title ?? courseCode;
         const term = (data as Record<string, unknown>).term as string ?? '';
         const sec = (data as Record<string, unknown>).section as string | null;
-        await notifyTeacherCourseAssigned({
-          teacherUserId: teacher_user_id,
-          courseCode,
-          courseTitle,
-          term,
-          section: sec,
-        });
+        const teachers = (data as Record<string, unknown>).teachers as { full_name?: string } | null;
+        const teacherName = teachers?.full_name ?? null;
+        await Promise.all([
+          notifyTeacherCourseAssigned({
+            teacherUserId: teacher_user_id,
+            courseCode,
+            courseTitle,
+            term,
+            section: sec,
+          }),
+          notifyStudentCourseAssigned({
+            courseCode,
+            courseTitle,
+            teacherName,
+            term,
+            section: sec,
+          }),
+        ]);
       } catch (notifErr) {
         console.error('[course-offerings] Failed to send reassignment notification:', notifErr);
       }
