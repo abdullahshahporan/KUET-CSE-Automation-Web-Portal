@@ -99,24 +99,36 @@ export default function PlayerPage() {
   // ── Fetch data ──
   const fetchData = useCallback(async () => {
     try {
-      const [data, device, slots] = await Promise.all([
-        fetchTvDisplayDataForTarget(target),
-        fetchDeviceByName(target),
-        fetchTodayRoutineSlots().catch(() => [] as RoutineSlotWithDetails[]),
-      ]);
+      // Fetch content data (events, announcements, ticker)
+      const data = await fetchTvDisplayDataForTarget(target);
       setAnnouncements(data.announcements);
       setTicker(data.ticker);
       setEvents(data.events);
       setSettings(data.settings);
-      setShowRoomSchedule(device?.show_room_schedule ?? true);
-      setRoutineSlots(slots);
       setError(null);
     } catch (err) {
-      console.error(`[${target}] Fetch error:`, err);
+      console.error(`[${target}] Content fetch error:`, err);
       setError(err instanceof Error ? err.message : String(err));
-    } finally {
-      setLoading(false);
     }
+
+    // Fetch device settings independently — failure should not hide events
+    try {
+      const device = await fetchDeviceByName(target);
+      setShowRoomSchedule(device?.show_room_schedule ?? true);
+    } catch (err) {
+      console.error(`[${target}] Device fetch error:`, err);
+    }
+
+    // Fetch routine slots independently — failure should not hide events
+    try {
+      const slots = await fetchTodayRoutineSlots();
+      setRoutineSlots(slots);
+    } catch (err) {
+      console.error(`[${target}] Routine slots fetch error:`, err);
+      setRoutineSlots([]);
+    }
+
+    setLoading(false);
   }, [target]);
 
   // Initial fetch + polling + realtime
@@ -319,9 +331,13 @@ export default function PlayerPage() {
               ) : (
                 <div
                   className="h-full flex items-center justify-center rounded-2xl"
-                  style={{ background: 'rgba(255,255,255,0.02)', border: `1px solid ${C.border}` }}
+                  style={{ background: 'rgba(255,255,255,0.04)', border: `1px solid ${C.border}` }}
                 >
-                  <p style={{ color: C.textDim }}>No events to display</p>
+                  <div className="text-center">
+                    <Monitor className="w-12 h-12 mx-auto mb-3" style={{ color: C.textMuted }} />
+                    <p className="text-lg font-medium" style={{ color: C.textMuted }}>No events to display</p>
+                    <p className="text-sm mt-1" style={{ color: C.textDim }}>Send content from the admin panel</p>
+                  </div>
                 </div>
               )}
             </AnimatePresence>
