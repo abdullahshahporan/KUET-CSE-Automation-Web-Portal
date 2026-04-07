@@ -130,7 +130,7 @@ const AnimatedList: React.FC<AnimatedListProps> = ({
   }, [selectedIndex, keyboardNav]);
 
   const defaultRenderItem = (item: string, index: number, isSelected: boolean) => (
-    <div className={`p-4 bg-[#111] rounded-xl border border-[#3d4951] transition-all duration-200 ${isSelected ? 'bg-[#161a1d] border-[#ba181b]/50' : 'hover:bg-[#161a1d]'} ${itemClassName}`}>
+    <div className={`p-4 bg-[#111] rounded-xl border border-[#3d4951] transition-all duration-200 ${isSelected ? 'bg-[#161a1d] border-red-400/50' : 'hover:bg-[#161a1d]'} ${itemClassName}`}>
       <p className="text-white m-0">{item}</p>
     </div>
   );
@@ -141,7 +141,7 @@ const AnimatedList: React.FC<AnimatedListProps> = ({
         ref={listRef}
         className={`overflow-y-auto p-2 ${
           displayScrollbar
-            ? '[&::-webkit-scrollbar]:w-[6px] [&::-webkit-scrollbar-track]:bg-[#0b090a] [&::-webkit-scrollbar-thumb]:bg-[#3d4951] [&::-webkit-scrollbar-thumb]:rounded-full [&::-webkit-scrollbar-thumb]:hover:bg-[#ba181b]/50'
+            ? '[&::-webkit-scrollbar]:w-[6px] [&::-webkit-scrollbar-track]:bg-[#0b090a] [&::-webkit-scrollbar-thumb]:bg-[#3d4951] [&::-webkit-scrollbar-thumb]:rounded-full [&::-webkit-scrollbar-thumb]:hover:bg-red-600/50'
             : 'scrollbar-hide'
         }`}
         style={{

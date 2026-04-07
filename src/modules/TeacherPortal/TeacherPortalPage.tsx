@@ -55,16 +55,16 @@ export default function TeacherPortalPage() {
     <div className="space-y-6">
       {/* Header */}
       <div>
-        <h1 className="text-2xl font-bold text-[#2C1810] dark:text-white">
+        <h1 className="text-2xl font-bold text-gray-900 dark:text-white">
           Teacher Portal
         </h1>
-        <p className="text-sm text-[#8B7355] dark:text-[#b1a7a6] mt-1">
+        <p className="text-sm text-gray-400 dark:text-[#b1a7a6] mt-1">
           Welcome, {user?.name || 'Teacher'}. Manage your courses, attendance, and more.
         </p>
       </div>
 
       {/* Tab Navigation */}
-      <div className="bg-white dark:bg-[#161a1d] rounded-xl border border-[#E8DDD1] dark:border-[#3d4951]/50 p-1.5 overflow-x-auto">
+      <div className="bg-white dark:bg-[#161a1d] rounded-xl border border-gray-200 dark:border-[#3d4951]/50 p-1.5 overflow-x-auto">
         <div className="flex gap-1 min-w-max">
           {tabs.map((tab) => {
             const Icon = tab.icon;
@@ -75,8 +75,8 @@ export default function TeacherPortalPage() {
                 onClick={() => setActiveTab(tab.id)}
                 className={`flex items-center gap-2 px-3 py-2 rounded-lg text-sm font-medium whitespace-nowrap transition-all ${
                   isActive
-                    ? 'bg-[#5D4037] dark:bg-[#ba181b] text-white shadow-sm'
-                    : 'text-[#6B5744] dark:text-[#b1a7a6] hover:bg-[#F5EDE4] dark:hover:bg-[#0b090a]'
+                    ? 'bg-gray-600 dark:bg-red-600 text-white shadow-sm'
+                    : 'text-gray-500 dark:text-[#b1a7a6] hover:bg-gray-50 dark:hover:bg-[#0b090a]'
                 }`}
               >
                 <Icon className="w-4 h-4" />

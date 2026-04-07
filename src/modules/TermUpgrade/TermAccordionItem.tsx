@@ -59,7 +59,7 @@ export default function TermAccordionItem({
         onClick={onToggleExpand}
         className={`w-full flex items-center justify-between p-4 transition-colors text-left ${
           isExpanded
-            ? 'border-b border-[#DCC5B2] dark:border-white/10'
+            ? 'border-b border-gray-200 dark:border-white/10'
             : ''
         }`}
       >
@@ -75,7 +75,7 @@ export default function TermAccordionItem({
               {termInfo.label}
             </h3>
             <div className="flex items-center gap-2 mt-0.5 flex-wrap">
-              <span className="text-xs text-[#8B7355] dark:text-white/40 flex items-center gap-1">
+              <span className="text-xs text-gray-400 dark:text-white/40 flex items-center gap-1">
                 <Users className="w-3 h-3" />
                 {students.length} student{students.length !== 1 ? 's' : ''}
               </span>
@@ -95,7 +95,7 @@ export default function TermAccordionItem({
 
         <div className="flex items-center gap-2 flex-shrink-0">
           {selectedCount > 0 && (
-            <span className="text-xs px-2 py-0.5 rounded-full bg-[#D9A299]/20 dark:bg-[#8400ff]/20 text-[#D9A299] dark:text-[#8400ff] font-medium">
+            <span className="text-xs px-2 py-0.5 rounded-full bg-indigo-100/20 dark:bg-[#8400ff]/20 text-indigo-500 dark:text-[#8400ff] font-medium">
               {selectedCount} selected
             </span>
           )}
@@ -103,7 +103,7 @@ export default function TermAccordionItem({
             animate={{ rotate: isExpanded ? 180 : 0 }}
             transition={{ duration: 0.2 }}
           >
-            <ChevronDown className="w-5 h-5 text-[#8B7355] dark:text-white/40" />
+            <ChevronDown className="w-5 h-5 text-gray-400 dark:text-white/40" />
           </motion.div>
         </div>
       </button>
@@ -129,7 +129,7 @@ export default function TermAccordionItem({
 
               {/* Term Change Action Bar */}
               {students.length > 0 && (
-                <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 pt-3 border-t border-[#DCC5B2]/50 dark:border-white/5">
+                <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 pt-3 border-t border-gray-200/50 dark:border-white/5">
                   {/* From → Target term selector */}
                   <div className="flex items-center gap-2 text-sm flex-wrap">
                     <span className={`px-2.5 py-1 rounded-lg border font-medium text-xs ${termInfo.bgClass} ${termInfo.colorClass}`}>
@@ -145,7 +145,7 @@ export default function TermAccordionItem({
                     <select
                       value={targetTermId}
                       onChange={(e) => setTargetTermId(e.target.value as TermId)}
-                      className="px-2.5 py-1 rounded-lg border border-[#DCC5B2] dark:border-white/10 bg-white dark:bg-[#1a1a2e] text-[#5D4E37] dark:text-white text-xs font-medium focus:ring-2 focus:ring-[#D9A299] dark:focus:ring-[#8400ff] outline-none"
+                      className="px-2.5 py-1 rounded-lg border border-gray-200 dark:border-white/10 bg-white dark:bg-[#1a1a2e] text-gray-700 dark:text-white text-xs font-medium focus:ring-2 focus:ring-indigo-300 dark:focus:ring-indigo-500 outline-none"
                     >
                       <option value="">Select target term</option>
                       {availableTargets.map((t) => {
@@ -172,7 +172,7 @@ export default function TermAccordionItem({
                         ? isUpgrade
                           ? 'bg-emerald-500 dark:bg-emerald-600 text-white hover:opacity-90 cursor-pointer'
                           : 'bg-amber-500 dark:bg-amber-600 text-white hover:opacity-90 cursor-pointer'
-                        : 'bg-[#F0E4D3] dark:bg-white/5 text-[#8B7355] dark:text-white/30 cursor-not-allowed'
+                        : 'bg-gray-50 dark:bg-white/5 text-gray-400 dark:text-white/30 cursor-not-allowed'
                     }`}
                   >
                     {isProcessing ? (

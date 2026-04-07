@@ -37,14 +37,14 @@ export async function POST(request: NextRequest) {
 
   try {
     const body = await request.json();
-    const { room_number, building_name, capacity, room_type, facilities } = body;
+    const { room_number, building_name, capacity, room_type, facilities, latitude, longitude, plus_code, floor_number } = body;
 
     const validation = requireField(room_number, 'room_number');
     if (!validation.valid) return badRequest(validation.error!);
 
     const { data, error } = await supabase
       .from('rooms')
-      .insert({ room_number, building_name, capacity, room_type, facilities, is_active: true })
+      .insert({ room_number, building_name, capacity, room_type, facilities, is_active: true, latitude, longitude, plus_code, floor_number })
       .select()
       .single();
 

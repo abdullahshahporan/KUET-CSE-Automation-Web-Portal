@@ -70,12 +70,12 @@ export default function SignInPage() {
   };
 
   return (
-    <div className="min-h-screen bg-[#FAF7F3] dark:bg-[#0b090a] flex items-center justify-center relative overflow-hidden px-4">
+    <div className="min-h-screen bg-white dark:bg-[#0b090a] flex items-center justify-center relative overflow-hidden px-4">
       {/* Light Rays Background */}
       <div className="absolute inset-0 z-0">
         <LightRays
           raysOrigin="top-left"
-          raysColor="#D9A299"
+          raysColor="#818CF8"
           raysSpeed={0.5}
           lightSpread={0.8}
           rayLength={3}
@@ -104,23 +104,23 @@ export default function SignInPage() {
             <motion.div 
               whileHover={{ rotate: 360 }}
               transition={{ duration: 0.5 }}
-              className="w-14 h-14 rounded-2xl bg-gradient-to-br from-[#D9A299] to-[#DCC5B2] dark:from-[#ba181b] dark:to-[#660708] flex items-center justify-center shadow-lg shadow-[#D9A299]/30 dark:shadow-[#ba181b]/30"
+              className="w-14 h-14 rounded-2xl bg-indigo-600 flex items-center justify-center shadow-lg shadow-indigo-600/30"
             >
               <img src="/kuet-logo.png" alt="KUET" className="w-7 h-7 object-contain" />
             </motion.div>
             <div className="text-left">
               <h1 className="text-2xl font-bold text-[#3E2723] dark:text-white">KUET CSE</h1>
-              <p className="text-xs text-[#5D4037] dark:text-[#b1a7a6]">Automation Portal</p>
+              <p className="text-xs text-gray-600 dark:text-[#b1a7a6]">Automation Portal</p>
             </div>
           </Link>
         </motion.div>
 
         {/* Sign In Card */}
         <motion.div variants={itemVariants}>
-          <SpotlightCard className="p-8 bg-[#FAF7F3] dark:bg-transparent" spotlightColor="rgba(217, 162, 153, 0.3)">
+          <SpotlightCard className="p-8 bg-white dark:bg-transparent" spotlightColor="rgba(217, 162, 153, 0.3)">
             <div className="text-center mb-8">
               <h2 className="text-2xl font-bold text-[#3E2723] dark:text-white mb-2">Welcome Back</h2>
-              <p className="text-[#5D4037] dark:text-[#b1a7a6] text-sm">Sign in to access your portal</p>
+              <p className="text-gray-600 dark:text-[#b1a7a6] text-sm">Sign in to access your portal</p>
             </div>
 
             <form onSubmit={handleSubmit} className="space-y-5">
@@ -128,13 +128,13 @@ export default function SignInPage() {
               <div className="space-y-2">
                 <label className="text-sm text-[#3E2723] dark:text-[#f5f3f4] font-medium">Email</label>
                 <div className="relative">
-                  <Mail className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-[#5D4037] dark:text-[#b1a7a6]/70" />
+                  <Mail className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-600 dark:text-[#b1a7a6]/70" />
                   <input
                     type="email"
                     value={email}
                     onChange={(e) => setEmail(e.target.value)}
                     placeholder="Enter your email"
-                    className="w-full pl-12 pr-4 py-3.5 bg-[#F0E4D3] dark:bg-[#0b090a] border border-[#DCC5B2] dark:border-[#3d4951] rounded-xl text-[#3E2723] dark:text-white placeholder:text-[#6B5744] dark:placeholder:text-white/30 focus:outline-none focus:border-[#D9A299] dark:focus:border-[#ba181b] focus:ring-1 focus:ring-[#D9A299]/50 dark:focus:ring-[#ba181b]/50 transition-all"
+                    className="w-full pl-12 pr-4 py-3.5 bg-gray-50 dark:bg-[#0b090a] border border-gray-200 dark:border-[#3d4951] rounded-xl text-[#3E2723] dark:text-white placeholder:text-gray-500 dark:placeholder:text-white/30 focus:outline-none focus:border-indigo-400 dark:focus:border-red-400 focus:ring-1 focus:ring-indigo-300/50 dark:focus:ring-red-400/50 transition-all"
                     required
                   />
                 </div>
@@ -144,19 +144,19 @@ export default function SignInPage() {
               <div className="space-y-2">
                 <label className="text-sm text-[#3E2723] dark:text-[#f5f3f4] font-medium">Password</label>
                 <div className="relative">
-                  <Lock className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-[#5D4037] dark:text-[#b1a7a6]/70" />
+                  <Lock className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-600 dark:text-[#b1a7a6]/70" />
                   <input
                     type={showPassword ? 'text' : 'password'}
                     value={password}
                     onChange={(e) => setPassword(e.target.value)}
                     placeholder="Enter your password"
-                    className="w-full pl-12 pr-12 py-3.5 bg-[#F0E4D3] dark:bg-[#0b090a] border border-[#DCC5B2] dark:border-[#3d4951] rounded-xl text-[#3E2723] dark:text-white placeholder:text-[#6B5744] dark:placeholder:text-white/30 focus:outline-none focus:border-[#D9A299] dark:focus:border-[#ba181b] focus:ring-1 focus:ring-[#D9A299]/50 dark:focus:ring-[#ba181b]/50 transition-all"
+                    className="w-full pl-12 pr-12 py-3.5 bg-gray-50 dark:bg-[#0b090a] border border-gray-200 dark:border-[#3d4951] rounded-xl text-[#3E2723] dark:text-white placeholder:text-gray-500 dark:placeholder:text-white/30 focus:outline-none focus:border-indigo-400 dark:focus:border-red-400 focus:ring-1 focus:ring-indigo-300/50 dark:focus:ring-red-400/50 transition-all"
                     required
                   />
                   <button
                     type="button"
                     onClick={() => setShowPassword(!showPassword)}
-                    className="absolute right-4 top-1/2 -translate-y-1/2 text-[#8B7355] dark:text-[#b1a7a6]/70 hover:text-[#5D4E37] dark:hover:text-white/60 transition-colors"
+                    className="absolute right-4 top-1/2 -translate-y-1/2 text-gray-400 dark:text-[#b1a7a6]/70 hover:text-gray-700 dark:hover:text-white/60 transition-colors"
                   >
                     {showPassword ? <EyeOff className="w-5 h-5" /> : <Eye className="w-5 h-5" />}
                   </button>
@@ -181,7 +181,7 @@ export default function SignInPage() {
               <div className="text-right">
                 <Link 
                   href="/auth/forgot-password" 
-                  className="text-sm text-[#D9A299] dark:text-[#e5383b] hover:text-[#5D4E37] dark:hover:text-[#f5686b] transition-colors"
+                  className="text-sm text-indigo-500 dark:text-[#e5383b] hover:text-gray-700 dark:hover:text-[#f5686b] transition-colors"
                 >
                   Forgot password?
                 </Link>
@@ -213,7 +213,7 @@ export default function SignInPage() {
             {/* Divider */}
             <div className="flex items-center gap-4 my-6">
               <div className="flex-1 h-px bg-[#DCC5B2] dark:bg-[#3d4951]" />
-              <span className="text-[#8B7355] dark:text-[#b1a7a6]/70 text-sm">Demo Accounts</span>
+              <span className="text-gray-400 dark:text-[#b1a7a6]/70 text-sm">Demo Accounts</span>
               <div className="flex-1 h-px bg-[#DCC5B2] dark:bg-[#3d4951]" />
             </div>
 
@@ -225,28 +225,28 @@ export default function SignInPage() {
                   whileHover={{ scale: 1.02 }}
                   whileTap={{ scale: 0.98 }}
                   onClick={() => handleDemoLogin(demo.email, demo.password)}
-                  className="w-full p-4 rounded-xl bg-[#F0E4D3] dark:bg-[#0b090a] border border-[#DCC5B2] dark:border-[#3d4951] hover:border-[#D9A299] dark:hover:border-[#ba181b]/50 hover:bg-[#D9A299]/10 dark:hover:bg-[#ba181b]/5 transition-all flex items-center gap-4 group"
+                  className="w-full p-4 rounded-xl bg-gray-50 dark:bg-[#0b090a] border border-gray-200 dark:border-[#3d4951] hover:border-indigo-400 dark:hover:border-red-400/50 hover:bg-indigo-100/10 dark:hover:bg-red-600/5 transition-all flex items-center gap-4 group"
                 >
                   <div className={`w-10 h-10 rounded-lg flex items-center justify-center ${
-                    index === 0 ? 'bg-[#D9A299]/30 text-[#D9A299] dark:bg-[#ba181b]/20 dark:text-[#ba181b]' : 'bg-[#DCC5B2]/50 text-[#5D4E37] dark:bg-[#d3d3d3]/20 dark:text-[#d3d3d3]'
+                    index === 0 ? 'bg-indigo-100/30 text-indigo-500 dark:bg-red-600/20 dark:text-red-600' : 'bg-[#DCC5B2]/50 text-gray-700 dark:bg-[#d3d3d3]/20 dark:text-[#d3d3d3]'
                   }`}>
                     <demo.icon className="w-5 h-5" />
                   </div>
                   <div className="flex-1 text-left">
                     <div className="text-[#3E2723] dark:text-white font-medium text-sm">{demo.role}</div>
-                    <div className="text-[#5D4037] dark:text-[#b1a7a6] text-xs">{demo.email}</div>
+                    <div className="text-gray-600 dark:text-[#b1a7a6] text-xs">{demo.email}</div>
                   </div>
-                  <ArrowRight className="w-4 h-4 text-[#8B7355] dark:text-[#b1a7a6]/50 group-hover:text-[#D9A299] dark:group-hover:text-white/60 group-hover:translate-x-1 transition-all" />
+                  <ArrowRight className="w-4 h-4 text-gray-400 dark:text-[#b1a7a6]/50 group-hover:text-indigo-500 dark:group-hover:text-white/60 group-hover:translate-x-1 transition-all" />
                 </motion.button>
               ))}
             </div>
 
             {/* Sign Up Link */}
-            <p className="text-center text-[#5D4037] dark:text-[#b1a7a6] text-sm mt-6">
+            <p className="text-center text-gray-600 dark:text-[#b1a7a6] text-sm mt-6">
               Don&apos;t have an account?{' '}
               <Link 
                 href="/auth/signup" 
-                className="text-[#D9A299] dark:text-[#e5383b] hover:text-[#5D4E37] dark:hover:text-[#f5686b] font-medium transition-colors"
+                className="text-indigo-500 dark:text-[#e5383b] hover:text-gray-700 dark:hover:text-[#f5686b] font-medium transition-colors"
               >
                 Sign Up
               </Link>

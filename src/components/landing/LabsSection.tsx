@@ -39,7 +39,7 @@ const LabsSection: React.FC<LabsSectionProps> = ({ labs, sectionTitle, sectionSu
                 <div className="absolute bottom-0 inset-x-0 p-5 z-10">
                   <h3 className="text-lg font-bold text-white mb-1">{l.name}</h3>
                   {l.description && <p className="text-white/70 text-sm line-clamp-2">{l.description}</p>}
-                  {l.room_number && <p className="text-[#D4A574] text-xs mt-2">Room: {l.room_number}</p>}
+                  {l.room_number && <p className="text-gray-400 text-xs mt-2">Room: {l.room_number}</p>}
                 </div>
               </div>
             </Reveal>

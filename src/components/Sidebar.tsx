@@ -1,8 +1,6 @@
 "use client";
 
 import { useAuth } from '@/contexts/AuthContext';
-import { useTheme } from '@/contexts/ThemeContext';
-import { AnimatePresence, motion, useInView } from 'framer-motion';
 import {
     BookOpen,
     Building2,
@@ -20,13 +18,10 @@ import {
     KeyRound,
     LayoutDashboard,
     LogOut,
-    MapPin,
     Megaphone,
     Monitor,
-    Moon,
     Settings,
     Sparkles,
-    Sun,
     TrendingUp,
     Upload,
     UserCog,
@@ -34,7 +29,6 @@ import {
     Users
 } from 'lucide-react';
 import { useRouter } from 'next/navigation';
-import { useRef } from 'react';
 
 interface MenuItem {
   id: string;
@@ -49,47 +43,16 @@ interface SidebarProps {
   onToggleCollapse: () => void;
 }
 
-// AnimatedListItem component for sidebar menu items
-const AnimatedListItem = ({ 
-  children, 
-  index, 
-  onClick 
-}: { 
-  children: React.ReactNode; 
-  index: number; 
-  onClick: () => void;
-}) => {
-  const ref = useRef<HTMLButtonElement>(null);
-  const inView = useInView(ref, { amount: 0.5, once: false });
-
-  return (
-    <motion.button
-      ref={ref}
-      onClick={onClick}
-      initial={{ scale: 0.8, opacity: 0, x: -20 }}
-      animate={inView ? { scale: 1, opacity: 1, x: 0 } : { scale: 0.8, opacity: 0, x: -20 }}
-      transition={{ duration: 0.25, delay: index * 0.05 }}
-      whileHover={{ x: 4, scale: 1.02 }}
-      whileTap={{ scale: 0.98 }}
-      className="w-full"
-    >
-      {children}
-    </motion.button>
-  );
-};
-
 export default function Sidebar({ activeItem, onMenuChange, isCollapsed, onToggleCollapse }: SidebarProps) {
   const router = useRouter();
   const { user, logout } = useAuth();
-  const { theme, toggleTheme } = useTheme();
   const isAdmin = user?.role === 'admin';
 
   const adminMenuItems: MenuItem[] = [
     { id: 'dashboard', label: 'Dashboard', icon: LayoutDashboard },
     { id: 'tv-display', label: 'TV Display', icon: Monitor },
     { id: 'faculty-info', label: 'Faculty Info', icon: Users },
-    { id: 'room-allocation', label: 'Room Allocation', icon: Building2 },
-    { id: 'geo-room-management', label: 'Geo Room Management', icon: MapPin },
+    { id: 'room-info', label: 'Room Info', icon: Building2 },
     { id: 'course-info', label: 'Course Info', icon: GraduationCap },
     { id: 'course-allocation', label: 'Course Allocation', icon: BookOpen },
     { id: 'class-routine', label: 'Class Routine', icon: Clock },
@@ -121,214 +84,120 @@ export default function Sidebar({ activeItem, onMenuChange, isCollapsed, onToggl
     router.push('/');
   };
 
-  const sidebarVariants = {
-    expanded: { width: 280 },
-    collapsed: { width: 80 },
-  };
-
   return (
-    <motion.aside 
-      variants={sidebarVariants}
-      animate={isCollapsed ? 'collapsed' : 'expanded'}
-      transition={{ duration: 0.3, ease: 'easeInOut' }}
-      className="bg-white dark:bg-[#161a1d] border-r border-[#E8DDD1] dark:border-[#3d4951]/50 h-screen fixed left-0 top-0 flex flex-col z-40 shadow-sm transition-colors"
+    <aside 
+      style={{ width: isCollapsed ? 80 : 260 }}
+      className="bg-[#2C1503] h-screen fixed left-0 top-0 flex flex-col z-40 transition-[width] duration-200"
     >
       {/* Header */}
-      <div className={`p-4 border-b border-[#E8DDD1] dark:border-[#3d4951]/50 ${isCollapsed ? 'px-3' : ''}`}>
+      <div className={`p-4 border-b border-[#3B1F12] ${isCollapsed ? 'px-3' : ''}`}>
         <div className="flex items-center justify-between">
-          <AnimatePresence mode="wait">
-            {!isCollapsed && (
-              <motion.div
-                initial={{ opacity: 0, x: -20 }}
-                animate={{ opacity: 1, x: 0 }}
-                exit={{ opacity: 0, x: -20 }}
-                transition={{ duration: 0.2 }}
-                className="flex items-center gap-3"
-              >
-                <div className="w-10 h-10 rounded-xl bg-[#5D4037] dark:bg-[#ba181b] flex items-center justify-center">
-                  <Sparkles className="w-5 h-5 text-white" />
-                </div>
-                <div>
-                  <h2 className="text-lg font-bold text-[#5D4E37] dark:text-white">KUET CSE</h2>
-                  <p className="text-xs text-[#8B7355] dark:text-[#b1a7a6]">Automation Portal</p>
-                </div>
-              </motion.div>
-            )}
-          </AnimatePresence>
+          {!isCollapsed && (
+            <div className="flex items-center gap-3">
+              <div className="w-9 h-9 rounded-lg bg-[#5D4037] flex items-center justify-center">
+                <Sparkles className="w-4 h-4 text-[#E8D5C4]" />
+              </div>
+              <div>
+                <h2 className="text-base font-bold text-[#F5E6D3]">KUET CSE</h2>
+                <p className="text-[11px] text-[#A89279]">Automation Portal</p>
+              </div>
+            </div>
+          )}
           
-          <motion.button
-            whileHover={{ scale: 1.1 }}
-            whileTap={{ scale: 0.9 }}
+          <button
             onClick={onToggleCollapse}
-            className={`p-2 rounded-xl bg-[#F5EDE4] dark:bg-[#0b090a] border border-[#E8DDD1] dark:border-[#3d4951] text-[#8B7355] dark:text-[#b1a7a6] hover:bg-[#E8DDD1] hover:text-[#5D4E37] dark:hover:text-white transition-colors ${isCollapsed ? 'mx-auto' : ''}`}
+            className={`p-1.5 rounded-md bg-[#3B1F12] text-[#A89279] transition-colors ${isCollapsed ? 'mx-auto' : ''}`}
             title={isCollapsed ? 'Expand sidebar' : 'Collapse sidebar'}
           >
-            {isCollapsed ? (
-              <ChevronRight className="w-5 h-5" />
-            ) : (
-              <ChevronLeft className="w-5 h-5" />
-            )}
-          </motion.button>
+            {isCollapsed ? <ChevronRight className="w-4 h-4" /> : <ChevronLeft className="w-4 h-4" />}
+          </button>
         </div>
       </div>
 
       {/* User Info */}
-      <div className={`p-4 border-b border-[#E8DDD1] dark:border-[#3d4951]/50 ${isCollapsed ? 'px-3' : ''}`}>
+      <div className={`p-4 border-b border-[#3B1F12] ${isCollapsed ? 'px-3' : ''}`}>
         <div className={`flex items-center gap-3 ${isCollapsed ? 'justify-center' : ''}`}>
           <div className="relative">
-            <div className="w-10 h-10 rounded-full bg-[#5D4037] dark:bg-[#ba181b] flex items-center justify-center text-white font-semibold text-sm">
+            <div className="w-9 h-9 rounded-full bg-[#5D4037] flex items-center justify-center text-[#E8D5C4] font-semibold text-sm">
               {user?.name?.charAt(0) || 'U'}
             </div>
-            <div className={`absolute -bottom-0.5 -right-0.5 w-3 h-3 rounded-full border-2 border-white dark:border-[#161a1d] ${user?.role === 'admin' ? 'bg-emerald-500' : 'bg-[#b1a7a6]'}`} />
+            <div className={`absolute -bottom-0.5 -right-0.5 w-2.5 h-2.5 rounded-full border-2 border-[#2C1503] ${user?.role === 'admin' ? 'bg-emerald-400' : 'bg-[#A89279]'}`} />
           </div>
-          <AnimatePresence mode="wait">
-            {!isCollapsed && (
-              <motion.div
-                initial={{ opacity: 0, x: -10 }}
-                animate={{ opacity: 1, x: 0 }}
-                exit={{ opacity: 0, x: -10 }}
-                className="flex-1 min-w-0"
-              >
-                <p className="text-sm font-semibold text-[#5D4E37] dark:text-white truncate">
-                  {user?.name || 'User'}
-                </p>
-                <p className="text-xs text-[#8B7355] dark:text-[#b1a7a6] capitalize">
-                  {user?.role || 'Guest'}
-                </p>
-              </motion.div>
-            )}
-          </AnimatePresence>
+          {!isCollapsed && (
+            <div className="flex-1 min-w-0">
+              <p className="text-sm font-semibold text-[#F5E6D3] truncate">
+                {user?.name || 'User'}
+              </p>
+              <p className="text-xs text-[#A89279] capitalize">
+                {user?.role || 'Guest'}
+              </p>
+            </div>
+          )}
         </div>
       </div>
 
-      {/* Menu Items with AnimatedList */}
-      <nav className="flex-1 p-3 space-y-1 overflow-y-auto [&::-webkit-scrollbar]:w-[4px] [&::-webkit-scrollbar-track]:bg-transparent [&::-webkit-scrollbar-thumb]:bg-[#DCC5B2] dark:[&::-webkit-scrollbar-thumb]:bg-white/20 [&::-webkit-scrollbar-thumb]:rounded-full">
-        {filteredMenuItems.map((item, index) => {
+      {/* Menu Items */}
+      <nav className="flex-1 p-2 space-y-0.5 overflow-y-auto [&::-webkit-scrollbar]:w-[3px] [&::-webkit-scrollbar-track]:bg-transparent [&::-webkit-scrollbar-thumb]:bg-[#5D4037] [&::-webkit-scrollbar-thumb]:rounded-full">
+        {filteredMenuItems.map((item) => {
           const Icon = item.icon;
           const isActive = activeItem === item.id;
           
           return (
-            <AnimatedListItem 
+            <button 
               key={item.id} 
-              index={index}
               onClick={() => onMenuChange(item.id)}
+              className="w-full"
             >
               <div
-                className={`w-full flex items-center gap-3 px-3 py-2.5 rounded-lg transition-all duration-200 group relative ${
+                className={`w-full flex items-center gap-3 px-3 py-2 rounded-md text-left transition-colors duration-100 relative ${
                   isActive
-                    ? 'bg-[#5D4037] dark:bg-[#ba181b] text-white shadow-sm'
-                    : 'text-[#6B5744] dark:text-[#b1a7a6] hover:bg-[#F5EDE4] dark:hover:bg-[#0b090a] hover:text-[#5D4E37] dark:hover:text-white border border-transparent'
+                    ? 'bg-[#5D4037] text-[#F5E6D3] font-semibold'
+                    : 'text-[#A89279]'
                 } ${isCollapsed ? 'justify-center px-2' : ''}`}
               >
-                <Icon className={`w-5 h-5 flex-shrink-0 ${isActive ? 'text-white' : 'text-[#8B7355] dark:text-[#b1a7a6] group-hover:text-[#5D4037] dark:group-hover:text-[#e5383b]'} transition-colors`} />
+                <Icon className={`w-[18px] h-[18px] flex-shrink-0 ${isActive ? 'text-[#F5E6D3]' : 'text-[#A89279]'}`} />
                 
-                <AnimatePresence mode="wait">
-                  {!isCollapsed && (
-                    <motion.span
-                      initial={{ opacity: 0, width: 0 }}
-                      animate={{ opacity: 1, width: 'auto' }}
-                      exit={{ opacity: 0, width: 0 }}
-                      className="font-medium text-sm whitespace-nowrap overflow-hidden"
-                    >
-                      {item.label}
-                    </motion.span>
-                  )}
-                </AnimatePresence>
-
-                {/* Active indicator */}
-                {isActive && !isCollapsed && (
-                  <motion.div
-                    layoutId="activeIndicator"
-                    className="absolute right-3 w-1.5 h-1.5 rounded-full bg-[#D9A299] dark:bg-white/80"
-                  />
+                {!isCollapsed && (
+                  <span className="text-[13px] whitespace-nowrap overflow-hidden">
+                    {item.label}
+                  </span>
                 )}
 
-                {/* Tooltip for collapsed state */}
+                {isActive && !isCollapsed && (
+                  <div className="absolute right-2 w-1.5 h-1.5 rounded-full bg-gray-100" />
+                )}
+
                 {isCollapsed && (
-                  <div className="absolute left-full ml-3 px-3 py-2 bg-[#FAF7F3] dark:bg-[#161a1d]/90 backdrop-blur-md border border-[#DCC5B2] dark:border-white/15 text-[#5D4E37] dark:text-white text-sm rounded-lg opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all whitespace-nowrap z-50 shadow-xl">
+                  <div className="absolute left-full ml-2 px-2 py-1 bg-[#2C1503] border border-[#5D4037] text-[#F5E6D3] text-xs rounded-md opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-opacity whitespace-nowrap z-50">
                     {item.label}
                   </div>
                 )}
               </div>
-            </AnimatedListItem>
+            </button>
           );
         })}
       </nav>
 
       {/* Footer Actions */}
-      <div className={`p-3 border-t border-[#E8DDD1] dark:border-[#3d4951]/50 space-y-1 ${isCollapsed ? 'px-2' : ''}`}>
-        {/* Theme Toggle */}
-        <motion.button
-          whileHover={{ x: isCollapsed ? 0 : 4 }}
-          whileTap={{ scale: 0.98 }}
-          onClick={toggleTheme}
-          className={`w-full flex items-center gap-3 px-3 py-2.5 rounded-lg text-[#6B5744] dark:text-[#b1a7a6] hover:bg-[#F5EDE4] dark:hover:bg-[#0b090a] hover:text-[#5D4037] dark:hover:text-white transition-all ${isCollapsed ? 'justify-center px-2' : ''}`}
-          title={isCollapsed ? 'Toggle Theme' : ''}
-        >
-          {theme === 'dark' ? (
-            <Sun className="w-5 h-5 text-amber-400" />
-          ) : (
-            <Moon className="w-5 h-5 text-[#5D4037]" />
-          )}
-          <AnimatePresence mode="wait">
-            {!isCollapsed && (
-              <motion.span
-                initial={{ opacity: 0 }}
-                animate={{ opacity: 1 }}
-                exit={{ opacity: 0 }}
-                className="font-medium text-sm"
-              >
-                {theme === 'dark' ? 'Light Mode' : 'Dark Mode'}
-              </motion.span>
-            )}
-          </AnimatePresence>
-        </motion.button>
-
-        {/* Settings */}
-        <motion.button
-          whileHover={{ x: isCollapsed ? 0 : 4 }}
-          whileTap={{ scale: 0.98 }}
-          className={`w-full flex items-center gap-3 px-3 py-2.5 rounded-lg text-[#6B5744] dark:text-[#b1a7a6] hover:bg-[#F5EDE4] dark:hover:bg-[#0b090a] hover:text-[#5D4037] dark:hover:text-white transition-all ${isCollapsed ? 'justify-center px-2' : ''}`}
+      <div className={`p-2 border-t border-[#3B1F12] space-y-0.5 ${isCollapsed ? 'px-2' : ''}`}>
+        <button
+          onClick={() => onMenuChange('settings')}
+          className={`w-full flex items-center gap-3 px-3 py-2 rounded-md text-[#A89279] transition-colors ${isCollapsed ? 'justify-center px-2' : ''}`}
           title={isCollapsed ? 'Settings' : ''}
         >
-          <Settings className="w-5 h-5" />
-          <AnimatePresence mode="wait">
-            {!isCollapsed && (
-              <motion.span
-                initial={{ opacity: 0 }}
-                animate={{ opacity: 1 }}
-                exit={{ opacity: 0 }}
-                className="font-medium text-sm"
-              >
-                Settings
-              </motion.span>
-            )}
-          </AnimatePresence>
-        </motion.button>
+          <Settings className="w-[18px] h-[18px]" />
+          {!isCollapsed && <span className="text-[13px]">Settings</span>}
+        </button>
 
-        {/* Logout */}
-        <motion.button
-          whileHover={{ x: isCollapsed ? 0 : 4 }}
-          whileTap={{ scale: 0.98 }}
+        <button
           onClick={handleLogout}
-          className={`w-full flex items-center gap-3 px-3 py-2.5 rounded-lg text-red-500 dark:text-[#e5383b] hover:bg-red-50 dark:hover:bg-[#e5383b]/10 hover:text-red-600 dark:hover:text-[#ea5f62] transition-all ${isCollapsed ? 'justify-center px-2' : ''}`}
+          className={`w-full flex items-center gap-3 px-3 py-2 rounded-md text-red-400 transition-colors ${isCollapsed ? 'justify-center px-2' : ''}`}
           title={isCollapsed ? 'Logout' : ''}
         >
-          <LogOut className="w-5 h-5" />
-          <AnimatePresence mode="wait">
-            {!isCollapsed && (
-              <motion.span
-                initial={{ opacity: 0 }}
-                animate={{ opacity: 1 }}
-                exit={{ opacity: 0 }}
-                className="font-medium text-sm"
-              >
-                Logout
-              </motion.span>
-            )}
-          </AnimatePresence>
-        </motion.button>
+          <LogOut className="w-[18px] h-[18px]" />
+          {!isCollapsed && <span className="text-[13px]">Logout</span>}
+        </button>
       </div>
-    </motion.aside>
+    </aside>
   );
 }

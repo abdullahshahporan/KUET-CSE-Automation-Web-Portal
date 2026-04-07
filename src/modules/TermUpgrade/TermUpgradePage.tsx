@@ -181,11 +181,11 @@ export default function TermUpgradePage() {
       {/* Header */}
       <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
         <div>
-          <h1 className="text-2xl font-bold text-[#5D4E37] dark:text-white flex items-center gap-2">
-            <TrendingUp className="w-7 h-7 text-[#D9A299] dark:text-[#ba181b]" />
+          <h1 className="text-2xl font-bold text-gray-700 dark:text-white flex items-center gap-2">
+            <TrendingUp className="w-7 h-7 text-indigo-500 dark:text-red-600" />
             Term Management
           </h1>
-          <p className="text-[#8B7355] dark:text-white/50 text-sm mt-1">
+          <p className="text-gray-400 dark:text-white/50 text-sm mt-1">
             Directly upgrade or downgrade students across 8 academic terms
           </p>
         </div>
@@ -195,7 +195,7 @@ export default function TermUpgradePage() {
             whileHover={{ scale: 1.05 }}
             whileTap={{ scale: 0.95 }}
             onClick={allExpanded ? collapseAll : expandAll}
-            className="flex items-center gap-1.5 px-3 py-2 rounded-xl bg-[#F0E4D3] dark:bg-white/5 border border-[#DCC5B2] dark:border-white/10 text-[#8B7355] dark:text-white/60 text-sm hover:bg-[#D9A299]/20 transition-colors"
+            className="flex items-center gap-1.5 px-3 py-2 rounded-xl bg-gray-50 dark:bg-white/5 border border-gray-200 dark:border-white/10 text-gray-400 dark:text-white/60 text-sm hover:bg-indigo-100/20 transition-colors"
             title={allExpanded ? 'Collapse All' : 'Expand All'}
           >
             {allExpanded ? (
@@ -210,7 +210,7 @@ export default function TermUpgradePage() {
             whileHover={{ scale: 1.05 }}
             whileTap={{ scale: 0.95 }}
             onClick={fetchData}
-            className="p-2 rounded-xl bg-[#F0E4D3] dark:bg-white/5 border border-[#DCC5B2] dark:border-white/10 text-[#8B7355] dark:text-white/60 hover:bg-[#D9A299]/20 transition-colors"
+            className="p-2 rounded-xl bg-gray-50 dark:bg-white/5 border border-gray-200 dark:border-white/10 text-gray-400 dark:text-white/60 hover:bg-indigo-100/20 transition-colors"
             title="Refresh"
           >
             <RefreshCw className={`w-5 h-5 ${loading ? 'animate-spin' : ''}`} />
@@ -228,7 +228,7 @@ export default function TermUpgradePage() {
       {/* Loading State */}
       {loading ? (
         <div className="flex items-center justify-center py-16">
-          <Loader2 className="w-8 h-8 text-[#D9A299] dark:text-[#ba181b] animate-spin" />
+          <Loader2 className="w-8 h-8 text-indigo-500 dark:text-red-600 animate-spin" />
         </div>
       ) : (
         /* Term Accordions */

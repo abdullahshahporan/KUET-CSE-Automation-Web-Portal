@@ -4,53 +4,42 @@
 
 /* ==========================================
    KUET CSE — Global Styles
-   Warm Brown / Beige / Cream Color System
+   Professional Academic Theme
+   Deep Brown + White + Clean
    ========================================== */
 
 :root {
-  /* Light Theme Variables */
-  --background: #FDF8F3;
-  --foreground: #2C1810;
+  --background: #FFFFFF;
+  --foreground: #111827;
   --card: #FFFFFF;
-  --card-foreground: #2C1810;
-  --primary: #5D4037;
+  --card-foreground: #111827;
+  --primary: #1E293B;
   --primary-foreground: #FFFFFF;
-  --secondary: #8B6914;
+  --secondary: #4B5563;
   --secondary-foreground: #FFFFFF;
-  --accent: #D4A574;
-  --muted: #F5EDE4;
-  --muted-foreground: #6B5744;
-  --border: #DCC5B2;
-  --input: #E8DDD1;
-  --ring: #5D4037;
-
-  /* Gradient Colors */
-  --gradient-start: #5D4037;
-  --gradient-mid: #8B6914;
-  --gradient-end: #D4A574;
+  --accent: #6366F1;
+  --muted: #F9FAFB;
+  --muted-foreground: #4B5563;
+  --border: #E5E7EB;
+  --input: #FFFFFF;
+  --ring: #6366F1;
 }
 
 .dark {
-  /* Dark Theme Variables — Onyx/Garnet/Mahogany */
-  --background: #0b090a;
-  --foreground: #f5f3f4;
-  --card: #161a1d;
-  --card-foreground: #f5f3f4;
-  --primary: #e5383b;
-  --primary-foreground: #0b090a;
-  --secondary: #ba181b;
-  --secondary-foreground: #f5f3f4;
-  --accent: #a4161a;
-  --muted: #161a1d;
-  --muted-foreground: #b1a7a6;
-  --border: #3d4951;
-  --input: #161a1d;
-  --ring: #e5383b;
-
-  /* Gradient Colors */
-  --gradient-start: #e5383b;
-  --gradient-mid: #ba181b;
-  --gradient-end: #660708;
+  --background: #FFFFFF;
+  --foreground: #111827;
+  --card: #FFFFFF;
+  --card-foreground: #111827;
+  --primary: #1E293B;
+  --primary-foreground: #FFFFFF;
+  --secondary: #4B5563;
+  --secondary-foreground: #FFFFFF;
+  --accent: #6366F1;
+  --muted: #F9FAFB;
+  --muted-foreground: #4B5563;
+  --border: #E5E7EB;
+  --input: #FFFFFF;
+  --ring: #6366F1;
 }
 
 * {
@@ -65,296 +54,206 @@ body {
 }
 
 /* ==========================================
-   Custom Animations
+   Minimal Animations (only functional)
    ========================================== */
-
-@keyframes gradient {
-  0%, 100% { background-position: 0% 50%; }
-  50% { background-position: 100% 50%; }
-}
-
-@keyframes float {
-  0%, 100% { transform: translateY(0px); }
-  50% { transform: translateY(-20px); }
-}
-
-@keyframes pulse-glow {
-  0%, 100% { box-shadow: 0 0 20px rgba(212, 165, 116, 0.3); }
-  50% { box-shadow: 0 0 40px rgba(212, 165, 116, 0.6); }
-}
-
-@keyframes shimmer {
-  0% { background-position: -200% 0; }
-  100% { background-position: 200% 0; }
-}
-
-@keyframes slide-up {
-  0% { opacity: 0; transform: translateY(20px); }
-  100% { opacity: 1; transform: translateY(0); }
-}
-
-@keyframes slide-down {
-  0% { opacity: 0; transform: translateY(-20px); }
-  100% { opacity: 1; transform: translateY(0); }
-}
-
-@keyframes slide-left {
-  0% { opacity: 0; transform: translateX(20px); }
-  100% { opacity: 1; transform: translateX(0); }
-}
-
-@keyframes slide-right {
-  0% { opacity: 0; transform: translateX(-20px); }
-  100% { opacity: 1; transform: translateX(0); }
-}
-
-@keyframes scale-in {
-  0% { opacity: 0; transform: scale(0.95); }
-  100% { opacity: 1; transform: scale(1); }
-}
-
-@keyframes spin-slow {
-  from { transform: rotate(0deg); }
-  to { transform: rotate(360deg); }
-}
-
-@keyframes bounce-subtle {
-  0%, 100% { transform: translateY(0); }
-  50% { transform: translateY(-5px); }
-}
 
 @keyframes marquee {
   0% { transform: translateX(0%); }
   100% { transform: translateX(-50%); }
 }
 
-/* Animation Classes */
-.animate-gradient {
-  background-size: 200% 200%;
-  animation: gradient 3s ease infinite;
-}
-
-.animate-float { animation: float 3s ease-in-out infinite; }
-.animate-pulse-glow { animation: pulse-glow 2s ease-in-out infinite; }
-.animate-shimmer {
-  background: linear-gradient(90deg, transparent, rgba(212,165,116,0.15), transparent);
-  background-size: 200% 100%;
-  animation: shimmer 2s infinite;
-}
-.animate-slide-up { animation: slide-up 0.5s ease-out; }
-.animate-slide-down { animation: slide-down 0.5s ease-out; }
-.animate-slide-left { animation: slide-left 0.5s ease-out; }
-.animate-slide-right { animation: slide-right 0.5s ease-out; }
-.animate-scale-in { animation: scale-in 0.3s ease-out; }
-.animate-spin-slow { animation: spin-slow 8s linear infinite; }
-.animate-bounce-subtle { animation: bounce-subtle 2s ease-in-out infinite; }
 .animate-marquee { animation: marquee 30s linear infinite; }
-
-/* Stagger animations for lists */
-.stagger-1 { animation-delay: 0.1s; }
-.stagger-2 { animation-delay: 0.2s; }
-.stagger-3 { animation-delay: 0.3s; }
-.stagger-4 { animation-delay: 0.4s; }
-.stagger-5 { animation-delay: 0.5s; }
-
-/* ==========================================
-   Glass Morphism Effects
-   ========================================== */
-
-.glass {
-  background: rgba(255, 255, 255, 0.1);
-  backdrop-filter: blur(10px);
-  border: 1px solid rgba(255, 255, 255, 0.2);
-}
-
-.dark .glass {
-  background: rgba(11, 9, 10, 0.6);
-  border: 1px solid rgba(255, 255, 255, 0.08);
-}
-
-.glass-card {
-  background: rgba(255, 255, 255, 0.8);
-  backdrop-filter: blur(20px);
-  border: 1px solid rgba(255, 255, 255, 0.3);
-}
-
-.dark .glass-card {
-  background: rgba(22, 26, 29, 0.85);
-  border: 1px solid rgba(255, 255, 255, 0.08);
-}
-
-/* ==========================================
-   BRACU-Style Image Overlays
-   ========================================== */
-
-.img-overlay-warm {
-  position: relative;
-}
-.img-overlay-warm::after {
-  content: '';
-  position: absolute;
-  inset: 0;
-  background: linear-gradient(
-    to bottom,
-    rgba(93, 64, 55, 0.1) 0%,
-    rgba(93, 64, 55, 0.25) 100%
-  );
-  pointer-events: none;
-}
-
-.img-edge-gradient::before {
-  content: '';
-  position: absolute;
-  bottom: 0;
-  left: 0;
-  right: 0;
-  height: 50%;
-  background: linear-gradient(to top, rgba(44, 24, 16, 0.8), transparent);
-  pointer-events: none;
-  z-index: 1;
-}
 
 /* ==========================================
    Custom Scrollbar
    ========================================== */
 
 ::-webkit-scrollbar {
-  width: 8px;
-  height: 8px;
+  width: 6px;
+  height: 6px;
 }
 
 ::-webkit-scrollbar-track {
-  background: transparent;
+  background: #F3F4F6;
 }
 
 ::-webkit-scrollbar-thumb {
-  background: linear-gradient(to bottom, var(--primary), var(--accent));
-  border-radius: 4px;
+  background: #9CA3AF;
+  border-radius: 3px;
 }
 
 ::-webkit-scrollbar-thumb:hover {
-  background: linear-gradient(to bottom, var(--gradient-start), var(--gradient-end));
+  background: #6B7280;
 }
 
 * {
   scrollbar-width: thin;
-  scrollbar-color: var(--primary) transparent;
+  scrollbar-color: #9CA3AF #F3F4F6;
 }
 
 /* ==========================================
-   Utility Classes
+   Button Styles — Flat, No Gradients
    ========================================== */
 
-.text-gradient {
-  background: linear-gradient(135deg, var(--gradient-start), var(--gradient-mid), var(--gradient-end));
-  -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
-  background-clip: text;
-}
-
-.bg-gradient-primary {
-  background: linear-gradient(135deg, var(--gradient-start), var(--gradient-mid), var(--gradient-end));
-}
-
-.bg-mesh {
-  background-color: var(--background);
-  background-image:
-    radial-gradient(at 40% 20%, rgba(93, 64, 55, 0.08) 0px, transparent 50%),
-    radial-gradient(at 80% 0%, rgba(139, 105, 20, 0.08) 0px, transparent 50%),
-    radial-gradient(at 0% 50%, rgba(212, 165, 116, 0.06) 0px, transparent 50%),
-    radial-gradient(at 80% 50%, rgba(196, 149, 106, 0.05) 0px, transparent 50%),
-    radial-gradient(at 0% 100%, rgba(93, 64, 55, 0.08) 0px, transparent 50%);
-}
-
-/* Hover effects */
-.hover-lift {
-  transition: transform 0.3s ease, box-shadow 0.3s ease;
-}
-
-.hover-lift:hover {
-  transform: translateY(-4px);
-  box-shadow: 0 12px 40px -12px rgba(93, 64, 55, 0.2);
-}
-
-.hover-glow:hover {
-  box-shadow: 0 0 30px rgba(212, 165, 116, 0.3);
-}
-
-/* Focus styles */
-.focus-ring:focus {
-  outline: none;
-  ring: 2px;
-  ring-offset: 2px;
-  ring-color: var(--ring);
-}
-
-/* Card hover effects */
-.card-interactive {
-  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-}
-
-.card-interactive:hover {
-  transform: translateY(-2px);
-  box-shadow: 0 20px 40px -20px rgba(93, 64, 55, 0.15);
-}
-
-/* Button styles */
 .btn-primary {
-  @apply px-6 py-3 bg-gradient-to-r from-[#5D4037] via-[#4E342E] to-[#5D4037]
-         text-white font-semibold rounded-xl
-         hover:from-[#4E342E] hover:via-[#3E2723] hover:to-[#4E342E]
-         transform hover:scale-[1.02] active:scale-[0.98]
-         transition-all duration-300 shadow-lg hover:shadow-xl
-         disabled:opacity-50 disabled:cursor-not-allowed disabled:transform-none;
+  @apply px-6 py-3 bg-slate-800
+         text-white font-semibold rounded-lg
+         transition-colors duration-150
+         disabled:opacity-50 disabled:cursor-not-allowed;
 }
 
 .btn-secondary {
-  @apply px-6 py-3 bg-white dark:bg-[#161a1d]
-         text-[#5D4037] dark:text-[#f5f3f4] font-semibold rounded-xl
-         border-2 border-[#DCC5B2] dark:border-[#3d4951]
-         hover:border-[#D4A574] hover:text-[#3E2723] dark:hover:text-white
-         transform hover:scale-[1.02] active:scale-[0.98]
-         transition-all duration-300;
+  @apply px-6 py-3 bg-white
+         text-gray-900 font-semibold rounded-lg
+         border border-gray-200
+         transition-colors duration-150;
 }
 
 .btn-ghost {
-  @apply px-4 py-2 text-[#6B5744] dark:text-[#b1a7a6] font-medium rounded-lg
-         hover:bg-[#F5EDE4] dark:hover:bg-[#161a1d]
-         transition-all duration-200;
+  @apply px-4 py-2 text-gray-600 font-medium rounded-lg
+         transition-colors duration-150;
 }
 
 /* Input styles */
 .input-primary {
   @apply w-full px-4 py-3
-         bg-[#FAF7F3] dark:bg-[#161a1d]/50
-         border-2 border-[#DCC5B2] dark:border-[#3d4951]
-         rounded-xl
-         focus:outline-none focus:ring-2 focus:ring-[#D4A574] dark:focus:ring-[#e5383b] focus:border-transparent
-         text-[#2C1810] dark:text-white
-         placeholder-[#8B7355] dark:placeholder-[#b1a7a6]
-         transition-all duration-200;
+         bg-white
+         border border-gray-200
+         rounded-lg
+         focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent
+         text-gray-900
+         placeholder-gray-400
+         transition-colors duration-150;
 }
 
 /* ==========================================
-   Page Transition
+   Professional Table Styles
    ========================================== */
 
-.page-enter {
-  opacity: 0;
-  transform: translateY(10px);
+table {
+  border-collapse: separate;
+  border-spacing: 0;
+  width: 100%;
 }
 
-.page-enter-active {
-  opacity: 1;
-  transform: translateY(0);
-  transition: opacity 300ms ease-out, transform 300ms ease-out;
+table thead th {
+  background: #1E293B !important;
+  color: #FFFFFF !important;
+  font-weight: 600;
+  font-size: 0.78rem;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  padding: 0.75rem 1rem;
+  border-bottom: 2px solid #334155;
+  white-space: nowrap;
 }
 
-.page-exit {
-  opacity: 1;
+table thead th:first-child {
+  border-top-left-radius: 0.5rem;
 }
 
-.page-exit-active {
-  opacity: 0;
-  transition: opacity 200ms ease-in;
+table thead th:last-child {
+  border-top-right-radius: 0.5rem;
+}
+
+table tbody tr:nth-child(even) {
+  background-color: #F9FAFB;
+}
+
+table tbody tr:nth-child(odd) {
+  background-color: #FFFFFF;
+}
+
+table tbody td {
+  padding: 0.65rem 1rem;
+  color: #1F2937;
+  font-size: 0.875rem;
+  border-bottom: 1px solid #E5E7EB;
+}
+
+table tbody tr:last-child td {
+  border-bottom: none;
+}
+
+table tbody tr:last-child td:first-child {
+  border-bottom-left-radius: 0.5rem;
+}
+
+table tbody tr:last-child td:last-child {
+  border-bottom-right-radius: 0.5rem;
+}
+
+/* Dark mode overrides — force light */
+.dark table thead th {
+  background: #1E293B !important;
+  color: #FFFFFF !important;
+  border-bottom-color: #334155;
+}
+
+.dark table tbody tr:nth-child(even) {
+  background-color: #F9FAFB;
+}
+
+.dark table tbody tr:nth-child(odd) {
+  background-color: #FFFFFF;
+}
+
+.dark table tbody td {
+  color: #1F2937;
+  border-bottom-color: #E5E7EB;
+}
+
+.dark .bg-\[\#161a1d\],
+.dark .bg-\[\#0b090a\],
+.dark .bg-\[\#1a1a2e\] {
+  background-color: #FFFFFF !important;
+}
+
+.dark .border-\[\#3d4951\],
+.dark .border-white\/10 {
+  border-color: #E5E7EB !important;
+}
+
+/* ==========================================
+   Professional Card Styles — Clean, Flat
+   ========================================== */
+
+.dashboard-card {
+  background: #FFFFFF;
+  border: 1px solid #E5E7EB;
+  border-radius: 0.5rem;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.06);
+}
+
+.table-wrapper {
+  background: #FFFFFF;
+  border: 1px solid #E5E7EB;
+  border-radius: 0.5rem;
+  overflow: hidden;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.06);
+}
+
+/* Status badge styles */
+.badge-success {
+  background: #ecfdf5;
+  color: #065f46;
+  border: 1px solid #a7f3d0;
+}
+
+.badge-warning {
+  background: #fffbeb;
+  color: #92400e;
+  border: 1px solid #fde68a;
+}
+
+.badge-error {
+  background: #fef2f2;
+  color: #991b1b;
+  border: 1px solid #fecaca;
+}
+
+.badge-info {
+  background: #EFF6FF;
+  color: #1E40AF;
+  border: 1px solid #BFDBFE;
 }

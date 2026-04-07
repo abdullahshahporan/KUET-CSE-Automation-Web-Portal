@@ -73,10 +73,10 @@ export default function TermUpgradeStats({
                 <stat.icon className={`w-5 h-5 ${stat.color}`} />
               </div>
               <div>
-                <p className="text-xl font-bold text-[#5D4E37] dark:text-white">
+                <p className="text-xl font-bold text-gray-700 dark:text-white">
                   {stat.value}
                 </p>
-                <p className="text-xs text-[#8B7355] dark:text-white/50">
+                <p className="text-xs text-gray-400 dark:text-white/50">
                   {stat.label}
                 </p>
               </div>

@@ -30,21 +30,21 @@ export default function NoticesPage() {
           {data.news.map((n, i) => (
             <motion.div key={n.id} initial={{ opacity: 0, x: -20 }} whileInView={{ opacity: 1, x: 0 }}
               viewport={{ once: true }} transition={{ delay: i * 0.05 }}
-              className="bg-white rounded-xl p-5 border border-[#E8DDD1] hover:shadow-warm hover:-translate-y-0.5 transition-all flex items-start gap-4">
-              <div className="w-12 h-12 rounded-xl bg-[#5D4037]/10 flex items-center justify-center flex-shrink-0">
-                <Calendar className="w-5 h-5 text-[#5D4037]" />
+              className="bg-white rounded-xl p-5 border border-gray-200 hover:shadow-warm hover:-translate-y-0.5 transition-all flex items-start gap-4">
+              <div className="w-12 h-12 rounded-xl bg-gray-600/10 flex items-center justify-center flex-shrink-0">
+                <Calendar className="w-5 h-5 text-gray-600" />
               </div>
               <div className="flex-1 min-w-0">
                 <div className="flex items-center gap-2 mb-1">
-                  <span className="px-2 py-0.5 bg-[#D4A574]/20 text-[#5D4037] text-xs font-bold rounded-full">{n.category}</span>
+                  <span className="px-2 py-0.5 bg-[#D4A574]/20 text-gray-600 text-xs font-bold rounded-full">{n.category}</span>
                   {n.published_at && (
-                    <span className="text-xs text-[#8B7355]">
+                    <span className="text-xs text-gray-400">
                       {new Date(n.published_at).toLocaleDateString('en-US', { day: '2-digit', month: 'short', year: 'numeric' })}
                     </span>
                   )}
                 </div>
-                <h3 className="font-bold text-[#2C1810]">{n.title}</h3>
-                {n.excerpt && <p className="text-[#6B5744] text-sm mt-1 line-clamp-2">{n.excerpt}</p>}
+                <h3 className="font-bold text-gray-900">{n.title}</h3>
+                {n.excerpt && <p className="text-gray-500 text-sm mt-1 line-clamp-2">{n.excerpt}</p>}
               </div>
             </motion.div>
           ))}

@@ -103,8 +103,8 @@ export default function TVViewerPage({ onMenuChange }: { onMenuChange?: (id: str
     return (
       <div className="h-full flex items-center justify-center p-12">
         <div className="flex flex-col items-center gap-3">
-          <Monitor className="w-10 h-10 text-[#D9A299] dark:text-[#ba181b] animate-pulse" />
-          <p className="text-[#8B7355] dark:text-[#b1a7a6]">Loading TV devices...</p>
+          <Monitor className="w-10 h-10 text-indigo-500 dark:text-red-600 animate-pulse" />
+          <p className="text-gray-400 dark:text-[#b1a7a6]">Loading TV devices...</p>
         </div>
       </div>
     );
@@ -113,20 +113,20 @@ export default function TVViewerPage({ onMenuChange }: { onMenuChange?: (id: str
   return (
     <div className="h-full flex flex-col">
       {/* Header with device selector */}
-      <SpotlightCard className="rounded-2xl border border-[#DCC5B2] dark:border-[#3d4951] bg-[#FAF7F3] dark:bg-transparent p-4 mb-4 flex-shrink-0" spotlightColor="rgba(217, 162, 153, 0.2)">
+      <SpotlightCard className="rounded-2xl border border-gray-200 dark:border-[#3d4951] bg-white dark:bg-transparent p-4 mb-4 flex-shrink-0" spotlightColor="rgba(217, 162, 153, 0.2)">
         <div className="flex items-center justify-between gap-4">
           <div className="flex items-center gap-3">
             <motion.button
               whileHover={{ scale: 1.05 }}
               whileTap={{ scale: 0.95 }}
               onClick={() => onMenuChange?.('tv-display')}
-              className="p-2 rounded-lg border border-[#DCC5B2] dark:border-[#3d4951] text-[#5D4E37] dark:text-[#d3d3d3] hover:bg-[#F0E4D3] dark:hover:bg-[#0b090a] transition-colors"
+              className="p-2 rounded-lg border border-gray-200 dark:border-[#3d4951] text-gray-700 dark:text-[#d3d3d3] hover:bg-gray-50 dark:hover:bg-[#0b090a] transition-colors"
             >
               <ArrowLeft className="w-5 h-5" />
             </motion.button>
             <div>
-              <h1 className="text-xl font-bold text-[#5D4E37] dark:text-white">TV Viewer</h1>
-              <p className="text-xs text-[#8B7355] dark:text-[#b1a7a6]">Preview what each TV screen displays</p>
+              <h1 className="text-xl font-bold text-gray-700 dark:text-white">TV Viewer</h1>
+              <p className="text-xs text-gray-400 dark:text-[#b1a7a6]">Preview what each TV screen displays</p>
             </div>
           </div>
 
@@ -141,13 +141,13 @@ export default function TVViewerPage({ onMenuChange }: { onMenuChange?: (id: str
                 className={`flex items-center gap-2 px-4 py-2.5 rounded-lg text-sm font-medium transition-all ${
                   selectedTarget === device.name
                     ? 'bg-gradient-to-r from-[#D9A299] to-[#DCC5B2] dark:from-[#ba181b] dark:to-[#e5383b] text-white shadow-md'
-                    : 'border border-[#DCC5B2] dark:border-[#3d4951] text-[#8B7355] dark:text-[#b1a7a6] hover:bg-[#F0E4D3] dark:hover:bg-[#0b090a]'
+                    : 'border border-gray-200 dark:border-[#3d4951] text-gray-400 dark:text-[#b1a7a6] hover:bg-gray-50 dark:hover:bg-[#0b090a]'
                 }`}
               >
                 <Tv className="w-4 h-4" />
                 <span>{device.name}</span>
                 {device.label && (
-                  <span className={`text-xs ${selectedTarget === device.name ? 'text-white/70' : 'text-[#8B7355] dark:text-[#b1a7a6]/60'}`}>
+                  <span className={`text-xs ${selectedTarget === device.name ? 'text-white/70' : 'text-gray-400 dark:text-[#b1a7a6]/60'}`}>
                     ({device.label})
                   </span>
                 )}
@@ -159,14 +159,14 @@ export default function TVViewerPage({ onMenuChange }: { onMenuChange?: (id: str
 
       {/* TV Preview area */}
       {selectedTarget ? (
-        <div className="flex-1 min-h-0 rounded-2xl overflow-hidden border border-[#DCC5B2] dark:border-[#3d4951] shadow-xl">
+        <div className="flex-1 min-h-0 rounded-2xl overflow-hidden border border-gray-200 dark:border-[#3d4951] shadow-xl">
           <TVPreview target={selectedTarget} showRoomSchedule={devices.find(d => d.name === selectedTarget)?.show_room_schedule ?? true} />
         </div>
       ) : (
         <div className="flex-1 flex items-center justify-center">
           <div className="text-center">
-            <Tv className="w-16 h-16 text-[#8B7355] dark:text-[#b1a7a6]/40 mx-auto mb-4" />
-            <p className="text-[#8B7355] dark:text-[#b1a7a6]">No TV devices configured. Add devices in TV Display → TV Devices tab.</p>
+            <Tv className="w-16 h-16 text-gray-400 dark:text-[#b1a7a6]/40 mx-auto mb-4" />
+            <p className="text-gray-400 dark:text-[#b1a7a6]">No TV devices configured. Add devices in TV Display → TV Devices tab.</p>
           </div>
         </div>
       )}

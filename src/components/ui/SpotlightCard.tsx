@@ -1,11 +1,4 @@
-'use client';
-
-import React, { useRef, useState } from 'react';
-
-interface Position {
-  x: number;
-  y: number;
-}
+import React from 'react';
 
 interface SpotlightCardProps extends React.PropsWithChildren {
   className?: string;
@@ -15,55 +8,9 @@ interface SpotlightCardProps extends React.PropsWithChildren {
 const SpotlightCard: React.FC<SpotlightCardProps> = ({
   children,
   className = '',
-  spotlightColor = 'rgba(217, 162, 153, 0.35)'
 }) => {
-  const divRef = useRef<HTMLDivElement>(null);
-  const [isFocused, setIsFocused] = useState<boolean>(false);
-  const [position, setPosition] = useState<Position>({ x: 0, y: 0 });
-  const [opacity, setOpacity] = useState<number>(0);
-
-  const handleMouseMove: React.MouseEventHandler<HTMLDivElement> = e => {
-    if (!divRef.current || isFocused) return;
-
-    const rect = divRef.current.getBoundingClientRect();
-    setPosition({ x: e.clientX - rect.left, y: e.clientY - rect.top });
-  };
-
-  const handleFocus = () => {
-    setIsFocused(true);
-    setOpacity(0.6);
-  };
-
-  const handleBlur = () => {
-    setIsFocused(false);
-    setOpacity(0);
-  };
-
-  const handleMouseEnter = () => {
-    setOpacity(0.6);
-  };
-
-  const handleMouseLeave = () => {
-    setOpacity(0);
-  };
-
   return (
-    <div
-      ref={divRef}
-      onMouseMove={handleMouseMove}
-      onFocus={handleFocus}
-      onBlur={handleBlur}
-      onMouseEnter={handleMouseEnter}
-      onMouseLeave={handleMouseLeave}
-      className={`relative rounded-2xl border border-[#DCC5B2] dark:border-[#3d4951] bg-white dark:bg-[#161a1d] overflow-hidden p-6 transition-all duration-300 hover:border-[#D9A299] dark:hover:border-[#ba181b]/60 hover:shadow-lg dark:hover:shadow-[#ba181b]/10 hover:shadow-[#D9A299]/20 ${className}`}
-    >
-      <div
-        className="pointer-events-none absolute inset-0 transition-opacity duration-500 ease-in-out"
-        style={{
-          opacity,
-          background: `radial-gradient(circle at ${position.x}px ${position.y}px, ${spotlightColor}, transparent 80%)`
-        }}
-      />
+    <div className={`rounded-lg border border-gray-200 bg-white p-6 ${className}`}>
       {children}
     </div>
   );

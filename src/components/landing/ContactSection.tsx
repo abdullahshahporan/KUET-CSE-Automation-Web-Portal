@@ -29,7 +29,7 @@ const ContactSection: React.FC<ContactSectionProps> = ({ backgroundImagePath, em
     <div className="relative z-10 max-w-4xl mx-auto px-6 md:px-8 text-center">
       <Reveal>
         <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-white/10 backdrop-blur-md border border-white/20 mb-6">
-          <Mail className="w-4 h-4 text-[#D4A574]" />
+          <Mail className="w-4 h-4 text-gray-400" />
           <span className="text-sm text-white/90 font-medium">Get in Touch</span>
         </div>
         <h2 className="text-3xl md:text-4xl lg:text-5xl font-bold text-white mb-4">
@@ -41,8 +41,8 @@ const ContactSection: React.FC<ContactSectionProps> = ({ backgroundImagePath, em
         <div className="flex flex-col sm:flex-row justify-center gap-4">
           <Link
             href="/contact"
-            className="inline-flex items-center justify-center gap-2 px-8 py-4 bg-[#D4A574] text-[#2C1810] font-semibold rounded-full
-              hover:bg-[#C4956A] transition-all hover:shadow-lg hover:shadow-[#D4A574]/30 hover:scale-105 active:scale-95"
+            className="inline-flex items-center justify-center gap-2 px-8 py-4 bg-[#D4A574] text-gray-900 font-semibold rounded-full
+              hover:bg-gray-300 transition-all hover:shadow-lg hover:shadow-[#D4A574]/30 hover:scale-105 active:scale-95"
           >
             <Mail className="w-5 h-5" /> Contact Us
           </Link>

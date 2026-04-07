@@ -29,9 +29,9 @@ const PillButton: React.FC<PillButtonProps> = ({
   const baseStyles = 'relative inline-flex items-center justify-center font-medium transition-all duration-300 rounded-full overflow-hidden backdrop-blur-md';
   
   const variantStyles = {
-    primary: 'bg-[#D9A299]/40 text-white hover:bg-[#D9A299]/50 hover:shadow-[0_0_25px_rgba(217,162,153,0.4)] border border-[#D9A299]/50',
-    secondary: 'bg-[#DCC5B2]/30 text-white hover:bg-[#DCC5B2]/40 hover:shadow-[0_0_25px_rgba(220,197,178,0.4)] border border-[#DCC5B2]/50',
-    outline: 'bg-white/5 border border-[#D9A299]/50 text-[#D9A299] hover:bg-[#D9A299]/20 hover:shadow-[0_0_20px_rgba(217,162,153,0.3)]',
+    primary: 'bg-indigo-100/40 text-white hover:bg-indigo-100/50 hover:shadow-[0_0_25px_rgba(217,162,153,0.4)] border border-[#D9A299]/50',
+    secondary: 'bg-[#DCC5B2]/30 text-white hover:bg-[#DCC5B2]/40 hover:shadow-[0_0_25px_rgba(220,197,178,0.4)] border border-gray-200/50',
+    outline: 'bg-white/5 border border-[#D9A299]/50 text-indigo-500 hover:bg-indigo-100/20 hover:shadow-[0_0_20px_rgba(217,162,153,0.3)]',
     ghost: 'bg-white/5 border border-white/15 text-white/90 hover:bg-white/10 hover:border-white/25'
   };
 

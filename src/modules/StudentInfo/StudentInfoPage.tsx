@@ -59,7 +59,7 @@ export default function StudentInfoPage() {
   const getSessionColor = (session: string) => {
     const year = parseInt(session);
     const colors = [
-      'bg-[#ba181b]/20 text-[#e5383b] border border-[#ba181b]/30',
+      'bg-red-600/20 text-[#e5383b] border border-red-400/30',
       'bg-[#d3d3d3]/20 text-[#d3d3d3] border border-[#d3d3d3]/30',
       'bg-emerald-500/20 text-emerald-400 border border-emerald-500/30',
       'bg-amber-500/20 text-amber-400 border border-amber-500/30',
@@ -130,19 +130,19 @@ export default function StudentInfoPage() {
         className="flex flex-col md:flex-row md:items-center justify-between gap-4"
       >
         <div>
-          <h1 className="text-2xl font-bold text-[#5D4E37] dark:text-white">Student Directory</h1>
-          <p className="text-[#8B7355] dark:text-[#b1a7a6] mt-1">View all enrolled students</p>
+          <h1 className="text-2xl font-bold text-gray-700 dark:text-white">Student Directory</h1>
+          <p className="text-gray-400 dark:text-[#b1a7a6] mt-1">View all enrolled students</p>
         </div>
         
         <div className="flex items-center gap-3">
           <button
             onClick={() => setShowUpload(true)}
-            className="px-4 py-2 border border-[#DCC5B2] dark:border-[#3d4951] text-[#5D4E37] dark:text-[#b1a7a6] rounded-lg transition-all flex items-center gap-2 hover:bg-[#F0E4D3] dark:hover:bg-[#3d4951]/30 text-sm"
+            className="px-4 py-2 border border-gray-200 dark:border-[#3d4951] text-gray-700 dark:text-[#b1a7a6] rounded-lg transition-all flex items-center gap-2 hover:bg-gray-50 dark:hover:bg-[#3d4951]/30 text-sm"
           >
             <Upload className="w-4 h-4" />
             Upload CSV
           </button>
-          <div className="flex items-center gap-2 text-sm text-[#8B7355] dark:text-[#b1a7a6]">
+          <div className="flex items-center gap-2 text-sm text-gray-400 dark:text-[#b1a7a6]">
             <UserCog className="w-4 h-4" />
             <span>{filteredStudents.length} students</span>
           </div>
@@ -162,13 +162,13 @@ export default function StudentInfoPage() {
             placeholder="Search by name, roll, or email..."
             value={searchTerm}
             onChange={(e) => setSearchTerm(e.target.value)}
-            className="w-full px-4 py-2 border border-[#DCC5B2] dark:border-[#3d4951] rounded-lg bg-[#FAF7F3] dark:bg-[#161a1d] text-[#5D4E37] dark:text-white placeholder:text-[#8B7355] dark:placeholder:text-white/40 focus:border-[#D9A299] dark:focus:border-[#ba181b] focus:outline-none focus:ring-1 focus:ring-[#D9A299] dark:focus:ring-[#ba181b]"
+            className="w-full px-4 py-2 border border-gray-200 dark:border-[#3d4951] rounded-lg bg-white dark:bg-[#161a1d] text-gray-700 dark:text-white placeholder:text-gray-400 dark:placeholder:text-white/40 focus:border-indigo-400 dark:focus:border-red-400 focus:outline-none focus:ring-1 focus:ring-indigo-300 dark:focus:ring-red-400"
           />
         </div>
         <select
           value={filterSession}
           onChange={(e) => setFilterSession(e.target.value)}
-          className="px-4 py-2 border border-[#DCC5B2] dark:border-[#3d4951] rounded-lg bg-[#FAF7F3] dark:bg-[#161a1d] text-[#5D4E37] dark:text-white focus:border-[#D9A299] dark:focus:border-[#ba181b] focus:outline-none"
+          className="px-4 py-2 border border-gray-200 dark:border-[#3d4951] rounded-lg bg-white dark:bg-[#161a1d] text-gray-700 dark:text-white focus:border-indigo-400 dark:focus:border-red-400 focus:outline-none"
         >
           <option value="all">All Sessions</option>
           {uniqueSessions.map(session => (
@@ -178,7 +178,7 @@ export default function StudentInfoPage() {
         <select
           value={filterTerm}
           onChange={(e) => setFilterTerm(e.target.value)}
-          className="px-4 py-2 border border-[#DCC5B2] dark:border-[#3d4951] rounded-lg bg-[#FAF7F3] dark:bg-[#161a1d] text-[#5D4E37] dark:text-white focus:border-[#D9A299] dark:focus:border-[#ba181b] focus:outline-none"
+          className="px-4 py-2 border border-gray-200 dark:border-[#3d4951] rounded-lg bg-white dark:bg-[#161a1d] text-gray-700 dark:text-white focus:border-indigo-400 dark:focus:border-red-400 focus:outline-none"
         >
           <option value="all">All Terms</option>
           {uniqueTerms.map(term => (
@@ -190,8 +190,8 @@ export default function StudentInfoPage() {
       {/* Student Grid */}
       {loading && students.length === 0 ? (
         <div className="flex items-center justify-center py-12">
-          <Loader2 className="w-8 h-8 animate-spin text-[#D9A299] dark:text-[#ba181b]" />
-          <span className="ml-3 text-[#8B7355] dark:text-[#b1a7a6]">Loading students...</span>
+          <Loader2 className="w-8 h-8 animate-spin text-indigo-500 dark:text-red-600" />
+          <span className="ml-3 text-gray-400 dark:text-[#b1a7a6]">Loading students...</span>
         </div>
       ) : filteredStudents.length === 0 ? (
         <motion.div
@@ -200,7 +200,7 @@ export default function StudentInfoPage() {
           className="text-center py-12"
         >
           <GraduationCap className="w-16 h-16 mx-auto text-[#DCC5B2] dark:text-white/20 mb-4" />
-          <p className="text-[#8B7355] dark:text-[#b1a7a6]">
+          <p className="text-gray-400 dark:text-[#b1a7a6]">
             {searchTerm || filterSession !== 'all' || filterTerm !== 'all' 
               ? 'No students match your filters' 
               : 'No students found. Add students to get started!'}
@@ -225,10 +225,10 @@ export default function StudentInfoPage() {
                   <div className="flex items-center gap-3">
                     <div className="w-1.5 h-8 rounded-full bg-gradient-to-b from-[#D9A299] to-[#DCC5B2]" />
                     <div>
-                      <h2 className="text-lg font-bold text-[#5D4E37] dark:text-white">
+                      <h2 className="text-lg font-bold text-gray-700 dark:text-white">
                         {group.label}
                       </h2>
-                      <p className="text-xs text-[#8B7355] dark:text-[#b1a7a6]">
+                      <p className="text-xs text-gray-400 dark:text-[#b1a7a6]">
                         {group.students.length} student{group.students.length !== 1 ? 's' : ''}
                       </p>
                     </div>
@@ -250,7 +250,7 @@ export default function StudentInfoPage() {
                       transition={{ delay: index * 0.03 }}
                     >
                       <SpotlightCard 
-                        className="h-full bg-[#FAF7F3] dark:bg-transparent border border-[#DCC5B2] dark:border-transparent" 
+                        className="h-full bg-white dark:bg-transparent border border-gray-200 dark:border-transparent" 
                         spotlightColor="rgba(217, 162, 153, 0.2)"
                       >
                         <div className="p-6 space-y-4">
@@ -261,10 +261,10 @@ export default function StudentInfoPage() {
                                 {student.full_name.charAt(0).toUpperCase()}
                               </div>
                               <div>
-                                <h3 className="font-semibold text-[#5D4E37] dark:text-white">
+                                <h3 className="font-semibold text-gray-700 dark:text-white">
                                   {student.full_name}
                                 </h3>
-                                <p className="text-sm text-[#8B7355] dark:text-[#b1a7a6]">
+                                <p className="text-sm text-gray-400 dark:text-[#b1a7a6]">
                                   Roll: {student.roll_no}
                                 </p>
                               </div>
@@ -279,11 +279,11 @@ export default function StudentInfoPage() {
 
                           {/* Contact Info */}
                           <div className="space-y-2">
-                            <div className="flex items-center gap-2 text-sm text-[#8B7355] dark:text-[#b1a7a6]">
+                            <div className="flex items-center gap-2 text-sm text-gray-400 dark:text-[#b1a7a6]">
                               <Mail className="w-4 h-4 flex-shrink-0" />
                               <span className="truncate">{student.profile.email}</span>
                             </div>
-                            <div className="flex items-center gap-2 text-sm text-[#8B7355] dark:text-[#b1a7a6]">
+                            <div className="flex items-center gap-2 text-sm text-gray-400 dark:text-[#b1a7a6]">
                               <Phone className="w-4 h-4 flex-shrink-0" />
                               <span>{student.phone}</span>
                             </div>
@@ -295,14 +295,14 @@ export default function StudentInfoPage() {
                               <Calendar className="w-3 h-3 inline mr-1" />
                               Session {student.session}
                             </span>
-                            <span className="px-2.5 py-1 bg-[#5D4E37]/10 dark:bg-[#3d4951]/30 text-[#5D4E37] dark:text-white text-xs rounded-full">
+                            <span className="px-2.5 py-1 bg-[#5D4E37]/10 dark:bg-[#3d4951]/30 text-gray-700 dark:text-white text-xs rounded-full">
                               <GraduationCap className="w-3 h-3 inline mr-1" />
                               {getTermLabel(student.term)}
                             </span>
                           </div>
 
                           {/* Actions */}
-                          <div className="pt-4 border-t border-[#DCC5B2]/50 dark:border-[#3d4951]/50">
+                          <div className="pt-4 border-t border-gray-200/50 dark:border-[#3d4951]/50">
                             <button
                               onClick={() => handleDelete(student.user_id)}
                               disabled={loading}
@@ -325,7 +325,7 @@ export default function StudentInfoPage() {
                   <div className="flex justify-center pt-2">
                     <button
                       onClick={() => toggleTerm(group.term)}
-                      className="px-6 py-2.5 text-sm font-medium rounded-full border border-[#DCC5B2] dark:border-[#3d4951] text-[#5D4E37] dark:text-[#b1a7a6] hover:bg-[#F0E4D3] dark:hover:bg-[#3d4951]/30 transition-all flex items-center gap-2"
+                      className="px-6 py-2.5 text-sm font-medium rounded-full border border-gray-200 dark:border-[#3d4951] text-gray-700 dark:text-[#b1a7a6] hover:bg-gray-50 dark:hover:bg-[#3d4951]/30 transition-all flex items-center gap-2"
                     >
                       {isExpanded ? (
                         <>

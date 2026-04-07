@@ -214,9 +214,9 @@ export async function GET(request: NextRequest) {
     if (error) throw error;
 
     // For each room, get the count of attendance submissions
-    const rooms = data || [];
+    const rooms = (data || []) as unknown as Record<string, unknown>[];
     if (rooms.length > 0) {
-      const roomIds = rooms.map((r: { id: string }) => r.id);
+      const roomIds = rooms.map((r) => r.id as string);
       const { data: logCounts } = await supabase
         .from('geo_attendance_logs')
         .select('geo_room_id')
@@ -229,7 +229,7 @@ export async function GET(request: NextRequest) {
       }
 
       for (const room of rooms) {
-        (room as Record<string, unknown>).submission_count = countMap.get(room.id) || 0;
+        room.submission_count = countMap.get(room.id as string) || 0;
       }
     }
 

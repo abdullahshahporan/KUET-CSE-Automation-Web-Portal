@@ -31,27 +31,27 @@ export default function NewsPage() {
           {data.news.map((n, i) => (
             <motion.div key={n.id} initial={{ opacity: 0, y: 30 }} whileInView={{ opacity: 1, y: 0 }}
               viewport={{ once: true }} transition={{ delay: i * 0.08 }}
-              className={`group bg-white rounded-2xl overflow-hidden border border-[#E8DDD1] hover:shadow-warm-lg hover:-translate-y-1 transition-all duration-300 ${
+              className={`group bg-white rounded-2xl overflow-hidden border border-gray-200 hover:shadow-warm-lg hover:-translate-y-1 transition-all duration-300 ${
                 i === 0 ? 'md:col-span-2 lg:col-span-2 md:row-span-2' : ''
               }`}>
               {n.image_path && (
                 <div className="relative overflow-hidden">
                   <img src={getImageUrl(n.image_path)} alt={n.title}
                     className={`w-full object-cover transition-transform duration-700 group-hover:scale-110 ${i === 0 ? 'h-64 md:h-80' : 'h-48'}`} />
-                  <div className="absolute inset-0 bg-[#5D4037]/15 group-hover:bg-[#5D4037]/5 transition-all" />
+                  <div className="absolute inset-0 bg-gray-600/15 group-hover:bg-gray-700/5 transition-all" />
                   <div className="absolute bottom-0 inset-x-0 h-1/2 bg-gradient-to-t from-[#161a1d]/60 to-transparent" />
-                  <span className="absolute top-3 left-3 px-3 py-1 bg-[#D4A574] text-[#2C1810] text-xs font-bold rounded-full">{n.category}</span>
+                  <span className="absolute top-3 left-3 px-3 py-1 bg-[#D4A574] text-gray-900 text-xs font-bold rounded-full">{n.category}</span>
                 </div>
               )}
               <div className="p-5">
                 {n.published_at && (
-                  <p className="text-xs text-[#8B7355] mb-2">
+                  <p className="text-xs text-gray-400 mb-2">
                     {new Date(n.published_at).toLocaleDateString('en-US', { day: '2-digit', month: 'short', year: 'numeric' })}
                   </p>
                 )}
-                <h3 className={`font-bold text-[#2C1810] mb-2 group-hover:text-[#5D4037] ${i === 0 ? 'text-xl' : 'text-base'}`}>{n.title}</h3>
-                {n.excerpt && <p className="text-[#6B5744] text-sm line-clamp-3">{n.excerpt}</p>}
-                {n.body && i === 0 && <p className="text-[#6B5744] text-sm mt-3 line-clamp-4">{n.body}</p>}
+                <h3 className={`font-bold text-gray-900 mb-2 group-hover:text-gray-600 ${i === 0 ? 'text-xl' : 'text-base'}`}>{n.title}</h3>
+                {n.excerpt && <p className="text-gray-500 text-sm line-clamp-3">{n.excerpt}</p>}
+                {n.body && i === 0 && <p className="text-gray-500 text-sm mt-3 line-clamp-4">{n.body}</p>}
               </div>
             </motion.div>
           ))}

@@ -62,7 +62,7 @@ export default function CourseStudentsTab() {
   if (loadingCourses) {
     return (
       <div className="flex justify-center py-12">
-        <Loader2 className="w-6 h-6 animate-spin text-[#8B7355] dark:text-[#b1a7a6]" />
+        <Loader2 className="w-6 h-6 animate-spin text-gray-400 dark:text-[#b1a7a6]" />
       </div>
     );
   }
@@ -77,19 +77,19 @@ export default function CourseStudentsTab() {
     return (
       <div className="space-y-6">
         <div>
-          <h2 className="text-xl font-bold text-[#2C1810] dark:text-white">Course Students</h2>
-          <p className="text-sm text-[#8B7355] dark:text-[#b1a7a6] mt-1">View students by course, organized by term</p>
+          <h2 className="text-xl font-bold text-gray-900 dark:text-white">Course Students</h2>
+          <p className="text-sm text-gray-400 dark:text-[#b1a7a6] mt-1">View students by course, organized by term</p>
         </div>
 
         {courses.length === 0 ? (
-          <div className="bg-white dark:bg-[#161a1d] rounded-xl border border-[#E8DDD1] dark:border-[#3d4951]/50 p-8 text-center">
+          <div className="bg-white dark:bg-[#161a1d] rounded-xl border border-gray-200 dark:border-[#3d4951]/50 p-8 text-center">
             <Users className="w-10 h-10 mx-auto text-[#DCC5B2] dark:text-[#3d4951] mb-3" />
-            <p className="text-[#8B7355] dark:text-[#b1a7a6]">No courses assigned yet.</p>
+            <p className="text-gray-400 dark:text-[#b1a7a6]">No courses assigned yet.</p>
           </div>
         ) : (
           sortedTerms.map(term => (
             <div key={term}>
-              <h3 className="text-sm font-semibold text-[#5D4037] dark:text-[#e5383b] mb-3 uppercase tracking-wider">
+              <h3 className="text-sm font-semibold text-gray-600 dark:text-[#e5383b] mb-3 uppercase tracking-wider">
                 Term {term}
               </h3>
               <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3">
@@ -97,23 +97,23 @@ export default function CourseStudentsTab() {
                   <button
                     key={c.offering_id}
                     onClick={() => selectCourse(c)}
-                    className="bg-white dark:bg-[#161a1d] rounded-xl border border-[#E8DDD1] dark:border-[#3d4951]/50 p-4 text-left hover:border-[#5D4037] dark:hover:border-[#ba181b] transition-colors"
+                    className="bg-white dark:bg-[#161a1d] rounded-xl border border-gray-200 dark:border-[#3d4951]/50 p-4 text-left hover:border-gray-300 dark:hover:border-red-400 transition-colors"
                   >
                     <div className="flex items-center gap-3">
-                      <div className="w-9 h-9 rounded-lg bg-[#5D4037]/10 dark:bg-[#ba181b]/20 flex items-center justify-center">
-                        <GraduationCap className="w-4 h-4 text-[#5D4037] dark:text-[#e5383b]" />
+                      <div className="w-9 h-9 rounded-lg bg-gray-600/10 dark:bg-red-600/20 flex items-center justify-center">
+                        <GraduationCap className="w-4 h-4 text-gray-600 dark:text-[#e5383b]" />
                       </div>
                       <div>
-                        <p className="font-bold text-[#2C1810] dark:text-white text-sm">{c.course_code}</p>
-                        <p className="text-xs text-[#8B7355] dark:text-[#b1a7a6] line-clamp-1">{c.course_title}</p>
+                        <p className="font-bold text-gray-900 dark:text-white text-sm">{c.course_code}</p>
+                        <p className="text-xs text-gray-400 dark:text-[#b1a7a6] line-clamp-1">{c.course_title}</p>
                       </div>
                     </div>
                     <div className="mt-2 flex gap-2">
-                      <span className="text-xs px-2 py-0.5 rounded-full bg-[#F0E4D3] dark:bg-[#0b090a] text-[#5D4E37] dark:text-[#b1a7a6]">{c.course_type}</span>
+                      <span className="text-xs px-2 py-0.5 rounded-full bg-gray-50 dark:bg-[#0b090a] text-gray-700 dark:text-[#b1a7a6]">{c.course_type}</span>
                       {c.section && (
-                        <span className="text-xs px-2 py-0.5 rounded-full bg-[#F0E4D3] dark:bg-[#0b090a] text-[#5D4E37] dark:text-[#b1a7a6]">Sec {c.section}</span>
+                        <span className="text-xs px-2 py-0.5 rounded-full bg-gray-50 dark:bg-[#0b090a] text-gray-700 dark:text-[#b1a7a6]">Sec {c.section}</span>
                       )}
-                      <span className="text-xs px-2 py-0.5 rounded-full bg-[#F0E4D3] dark:bg-[#0b090a] text-[#5D4E37] dark:text-[#b1a7a6]">{c.credit} cr</span>
+                      <span className="text-xs px-2 py-0.5 rounded-full bg-gray-50 dark:bg-[#0b090a] text-gray-700 dark:text-[#b1a7a6]">{c.credit} cr</span>
                     </div>
                   </button>
                 ))}
@@ -130,10 +130,10 @@ export default function CourseStudentsTab() {
     <div className="space-y-6">
       <div className="flex items-center justify-between">
         <div>
-          <h2 className="text-xl font-bold text-[#2C1810] dark:text-white">
+          <h2 className="text-xl font-bold text-gray-900 dark:text-white">
             {selectedCourse.course_code} — Students
           </h2>
-          <p className="text-sm text-[#8B7355] dark:text-[#b1a7a6] mt-1">
+          <p className="text-sm text-gray-400 dark:text-[#b1a7a6] mt-1">
             {selectedCourse.course_title} &middot; Term {selectedCourse.term}
             {selectedCourse.section ? ` &middot; Sec ${selectedCourse.section}` : ''}
           </p>
@@ -142,7 +142,7 @@ export default function CourseStudentsTab() {
           {students.length > 0 && (
             <button
               onClick={handleExportCSV}
-              className="px-3 py-2 text-xs border border-[#DCC5B2] dark:border-[#3d4951] text-[#5D4E37] dark:text-[#b1a7a6] rounded-lg hover:bg-[#F0E4D3] dark:hover:bg-[#3d4951]/30 transition-colors flex items-center gap-1"
+              className="px-3 py-2 text-xs border border-gray-200 dark:border-[#3d4951] text-gray-700 dark:text-[#b1a7a6] rounded-lg hover:bg-gray-50 dark:hover:bg-[#3d4951]/30 transition-colors flex items-center gap-1"
             >
               <Download className="w-3 h-3" />
               Export CSV
@@ -150,7 +150,7 @@ export default function CourseStudentsTab() {
           )}
           <button
             onClick={() => { setSelectedCourse(null); setStudents([]); }}
-            className="px-4 py-2 border border-[#DCC5B2] dark:border-[#3d4951] text-[#5D4E37] dark:text-[#b1a7a6] rounded-lg text-sm hover:bg-[#F0E4D3] dark:hover:bg-[#3d4951]/30 transition-colors"
+            className="px-4 py-2 border border-gray-200 dark:border-[#3d4951] text-gray-700 dark:text-[#b1a7a6] rounded-lg text-sm hover:bg-gray-50 dark:hover:bg-[#3d4951]/30 transition-colors"
           >
             Back to Courses
           </button>
@@ -159,41 +159,41 @@ export default function CourseStudentsTab() {
 
       {loadingStudents ? (
         <div className="flex justify-center py-12">
-          <Loader2 className="w-6 h-6 animate-spin text-[#8B7355] dark:text-[#b1a7a6]" />
+          <Loader2 className="w-6 h-6 animate-spin text-gray-400 dark:text-[#b1a7a6]" />
         </div>
       ) : students.length === 0 ? (
-        <div className="bg-white dark:bg-[#161a1d] rounded-xl border border-[#E8DDD1] dark:border-[#3d4951]/50 p-8 text-center">
+        <div className="bg-white dark:bg-[#161a1d] rounded-xl border border-gray-200 dark:border-[#3d4951]/50 p-8 text-center">
           <Users className="w-10 h-10 mx-auto text-[#DCC5B2] dark:text-[#3d4951] mb-3" />
-          <p className="text-[#8B7355] dark:text-[#b1a7a6]">No students found for this course.</p>
+          <p className="text-gray-400 dark:text-[#b1a7a6]">No students found for this course.</p>
         </div>
       ) : (
-        <div className="bg-white dark:bg-[#161a1d] rounded-xl border border-[#E8DDD1] dark:border-[#3d4951]/50 overflow-hidden">
-          <div className="px-4 py-3 bg-[#F5EDE4] dark:bg-[#0b090a] border-b border-[#E8DDD1] dark:border-[#3d4951]/50">
-            <span className="text-sm font-medium text-[#5D4E37] dark:text-white">
+        <div className="bg-white dark:bg-[#161a1d] rounded-xl border border-gray-200 dark:border-[#3d4951]/50 overflow-hidden">
+          <div className="px-4 py-3 bg-gray-50 dark:bg-[#0b090a] border-b border-gray-200 dark:border-[#3d4951]/50">
+            <span className="text-sm font-medium text-gray-700 dark:text-white">
               {students.length} student{students.length !== 1 ? 's' : ''} enrolled
             </span>
           </div>
           <div className="overflow-x-auto">
             <table className="w-full text-sm">
-              <thead className="bg-[#FAF7F3] dark:bg-[#0b090a]/50">
+              <thead className="bg-white dark:bg-[#0b090a]/50">
                 <tr>
-                  <th className="p-3 text-left text-xs font-medium text-[#8B7355] dark:text-[#b1a7a6]">#</th>
-                  <th className="p-3 text-left text-xs font-medium text-[#8B7355] dark:text-[#b1a7a6]">Roll</th>
-                  <th className="p-3 text-left text-xs font-medium text-[#8B7355] dark:text-[#b1a7a6]">Name</th>
-                  <th className="p-3 text-left text-xs font-medium text-[#8B7355] dark:text-[#b1a7a6]">Email</th>
-                  <th className="p-3 text-left text-xs font-medium text-[#8B7355] dark:text-[#b1a7a6]">Phone</th>
-                  <th className="p-3 text-left text-xs font-medium text-[#8B7355] dark:text-[#b1a7a6]">Section</th>
+                  <th className="p-3 text-left text-xs font-medium text-gray-400 dark:text-[#b1a7a6]">#</th>
+                  <th className="p-3 text-left text-xs font-medium text-gray-400 dark:text-[#b1a7a6]">Roll</th>
+                  <th className="p-3 text-left text-xs font-medium text-gray-400 dark:text-[#b1a7a6]">Name</th>
+                  <th className="p-3 text-left text-xs font-medium text-gray-400 dark:text-[#b1a7a6]">Email</th>
+                  <th className="p-3 text-left text-xs font-medium text-gray-400 dark:text-[#b1a7a6]">Phone</th>
+                  <th className="p-3 text-left text-xs font-medium text-gray-400 dark:text-[#b1a7a6]">Section</th>
                 </tr>
               </thead>
               <tbody className="divide-y divide-[#E8DDD1] dark:divide-[#3d4951]/50">
                 {students.map((s, i) => (
-                  <tr key={s.roll_no} className="hover:bg-[#F5EDE4] dark:hover:bg-[#0b090a]/30 transition-colors">
-                    <td className="p-3 text-[#8B7355] dark:text-[#b1a7a6]">{i + 1}</td>
-                    <td className="p-3 font-medium text-[#2C1810] dark:text-white">{s.roll_no}</td>
-                    <td className="p-3 text-[#2C1810] dark:text-white">{s.full_name}</td>
-                    <td className="p-3 text-[#6B5744] dark:text-[#b1a7a6]">{s.email}</td>
-                    <td className="p-3 text-[#6B5744] dark:text-[#b1a7a6]">{s.phone}</td>
-                    <td className="p-3 text-[#6B5744] dark:text-[#b1a7a6]">{s.section || '—'}</td>
+                  <tr key={s.roll_no} className="hover:bg-gray-50 dark:hover:bg-[#0b090a]/30 transition-colors">
+                    <td className="p-3 text-gray-400 dark:text-[#b1a7a6]">{i + 1}</td>
+                    <td className="p-3 font-medium text-gray-900 dark:text-white">{s.roll_no}</td>
+                    <td className="p-3 text-gray-900 dark:text-white">{s.full_name}</td>
+                    <td className="p-3 text-gray-500 dark:text-[#b1a7a6]">{s.email}</td>
+                    <td className="p-3 text-gray-500 dark:text-[#b1a7a6]">{s.phone}</td>
+                    <td className="p-3 text-gray-500 dark:text-[#b1a7a6]">{s.section || '—'}</td>
                   </tr>
                 ))}
               </tbody>

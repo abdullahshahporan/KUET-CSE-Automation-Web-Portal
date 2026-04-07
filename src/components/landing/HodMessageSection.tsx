@@ -18,7 +18,7 @@ interface HodMessageSectionProps {
 }
 
 const HodMessageSection: React.FC<HodMessageSectionProps> = ({ hodMessage, sectionTitle }) => (
-  <section className="py-20 md:py-28 bg-[#FDF8F3]">
+  <section className="py-20 md:py-28 bg-white">
     <div className="max-w-7xl mx-auto px-6 md:px-8">
       <Reveal>
         <SectionHeading title={sectionTitle || 'Message from the Head'} />
@@ -33,7 +33,7 @@ const HodMessageSection: React.FC<HodMessageSectionProps> = ({ hodMessage, secti
                 alt={hodMessage.name}
                 className="w-full aspect-[3/4] object-cover"
               />
-              <div className="absolute inset-0 bg-[#5D4037]/10" />
+              <div className="absolute inset-0 bg-gray-600/10" />
               <div className="absolute inset-0" style={{ boxShadow: 'inset 0 0 60px rgba(93,64,55,0.25)' }} />
               <div className="absolute bottom-0 inset-x-0 h-1/3 bg-gradient-to-t from-[#161a1d]/70 to-transparent" />
               <div className="absolute bottom-4 left-4 right-4 z-10">
@@ -44,13 +44,13 @@ const HodMessageSection: React.FC<HodMessageSectionProps> = ({ hodMessage, secti
           </div>
           {/* Quote */}
           <div className="md:col-span-3">
-            <Quote className="w-10 h-10 text-[#D4A574] mb-4 opacity-60" />
-            <p className="text-xl md:text-2xl leading-relaxed text-[#2C1810]/90 italic mb-6">
+            <Quote className="w-10 h-10 text-gray-400 mb-4 opacity-60" />
+            <p className="text-xl md:text-2xl leading-relaxed text-gray-900/90 italic mb-6">
               &ldquo;{hodMessage.message}&rdquo;
             </p>
             <div className="w-16 h-0.5 bg-[#D4A574] mb-4" />
-            <p className="font-bold text-[#5D4037]">{hodMessage.name}</p>
-            <p className="text-[#8B7355] text-sm">{hodMessage.designation}</p>
+            <p className="font-bold text-gray-600">{hodMessage.name}</p>
+            <p className="text-gray-400 text-sm">{hodMessage.designation}</p>
           </div>
         </div>
       </Reveal>

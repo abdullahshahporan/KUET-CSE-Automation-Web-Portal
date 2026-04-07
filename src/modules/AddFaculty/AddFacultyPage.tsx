@@ -99,7 +99,7 @@ export default function AddFacultyPage() {
 
   const getDesignationColor = (designation: TeacherDesignation) => {
     switch (designation) {
-      case 'PROFESSOR': return 'bg-[#ba181b]/20 text-[#e5383b] border border-[#ba181b]/30';
+      case 'PROFESSOR': return 'bg-red-600/20 text-[#e5383b] border border-red-400/30';
       case 'ASSOCIATE_PROFESSOR': return 'bg-[#d3d3d3]/20 text-[#d3d3d3] border border-[#d3d3d3]/30';
       case 'ASSISTANT_PROFESSOR': return 'bg-emerald-500/20 text-emerald-400 border border-emerald-500/30';
       case 'LECTURER': return 'bg-amber-500/20 text-amber-400 border border-amber-500/30';
@@ -151,8 +151,8 @@ export default function AddFacultyPage() {
         className="flex items-center justify-between"
       >
         <div>
-          <h1 className="text-2xl font-bold text-[#5D4E37] dark:text-white">Faculty Management</h1>
-          <p className="text-[#8B7355] dark:text-[#b1a7a6] mt-1">Add and manage faculty members</p>
+          <h1 className="text-2xl font-bold text-gray-700 dark:text-white">Faculty Management</h1>
+          <p className="text-gray-400 dark:text-[#b1a7a6] mt-1">Add and manage faculty members</p>
         </div>
         <motion.button
           whileHover={{ scale: 1.05 }}
@@ -173,52 +173,52 @@ export default function AddFacultyPage() {
           <motion.div 
             initial={{ opacity: 0, scale: 0.95 }}
             animate={{ opacity: 1, scale: 1 }}
-            className="bg-[#FAF7F3] dark:bg-[#161a1d] border border-[#DCC5B2] dark:border-[#3d4951] rounded-2xl p-6 w-full max-w-lg mx-4"
+            className="bg-white dark:bg-[#161a1d] border border-gray-200 dark:border-[#3d4951] rounded-2xl p-6 w-full max-w-lg mx-4"
           >
-            <h2 className="text-xl font-bold text-[#5D4E37] dark:text-white mb-4">Add New Faculty</h2>
+            <h2 className="text-xl font-bold text-gray-700 dark:text-white mb-4">Add New Faculty</h2>
             <form onSubmit={handleSubmit} className="space-y-4">
               <div>
-                <label className="block text-sm font-medium text-[#5D4E37] dark:text-[#d3d3d3] mb-1">Full Name</label>
+                <label className="block text-sm font-medium text-gray-700 dark:text-[#d3d3d3] mb-1">Full Name</label>
                 <input
                   type="text"
                   value={formData.full_name}
                   onChange={(e) => setFormData({ ...formData, full_name: e.target.value })}
-                  className="w-full px-4 py-2 border border-[#DCC5B2] dark:border-[#3d4951] rounded-lg bg-[#FAF7F3] dark:bg-[#0b090a] text-[#5D4E37] dark:text-white focus:border-[#D9A299] dark:focus:border-[#ba181b] focus:outline-none focus:ring-1 focus:ring-[#D9A299] dark:focus:ring-[#ba181b]"
+                  className="w-full px-4 py-2 border border-gray-200 dark:border-[#3d4951] rounded-lg bg-white dark:bg-[#0b090a] text-gray-700 dark:text-white focus:border-indigo-400 dark:focus:border-red-400 focus:outline-none focus:ring-1 focus:ring-indigo-300 dark:focus:ring-red-400"
                   required
                   disabled={loading}
                 />
               </div>
               <div>
-                <label className="block text-sm font-medium text-[#5D4E37] dark:text-[#d3d3d3] mb-1">Email</label>
+                <label className="block text-sm font-medium text-gray-700 dark:text-[#d3d3d3] mb-1">Email</label>
                 <input
                   type="email"
                   value={formData.email}
                   onChange={(e) => setFormData({ ...formData, email: e.target.value })}
                   placeholder="name@cse.kuet.ac.bd"
-                  className="w-full px-4 py-2 border border-[#DCC5B2] dark:border-[#3d4951] rounded-lg bg-[#FAF7F3] dark:bg-[#0b090a] text-[#5D4E37] dark:text-white placeholder:text-[#8B7355] dark:placeholder:text-white/40 focus:border-[#D9A299] dark:focus:border-[#ba181b] focus:outline-none focus:ring-1 focus:ring-[#D9A299] dark:focus:ring-[#ba181b]"
+                  className="w-full px-4 py-2 border border-gray-200 dark:border-[#3d4951] rounded-lg bg-white dark:bg-[#0b090a] text-gray-700 dark:text-white placeholder:text-gray-400 dark:placeholder:text-white/40 focus:border-indigo-400 dark:focus:border-red-400 focus:outline-none focus:ring-1 focus:ring-indigo-300 dark:focus:ring-red-400"
                   required
                   disabled={loading}
                 />
               </div>
               <div className="grid grid-cols-2 gap-4">
                 <div>
-                  <label className="block text-sm font-medium text-[#5D4E37] dark:text-[#d3d3d3] mb-1">Phone</label>
+                  <label className="block text-sm font-medium text-gray-700 dark:text-[#d3d3d3] mb-1">Phone</label>
                   <input
                     type="tel"
                     value={formData.phone}
                     onChange={(e) => setFormData({ ...formData, phone: e.target.value })}
                     placeholder="e.g., 01712345678"
-                    className="w-full px-4 py-2 border border-[#DCC5B2] dark:border-[#3d4951] rounded-lg bg-[#FAF7F3] dark:bg-[#0b090a] text-[#5D4E37] dark:text-white placeholder:text-[#8B7355] dark:placeholder:text-white/40 focus:border-[#D9A299] dark:focus:border-[#ba181b] focus:outline-none focus:ring-1 focus:ring-[#D9A299] dark:focus:ring-[#ba181b]"
+                    className="w-full px-4 py-2 border border-gray-200 dark:border-[#3d4951] rounded-lg bg-white dark:bg-[#0b090a] text-gray-700 dark:text-white placeholder:text-gray-400 dark:placeholder:text-white/40 focus:border-indigo-400 dark:focus:border-red-400 focus:outline-none focus:ring-1 focus:ring-indigo-300 dark:focus:ring-red-400"
                     disabled={loading}
                     required
                   />
                 </div>
                 <div>
-                  <label className="block text-sm font-medium text-[#5D4E37] dark:text-[#d3d3d3] mb-1">Designation</label>
+                  <label className="block text-sm font-medium text-gray-700 dark:text-[#d3d3d3] mb-1">Designation</label>
                   <select
                     value={formData.designation}
                     onChange={(e) => setFormData({ ...formData, designation: e.target.value as TeacherDesignation })}
-                    className="w-full px-4 py-2 border border-[#DCC5B2] dark:border-[#3d4951] rounded-lg bg-[#FAF7F3] dark:bg-[#0b090a] text-[#5D4E37] dark:text-white focus:border-[#D9A299] dark:focus:border-[#ba181b] focus:outline-none focus:ring-1 focus:ring-[#D9A299] dark:focus:ring-[#ba181b]"
+                    className="w-full px-4 py-2 border border-gray-200 dark:border-[#3d4951] rounded-lg bg-white dark:bg-[#0b090a] text-gray-700 dark:text-white focus:border-indigo-400 dark:focus:border-red-400 focus:outline-none focus:ring-1 focus:ring-indigo-300 dark:focus:ring-red-400"
                     disabled={loading}
                   >
                     <option value="PROFESSOR">Professor</option>
@@ -234,7 +234,7 @@ export default function AddFacultyPage() {
                   whileTap={{ scale: 0.98 }}
                   type="button"
                   onClick={() => setShowForm(false)}
-                  className="flex-1 px-4 py-2 border border-[#DCC5B2] dark:border-[#3d4951] rounded-full text-[#5D4E37] dark:text-[#d3d3d3] hover:bg-[#F0E4D3] dark:hover:bg-[#0b090a]"
+                  className="flex-1 px-4 py-2 border border-gray-200 dark:border-[#3d4951] rounded-full text-gray-700 dark:text-[#d3d3d3] hover:bg-gray-50 dark:hover:bg-[#0b090a]"
                   disabled={loading}
                 >
                   Cancel
@@ -272,7 +272,7 @@ export default function AddFacultyPage() {
           placeholder="Search by name or email..."
           value={searchTerm}
           onChange={(e) => setSearchTerm(e.target.value)}
-          className="w-full max-w-md px-4 py-2 border border-[#DCC5B2] dark:border-[#3d4951] rounded-lg bg-[#FAF7F3] dark:bg-[#161a1d] text-[#5D4E37] dark:text-white placeholder:text-[#8B7355] dark:placeholder:text-white/40 focus:border-[#D9A299] dark:focus:border-[#ba181b] focus:outline-none focus:ring-1 focus:ring-[#D9A299] dark:focus:ring-[#ba181b]"
+          className="w-full max-w-md px-4 py-2 border border-gray-200 dark:border-[#3d4951] rounded-lg bg-white dark:bg-[#161a1d] text-gray-700 dark:text-white placeholder:text-gray-400 dark:placeholder:text-white/40 focus:border-indigo-400 dark:focus:border-red-400 focus:outline-none focus:ring-1 focus:ring-indigo-300 dark:focus:ring-red-400"
         />
       </motion.div>
 
@@ -286,23 +286,23 @@ export default function AddFacultyPage() {
           <div className="overflow-x-auto">
             {loading && teachers.length === 0 ? (
               <div className="flex items-center justify-center py-12">
-                <Loader2 className="w-8 h-8 animate-spin text-[#D9A299] dark:text-[#ba181b]" />
+                <Loader2 className="w-8 h-8 animate-spin text-indigo-500 dark:text-red-600" />
               </div>
             ) : filteredTeachers.length === 0 ? (
-              <div className="text-center py-12 text-[#8B7355] dark:text-[#b1a7a6]">
+              <div className="text-center py-12 text-gray-400 dark:text-[#b1a7a6]">
                 No teachers found. Add your first teacher to get started.
               </div>
             ) : (
               <table className="w-full">
-                <thead className="bg-[#F0E4D3] dark:bg-[#0b090a]/50 border-b border-[#DCC5B2] dark:border-[#3d4951]">
+                <thead className="bg-gray-50 dark:bg-[#0b090a]/50 border-b border-gray-200 dark:border-[#3d4951]">
                   <tr>
-                    <th className="px-6 py-4 text-left text-xs font-semibold text-[#5D4E37] dark:text-[#b1a7a6] uppercase">Name</th>
-                    <th className="px-6 py-4 text-left text-xs font-semibold text-[#5D4E37] dark:text-[#b1a7a6] uppercase">Email</th>
-                    <th className="px-6 py-4 text-left text-xs font-semibold text-[#5D4E37] dark:text-[#b1a7a6] uppercase">Phone</th>
-                    <th className="px-6 py-4 text-left text-xs font-semibold text-[#5D4E37] dark:text-[#b1a7a6] uppercase">Designation</th>
-                    <th className="px-6 py-4 text-left text-xs font-semibold text-[#5D4E37] dark:text-[#b1a7a6] uppercase">Teacher ID</th>
-                    <th className="px-6 py-4 text-left text-xs font-semibold text-[#5D4E37] dark:text-[#b1a7a6] uppercase">Status</th>
-                    <th className="px-6 py-4 text-left text-xs font-semibold text-[#5D4E37] dark:text-[#b1a7a6] uppercase">Actions</th>
+                    <th className="px-6 py-4 text-left text-xs font-semibold text-gray-700 dark:text-[#b1a7a6] uppercase">Name</th>
+                    <th className="px-6 py-4 text-left text-xs font-semibold text-gray-700 dark:text-[#b1a7a6] uppercase">Email</th>
+                    <th className="px-6 py-4 text-left text-xs font-semibold text-gray-700 dark:text-[#b1a7a6] uppercase">Phone</th>
+                    <th className="px-6 py-4 text-left text-xs font-semibold text-gray-700 dark:text-[#b1a7a6] uppercase">Designation</th>
+                    <th className="px-6 py-4 text-left text-xs font-semibold text-gray-700 dark:text-[#b1a7a6] uppercase">Teacher ID</th>
+                    <th className="px-6 py-4 text-left text-xs font-semibold text-gray-700 dark:text-[#b1a7a6] uppercase">Status</th>
+                    <th className="px-6 py-4 text-left text-xs font-semibold text-gray-700 dark:text-[#b1a7a6] uppercase">Actions</th>
                   </tr>
                 </thead>
                 <tbody className="divide-y divide-[#DCC5B2]/50 dark:divide-[#3d4951]/50">
@@ -312,24 +312,24 @@ export default function AddFacultyPage() {
                       initial={{ opacity: 0 }}
                       animate={{ opacity: 1 }}
                       transition={{ delay: index * 0.03 }}
-                      className="hover:bg-[#F0E4D3] dark:hover:bg-[#ba181b]/5 transition-colors"
+                      className="hover:bg-gray-50 dark:hover:bg-red-600/5 transition-colors"
                     >
                       <td className="px-6 py-4">
                         <div className="flex items-center gap-3">
                           <div className="w-10 h-10 rounded-full bg-gradient-to-br from-[#D9A299] to-[#DCC5B2] dark:from-[#ba181b] dark:to-[#d3d3d3] flex items-center justify-center text-white font-bold text-sm">
                             {teacher.full_name.split(' ').map(n => n[0]).join('').slice(0, 2)}
                           </div>
-                          <span className="font-medium text-[#5D4E37] dark:text-white">{teacher.full_name}</span>
+                          <span className="font-medium text-gray-700 dark:text-white">{teacher.full_name}</span>
                         </div>
                       </td>
-                      <td className="px-6 py-4 text-[#8B7355] dark:text-[#b1a7a6]">{teacher.profile.email}</td>
-                      <td className="px-6 py-4 text-[#8B7355] dark:text-[#b1a7a6]">{teacher.phone}</td>
+                      <td className="px-6 py-4 text-gray-400 dark:text-[#b1a7a6]">{teacher.profile.email}</td>
+                      <td className="px-6 py-4 text-gray-400 dark:text-[#b1a7a6]">{teacher.phone}</td>
                       <td className="px-6 py-4">
                         <span className={`px-2.5 py-1 rounded-full text-xs font-medium ${getDesignationColor(teacher.designation)}`}>
                           {getDesignationLabel(teacher.designation)}
                         </span>
                       </td>
-                      <td className="px-6 py-4 text-[#8B7355] dark:text-[#b1a7a6] font-mono text-sm">{teacher.teacher_uid}</td>
+                      <td className="px-6 py-4 text-gray-400 dark:text-[#b1a7a6] font-mono text-sm">{teacher.teacher_uid}</td>
                       <td className="px-6 py-4">
                         {teacher.profile.is_active ? (
                           <span className="px-2.5 py-1 rounded-full text-xs font-medium bg-emerald-500/20 text-emerald-400 border border-emerald-500/30">
@@ -343,7 +343,7 @@ export default function AddFacultyPage() {
                       </td>
                       <td className="px-6 py-4">
                         <div className="flex items-center gap-2">
-                          <button className="p-2 text-[#D9A299] dark:text-[#d3d3d3] hover:bg-[#D9A299]/10 dark:hover:bg-[#d3d3d3]/10 rounded-lg transition-colors">
+                          <button className="p-2 text-indigo-500 dark:text-[#d3d3d3] hover:bg-indigo-100/10 dark:hover:bg-[#d3d3d3]/10 rounded-lg transition-colors">
                             <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
                             </svg>

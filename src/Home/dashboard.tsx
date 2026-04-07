@@ -16,11 +16,11 @@ import { CourseInfoPage } from '@/modules/CourseInfo';
 import { CRManagementPage } from '@/modules/CRManagement';
 import { DashboardOverview } from '@/modules/Dashboard';
 import { FacultyInfoPage } from '@/modules/FacultyInfo';
-import { GeoRoomManagementPage } from '@/modules/GeoRoomManagement';
 import { OptionalCourseAllocationPage } from '@/modules/OptionalCourseAllocation';
 import { ResultPage } from '@/modules/Result';
 import { RoomAllocationPage } from '@/modules/RoomAllocation';
 import { SchedulePage } from '@/modules/Schedule';
+import { SettingsPage } from '@/modules/Settings';
 import { AnnouncementTab, ChangePasswordTab, CourseStudentsTab, EditProfileTab, MyScheduleTab, RoomRequestTab, TakeAttendanceTab, TeacherPortalPage, UploadCSVTab } from '@/modules/TeacherPortal';
 import { TermUpgradePage } from '@/modules/TermUpgrade';
 import { TVDisplayPage, TVViewerPage } from '@/modules/TVDisplay';
@@ -44,8 +44,7 @@ const PAGE_REGISTRY: Record<string, PageEntry> = {
   'tv-display':         { render: (onMenuChange) => <TVDisplayPage onMenuChange={onMenuChange} /> },
   'tv-viewer':           { render: (onMenuChange) => <TVViewerPage onMenuChange={onMenuChange} /> },
   'faculty-info':       { render: () => <FacultyInfoPage /> },
-  'room-allocation':    { render: () => <RoomAllocationPage /> },
-  'geo-room-management': { render: () => <GeoRoomManagementPage />, requiredRole: 'admin' },
+  'room-info':          { render: () => <RoomAllocationPage /> },
   'course-info':        { render: () => <CourseInfoPage /> },
   'course-allocation':  { render: () => <CourseAllocationPage /> },
   'class-routine':      { render: () => <ClassRoutinePage /> },
@@ -57,6 +56,7 @@ const PAGE_REGISTRY: Record<string, PageEntry> = {
   'result':             { render: () => <ResultPage /> },
   'teacher-portal':     { render: () => <TeacherPortalPage />,    requiredRole: 'teacher' },
   'website-cms':        { render: () => <WebsiteCMSPage />,       requiredRole: 'admin' },
+  'settings':           { render: (onMenuChange) => <SettingsPage onMenuChange={onMenuChange} /> },
   // Teacher Portal individual tabs (sidebar-driven)
   'tp-upload-csv':      { render: () => <UploadCSVTab />,         requiredRole: 'teacher' },
   'tp-take-attendance': { render: () => <TakeAttendanceTab />,    requiredRole: 'teacher' },
@@ -130,7 +130,7 @@ export default function Dashboard() {
   // ── Loading state ──
   if (isLoading) {
     return (
-      <div className="min-h-screen bg-[#FAF7F3] dark:bg-[#0b090a] flex items-center justify-center transition-colors">
+      <div className="min-h-screen bg-white flex items-center justify-center">
         <motion.div
           initial={{ opacity: 0, scale: 0.9 }}
           animate={{ opacity: 1, scale: 1 }}
@@ -143,7 +143,7 @@ export default function Dashboard() {
             animate={{ y: [0, -14, 0] }}
             transition={{ repeat: Infinity, duration: 2, ease: 'easeInOut' }}
           />
-          <p className="text-[#8B7355] dark:text-[#b1a7a6] font-medium">Loading dashboard...</p>
+          <p className="text-gray-600 font-semibold">Loading dashboard...</p>
         </motion.div>
       </div>
     );
@@ -152,7 +152,7 @@ export default function Dashboard() {
   if (!isAuthenticated) return null;
 
   return (
-    <div className="min-h-screen bg-[#FAF7F3] dark:bg-[#0b090a] transition-colors duration-300">
+    <div className="min-h-screen bg-white">
       <Sidebar
         activeItem={activeMenu}
         onMenuChange={setActiveMenu}
