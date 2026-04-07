@@ -160,7 +160,7 @@ export default function TVViewerPage({ onMenuChange }: { onMenuChange?: (id: str
       {/* TV Preview area */}
       {selectedTarget ? (
         <div className="flex-1 min-h-0 rounded-2xl overflow-hidden border border-gray-200 dark:border-[#3d4951] shadow-xl">
-          <TVPreview target={selectedTarget} showRoomSchedule={devices.find(d => d.name === selectedTarget)?.show_room_schedule ?? true} />
+          <TVPreview key={selectedTarget} target={selectedTarget} showRoomSchedule={devices.find(d => d.name === selectedTarget)?.show_room_schedule ?? true} />
         </div>
       ) : (
         <div className="flex-1 flex items-center justify-center">
@@ -197,15 +197,13 @@ function TVPreview({ target, showRoomSchedule }: { target: string; showRoomSched
   const headlinePrefix = settings.headline_prefix || 'HEADLINES';
   const eventRotationSec = parseInt(settings.event_rotation_sec || '8', 10);
 
-  // Fetch data filtered by target
+  // Fetch data filtered by target — always fetch everything independently of showRoomSchedule
   const fetchData = useCallback(async () => {
     try {
       const todayStr = new Date().toISOString().split('T')[0];
       const [tvData, slots] = await Promise.all([
         fetchTvDisplayDataForTarget(target),
-        showRoomSchedule
-          ? getRoutineSlots(undefined, undefined, undefined, todayStr).catch(() => [] as DBRoutineSlotWithDetails[])
-          : Promise.resolve([] as DBRoutineSlotWithDetails[]),
+        getRoutineSlots(undefined, undefined, undefined, todayStr).catch(() => [] as DBRoutineSlotWithDetails[]),
       ]);
       setAnnouncements(tvData.announcements);
       setTicker(tvData.ticker);
@@ -219,7 +217,7 @@ function TVPreview({ target, showRoomSchedule }: { target: string; showRoomSched
     }
   }, [target]);
 
-  // Re-fetch when target changes
+  // Initial fetch + polling
   useEffect(() => {
     setLoading(true);
     setEventPage(0);
@@ -229,7 +227,7 @@ function TVPreview({ target, showRoomSchedule }: { target: string; showRoomSched
     return () => clearInterval(interval);
   }, [fetchData]);
 
-  // Realtime subscription for this target
+  // Realtime subscription for content tables
   useEffect(() => {
     const channel = cmsSupabase
       .channel(`tv-viewer-${target}`)
@@ -386,8 +384,12 @@ function TVPreview({ target, showRoomSchedule }: { target: string; showRoomSched
                 </motion.div>
               ) : (
                 <div className="h-full flex items-center justify-center rounded-xl"
-                  style={{ background: 'rgba(255,255,255,0.02)', border: `1px solid ${C.border}` }}>
-                  <p className="text-sm" style={{ color: C.textDim }}>No events for {target}</p>
+                  style={{ background: 'rgba(255,255,255,0.04)', border: `1px solid ${C.border}` }}>
+                  <div className="text-center">
+                    <Monitor className="w-10 h-10 mx-auto mb-2" style={{ color: C.textMuted }} />
+                    <p className="text-sm font-medium" style={{ color: C.textMuted }}>No events for {target}</p>
+                    <p className="text-[10px] mt-1" style={{ color: C.textDim }}>Add events from the Events tab</p>
+                  </div>
                 </div>
               )}
             </AnimatePresence>
