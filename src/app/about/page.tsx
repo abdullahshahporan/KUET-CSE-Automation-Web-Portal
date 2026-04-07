@@ -34,43 +34,43 @@ export default function AboutPage() {
         {/* Mission & Vision */}
         <div className="grid md:grid-cols-2 gap-10">
           <motion.div initial={{ opacity: 0, x: -30 }} whileInView={{ opacity: 1, x: 0 }} viewport={{ once: true }}
-            className="bg-white rounded-2xl p-8 border border-[#E8DDD1] shadow-warm">
-            <div className="w-12 h-12 rounded-xl bg-[#5D4037]/10 flex items-center justify-center mb-4">
-              <GraduationCap className="w-6 h-6 text-[#5D4037]" />
+            className="bg-white rounded-2xl p-8 border border-gray-200 shadow-warm">
+            <div className="w-12 h-12 rounded-xl bg-gray-600/10 flex items-center justify-center mb-4">
+              <GraduationCap className="w-6 h-6 text-gray-600" />
             </div>
-            <h2 className="text-2xl font-bold text-[#2C1810] mb-4">Our Mission</h2>
-            <p className="text-[#6B5744] leading-relaxed">{dept['mission'] || 'To produce world-class graduates in Computer Science and Engineering.'}</p>
+            <h2 className="text-2xl font-bold text-gray-900 mb-4">Our Mission</h2>
+            <p className="text-gray-500 leading-relaxed">{dept['mission'] || 'To produce world-class graduates in Computer Science and Engineering.'}</p>
           </motion.div>
           <motion.div initial={{ opacity: 0, x: 30 }} whileInView={{ opacity: 1, x: 0 }} viewport={{ once: true }}
-            className="bg-white rounded-2xl p-8 border border-[#E8DDD1] shadow-warm">
-            <div className="w-12 h-12 rounded-xl bg-[#8B6914]/10 flex items-center justify-center mb-4">
-              <BookOpen className="w-6 h-6 text-[#8B6914]" />
+            className="bg-white rounded-2xl p-8 border border-gray-200 shadow-warm">
+            <div className="w-12 h-12 rounded-xl bg-amber-500/10 flex items-center justify-center mb-4">
+              <BookOpen className="w-6 h-6 text-amber-600" />
             </div>
-            <h2 className="text-2xl font-bold text-[#2C1810] mb-4">Our Vision</h2>
-            <p className="text-[#6B5744] leading-relaxed">{dept['vision'] || 'To be a center of excellence in CSE education and research.'}</p>
+            <h2 className="text-2xl font-bold text-gray-900 mb-4">Our Vision</h2>
+            <p className="text-gray-500 leading-relaxed">{dept['vision'] || 'To be a center of excellence in CSE education and research.'}</p>
           </motion.div>
         </div>
 
         {/* History */}
         <motion.div initial={{ opacity: 0, y: 30 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }}
-          className="bg-[#F5EDE4] rounded-2xl p-8 md:p-12">
+          className="bg-gray-50 rounded-2xl p-8 md:p-12">
           <div className="flex items-center gap-3 mb-6">
-            <Clock className="w-6 h-6 text-[#5D4037]" />
-            <h2 className="text-2xl font-bold text-[#2C1810]">Our History</h2>
+            <Clock className="w-6 h-6 text-gray-600" />
+            <h2 className="text-2xl font-bold text-gray-900">Our History</h2>
           </div>
-          <p className="text-[#6B5744] leading-relaxed text-lg">
+          <p className="text-gray-500 leading-relaxed text-lg">
             {dept['history'] || 'The Department of Computer Science and Engineering (CSE) at KUET was established in 2003.'}
           </p>
           {dept['established_year'] && (
-            <div className="mt-6 inline-flex items-center gap-2 px-4 py-2 bg-[#5D4037] text-white rounded-full text-sm font-semibold">
+            <div className="mt-6 inline-flex items-center gap-2 px-4 py-2 bg-gray-600 text-white rounded-full text-sm font-semibold">
               Established {dept['established_year']}
             </div>
           )}
         </motion.div>
 
         {/* Department Info */}
-        <div className="bg-white rounded-2xl p-8 border border-[#E8DDD1]">
-          <h2 className="text-2xl font-bold text-[#2C1810] mb-6">Department Information</h2>
+        <div className="bg-white rounded-2xl p-8 border border-gray-200">
+          <h2 className="text-2xl font-bold text-gray-900 mb-6">Department Information</h2>
           <div className="grid sm:grid-cols-2 gap-4">
             {[
               { label: 'Department', value: dept['department_name'] },
@@ -80,9 +80,9 @@ export default function AboutPage() {
               { label: 'Address', value: dept['address'] },
               { label: 'Established', value: dept['established_year'] },
             ].filter(r => r.value).map((r, i) => (
-              <div key={i} className="p-4 bg-[#FAF7F3] rounded-xl">
-                <p className="text-xs text-[#8B7355] uppercase tracking-wider mb-1">{r.label}</p>
-                <p className="text-[#2C1810] font-medium">{r.value}</p>
+              <div key={i} className="p-4 bg-white rounded-xl">
+                <p className="text-xs text-gray-400 uppercase tracking-wider mb-1">{r.label}</p>
+                <p className="text-gray-900 font-medium">{r.value}</p>
               </div>
             ))}
           </div>

@@ -46,7 +46,7 @@ export default function UploadCSVTab() {
   if (loading) {
     return (
       <div className="flex justify-center py-12">
-        <Loader2 className="w-6 h-6 animate-spin text-[#8B7355] dark:text-[#b1a7a6]" />
+        <Loader2 className="w-6 h-6 animate-spin text-gray-400 dark:text-[#b1a7a6]" />
       </div>
     );
   }
@@ -56,14 +56,14 @@ export default function UploadCSVTab() {
     return (
       <div className="space-y-6">
         <div>
-          <h2 className="text-xl font-bold text-[#2C1810] dark:text-white">Upload CSV</h2>
-          <p className="text-sm text-[#8B7355] dark:text-[#b1a7a6] mt-1">Select a course to upload attendance or marks</p>
+          <h2 className="text-xl font-bold text-gray-900 dark:text-white">Upload CSV</h2>
+          <p className="text-sm text-gray-400 dark:text-[#b1a7a6] mt-1">Select a course to upload attendance or marks</p>
         </div>
 
         {courses.length === 0 ? (
-          <div className="bg-white dark:bg-[#161a1d] rounded-xl border border-[#E8DDD1] dark:border-[#3d4951]/50 p-8 text-center">
+          <div className="bg-white dark:bg-[#161a1d] rounded-xl border border-gray-200 dark:border-[#3d4951]/50 p-8 text-center">
             <GraduationCap className="w-10 h-10 mx-auto text-[#DCC5B2] dark:text-[#3d4951] mb-3" />
-            <p className="text-[#8B7355] dark:text-[#b1a7a6]">No courses assigned yet.</p>
+            <p className="text-gray-400 dark:text-[#b1a7a6]">No courses assigned yet.</p>
           </div>
         ) : (
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
@@ -71,20 +71,20 @@ export default function UploadCSVTab() {
               <button
                 key={c.offering_id}
                 onClick={() => { setSelectedCourse(c); setUploadDone(false); }}
-                className="bg-white dark:bg-[#161a1d] rounded-xl border border-[#E8DDD1] dark:border-[#3d4951]/50 p-5 text-left hover:border-[#5D4037] dark:hover:border-[#ba181b] transition-colors group"
+                className="bg-white dark:bg-[#161a1d] rounded-xl border border-gray-200 dark:border-[#3d4951]/50 p-5 text-left hover:border-gray-300 dark:hover:border-red-400 transition-colors group"
               >
                 <div className="flex items-center gap-3 mb-2">
-                  <div className="w-10 h-10 rounded-lg bg-[#5D4037]/10 dark:bg-[#ba181b]/20 flex items-center justify-center">
-                    <GraduationCap className="w-5 h-5 text-[#5D4037] dark:text-[#e5383b]" />
+                  <div className="w-10 h-10 rounded-lg bg-gray-600/10 dark:bg-red-600/20 flex items-center justify-center">
+                    <GraduationCap className="w-5 h-5 text-gray-600 dark:text-[#e5383b]" />
                   </div>
                   <div>
-                    <p className="font-bold text-[#2C1810] dark:text-white text-sm">{c.course_code}</p>
-                    <p className="text-xs text-[#8B7355] dark:text-[#b1a7a6]">
+                    <p className="font-bold text-gray-900 dark:text-white text-sm">{c.course_code}</p>
+                    <p className="text-xs text-gray-400 dark:text-[#b1a7a6]">
                       {c.term} &middot; {c.course_type}
                     </p>
                   </div>
                 </div>
-                <p className="text-sm text-[#6B5744] dark:text-[#b1a7a6] line-clamp-1">{c.course_title}</p>
+                <p className="text-sm text-gray-500 dark:text-[#b1a7a6] line-clamp-1">{c.course_title}</p>
               </button>
             ))}
           </div>
@@ -101,15 +101,15 @@ export default function UploadCSVTab() {
         <div className="flex items-center gap-3">
           <button
             onClick={() => { setSelectedCourse(null); resetUpload(); }}
-            className="p-2 rounded-lg border border-[#DCC5B2] dark:border-[#3d4951] text-[#5D4E37] dark:text-[#b1a7a6] hover:bg-[#F0E4D3] dark:hover:bg-[#3d4951]/30 transition-colors"
+            className="p-2 rounded-lg border border-gray-200 dark:border-[#3d4951] text-gray-700 dark:text-[#b1a7a6] hover:bg-gray-50 dark:hover:bg-[#3d4951]/30 transition-colors"
           >
             <ArrowLeft className="w-4 h-4" />
           </button>
           <div>
-            <h2 className="text-xl font-bold text-[#2C1810] dark:text-white">
+            <h2 className="text-xl font-bold text-gray-900 dark:text-white">
               Upload CSV — {selectedCourse.course_code}
             </h2>
-            <p className="text-sm text-[#8B7355] dark:text-[#b1a7a6]">
+            <p className="text-sm text-gray-400 dark:text-[#b1a7a6]">
               {selectedCourse.course_title} &middot; Term {selectedCourse.term}
             </p>
           </div>
@@ -117,21 +117,21 @@ export default function UploadCSVTab() {
       </div>
 
       {/* Upload Type Selector */}
-      <div className="bg-white dark:bg-[#161a1d] rounded-xl border border-[#E8DDD1] dark:border-[#3d4951]/50 p-5">
-        <label className="block text-sm font-medium text-[#5D4E37] dark:text-[#b1a7a6] mb-3">What do you want to upload?</label>
+      <div className="bg-white dark:bg-[#161a1d] rounded-xl border border-gray-200 dark:border-[#3d4951]/50 p-5">
+        <label className="block text-sm font-medium text-gray-700 dark:text-[#b1a7a6] mb-3">What do you want to upload?</label>
         <div className="flex gap-3">
           <button
             onClick={() => { setUploadType('attendance'); resetUpload(); }}
             className={`flex-1 flex items-center gap-3 p-4 rounded-xl border-2 transition-all ${
               uploadType === 'attendance'
                 ? 'border-emerald-500 bg-emerald-50 dark:bg-emerald-900/20'
-                : 'border-[#E8DDD1] dark:border-[#3d4951]/50 hover:border-[#DCC5B2] dark:hover:border-[#3d4951]'
+                : 'border-gray-200 dark:border-[#3d4951]/50 hover:border-gray-200 dark:hover:border-[#3d4951]'
             }`}
           >
-            <Upload className={`w-5 h-5 ${uploadType === 'attendance' ? 'text-emerald-600 dark:text-emerald-400' : 'text-[#8B7355] dark:text-[#b1a7a6]'}`} />
+            <Upload className={`w-5 h-5 ${uploadType === 'attendance' ? 'text-emerald-600 dark:text-emerald-400' : 'text-gray-400 dark:text-[#b1a7a6]'}`} />
             <div className="text-left">
-              <p className={`font-medium text-sm ${uploadType === 'attendance' ? 'text-emerald-700 dark:text-emerald-300' : 'text-[#2C1810] dark:text-white'}`}>Attendance</p>
-              <p className="text-xs text-[#8B7355] dark:text-[#b1a7a6]">Roll, Date, Status</p>
+              <p className={`font-medium text-sm ${uploadType === 'attendance' ? 'text-emerald-700 dark:text-emerald-300' : 'text-gray-900 dark:text-white'}`}>Attendance</p>
+              <p className="text-xs text-gray-400 dark:text-[#b1a7a6]">Roll, Date, Status</p>
             </div>
           </button>
           <button
@@ -139,13 +139,13 @@ export default function UploadCSVTab() {
             className={`flex-1 flex items-center gap-3 p-4 rounded-xl border-2 transition-all ${
               uploadType === 'marks'
                 ? 'border-blue-500 bg-blue-50 dark:bg-blue-900/20'
-                : 'border-[#E8DDD1] dark:border-[#3d4951]/50 hover:border-[#DCC5B2] dark:hover:border-[#3d4951]'
+                : 'border-gray-200 dark:border-[#3d4951]/50 hover:border-gray-200 dark:hover:border-[#3d4951]'
             }`}
           >
-            <FileSpreadsheet className={`w-5 h-5 ${uploadType === 'marks' ? 'text-blue-600 dark:text-blue-400' : 'text-[#8B7355] dark:text-[#b1a7a6]'}`} />
+            <FileSpreadsheet className={`w-5 h-5 ${uploadType === 'marks' ? 'text-blue-600 dark:text-blue-400' : 'text-gray-400 dark:text-[#b1a7a6]'}`} />
             <div className="text-left">
-              <p className={`font-medium text-sm ${uploadType === 'marks' ? 'text-blue-700 dark:text-blue-300' : 'text-[#2C1810] dark:text-white'}`}>Exam Marks</p>
-              <p className="text-xs text-[#8B7355] dark:text-[#b1a7a6]">Roll, Exam Type, Marks</p>
+              <p className={`font-medium text-sm ${uploadType === 'marks' ? 'text-blue-700 dark:text-blue-300' : 'text-gray-900 dark:text-white'}`}>Exam Marks</p>
+              <p className="text-xs text-gray-400 dark:text-[#b1a7a6]">Roll, Exam Type, Marks</p>
             </div>
           </button>
         </div>

@@ -195,8 +195,8 @@ export default function FacultyInfoPage() {
         className="flex flex-col md:flex-row md:items-center justify-between gap-4"
       >
         <div>
-          <h1 className="text-2xl font-bold text-[#5D4E37] dark:text-white">Faculty Management</h1>
-          <p className="text-[#8B7355] dark:text-[#b1a7a6] mt-1">View and manage faculty members</p>
+          <h1 className="text-2xl font-bold text-gray-700 dark:text-white">Faculty Management</h1>
+          <p className="text-gray-400 dark:text-[#b1a7a6] mt-1">View and manage faculty members</p>
         </div>
         
         <div className="flex items-center gap-2">
@@ -205,20 +205,20 @@ export default function FacultyInfoPage() {
             whileHover={{ scale: 1.02 }}
             whileTap={{ scale: 0.98 }}
             onClick={() => setShowUpload(true)}
-            className="px-4 py-2 border border-[#DCC5B2] dark:border-[#3d4951] text-[#5D4E37] dark:text-[#b1a7a6] rounded-lg transition-all flex items-center gap-2 hover:bg-[#F0E4D3] dark:hover:bg-[#3d4951]/30"
+            className="px-4 py-2 border border-gray-200 dark:border-[#3d4951] text-gray-700 dark:text-[#b1a7a6] rounded-lg transition-all flex items-center gap-2 hover:bg-gray-50 dark:hover:bg-[#3d4951]/30"
           >
             <Upload className="w-5 h-5" />
             Upload CSV
           </motion.button>
 
           {/* Tab Navigation */}
-          <div className="flex bg-[#F0E4D3] dark:bg-[#161a1d] border border-[#DCC5B2] dark:border-[#3d4951] rounded-full p-1">
+          <div className="flex bg-gray-100 border border-gray-200 rounded-full p-1">
             <button
               onClick={() => setActiveTab('view')}
               className={`px-5 py-2.5 rounded-full text-sm font-medium transition-all flex items-center gap-2 ${
                 activeTab === 'view' 
-                  ? 'bg-[#D9A299] text-white shadow-lg shadow-[#D9A299]/25' 
-                  : 'text-[#8B7355] dark:text-[#b1a7a6] hover:text-[#5D4E37] dark:hover:text-white'
+                  ? 'bg-indigo-600 text-white shadow-lg shadow-indigo-600/25' 
+                  : 'text-gray-500 hover:text-gray-700'
               }`}
             >
               <UserCog className="w-4 h-4" />
@@ -228,8 +228,8 @@ export default function FacultyInfoPage() {
               onClick={() => setActiveTab('add')}
               className={`px-5 py-2.5 rounded-full text-sm font-medium transition-all flex items-center gap-2 ${
                 activeTab === 'add' 
-                  ? 'bg-[#D9A299] text-white shadow-lg shadow-[#D9A299]/25' 
-                  : 'text-[#8B7355] dark:text-[#b1a7a6] hover:text-[#5D4E37] dark:hover:text-white'
+                  ? 'bg-indigo-600 text-white shadow-lg shadow-indigo-600/25' 
+                  : 'text-gray-500 hover:text-gray-700'
               }`}
             >
               <Plus className="w-4 h-4" />
@@ -255,13 +255,13 @@ export default function FacultyInfoPage() {
                 placeholder="Search by name or email..."
                 value={searchTerm}
                 onChange={(e) => setSearchTerm(e.target.value)}
-                className="w-full px-4 py-2 border border-[#DCC5B2] dark:border-[#3d4951] rounded-lg bg-[#FAF7F3] dark:bg-[#161a1d] text-[#5D4E37] dark:text-white placeholder:text-[#8B7355] dark:placeholder:text-white/40 focus:border-[#D9A299] dark:focus:border-[#ba181b] focus:outline-none focus:ring-1 focus:ring-[#D9A299] dark:focus:ring-[#ba181b]"
+                className="w-full px-4 py-2 border border-gray-200 dark:border-[#3d4951] rounded-lg bg-white dark:bg-[#161a1d] text-gray-700 dark:text-white placeholder:text-gray-400 dark:placeholder:text-white/40 focus:border-indigo-400 dark:focus:border-red-400 focus:outline-none focus:ring-1 focus:ring-indigo-300 dark:focus:ring-red-400"
               />
             </div>
             <select
               value={filterDesignation}
               onChange={(e) => setFilterDesignation(e.target.value)}
-              className="px-4 py-2 border border-[#DCC5B2] dark:border-[#3d4951] rounded-lg bg-[#FAF7F3] dark:bg-[#161a1d] text-[#5D4E37] dark:text-white focus:border-[#D9A299] dark:focus:border-[#ba181b] focus:outline-none"
+              className="px-4 py-2 border border-gray-200 dark:border-[#3d4951] rounded-lg bg-white dark:bg-[#161a1d] text-gray-700 dark:text-white focus:border-indigo-400 dark:focus:border-red-400 focus:outline-none"
             >
               <option value="all">All Designations</option>
               <option value="PROFESSOR">Professor</option>
@@ -274,10 +274,10 @@ export default function FacultyInfoPage() {
           {/* Faculty Grid */}
           {loading && teachers.length === 0 ? (
             <div className="flex items-center justify-center py-12">
-              <Loader2 className="w-8 h-8 animate-spin text-[#D9A299] dark:text-[#ba181b]" />
+              <Loader2 className="w-8 h-8 animate-spin text-indigo-500 dark:text-red-600" />
             </div>
           ) : filteredTeachers.length === 0 ? (
-            <div className="text-center py-12 text-[#8B7355] dark:text-[#b1a7a6]">
+            <div className="text-center py-12 text-gray-400 dark:text-[#b1a7a6]">
               No teachers found. {filterDesignation !== 'all' || searchTerm ? 'Try adjusting your filters.' : 'Add your first teacher to get started.'}
             </div>
           ) : (
@@ -312,7 +312,7 @@ export default function FacultyInfoPage() {
                     </div>
                     <div className="flex-1 h-px bg-amber-500/30" />
                   </div>
-                  <p className="text-center text-xs text-[#8B7355] dark:text-amber-500/60 -mt-3">
+                  <p className="text-center text-xs text-gray-400 dark:text-amber-500/60 -mt-3">
                     These teachers cannot be assigned to any course
                   </p>
                   <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 opacity-75">
@@ -341,50 +341,50 @@ export default function FacultyInfoPage() {
           transition={{ delay: 0.1 }}
           className="max-w-2xl mx-auto"
         >
-                <SpotlightCard className="p-6" spotlightColor="rgba(132, 0, 255, 0.15)">
-                  <h2 className="text-xl font-bold text-[#5D4E37] dark:text-white mb-6">Add New Faculty Member</h2>
+                <SpotlightCard className="p-6">
+                  <h2 className="text-xl font-bold text-gray-800 mb-6">Add New Faculty Member</h2>
             <form onSubmit={handleSubmit} className="space-y-4">
               <div>
-                <label className="block text-sm font-medium text-white/70 mb-1">Full Name</label>
+                <label className="block text-sm font-medium text-gray-600 mb-1">Full Name</label>
                 <input
                   type="text"
                   value={formData.full_name}
                   onChange={(e) => setFormData({ ...formData, full_name: e.target.value })}
-                  className="w-full px-4 py-2 border border-[#3d4951] rounded-lg bg-[#0b090a] text-white focus:border-[#ba181b] focus:outline-none focus:ring-1 focus:ring-[#ba181b]"
+                  className="w-full px-4 py-2 border border-gray-200 rounded-lg bg-white text-gray-700 focus:border-indigo-400 focus:outline-none focus:ring-1 focus:ring-indigo-300"
                   required
                   disabled={loading}
                 />
               </div>
               <div>
-                <label className="block text-sm font-medium text-white/70 mb-1">Email</label>
+                <label className="block text-sm font-medium text-gray-600 mb-1">Email</label>
                 <input
                   type="email"
                   value={formData.email}
                   onChange={(e) => setFormData({ ...formData, email: e.target.value })}
                   placeholder="name@cse.kuet.ac.bd"
-                  className="w-full px-4 py-2 border border-[#3d4951] rounded-lg bg-[#0b090a] text-white placeholder:text-white/40 focus:border-[#ba181b] focus:outline-none focus:ring-1 focus:ring-[#ba181b]"
+                  className="w-full px-4 py-2 border border-gray-200 rounded-lg bg-white text-gray-700 placeholder:text-gray-400 focus:border-indigo-400 focus:outline-none focus:ring-1 focus:ring-indigo-300"
                   required
                   disabled={loading}
                 />
               </div>
               <div className="grid grid-cols-2 gap-4">
                 <div>
-                  <label className="block text-sm font-medium text-white/70 mb-1">Phone <span className="text-white/30">(optional)</span></label>
+                  <label className="block text-sm font-medium text-gray-600 mb-1">Phone <span className="text-gray-400">(optional)</span></label>
                   <input
                     type="tel"
                     value={formData.phone}
                     onChange={(e) => setFormData({ ...formData, phone: e.target.value })}
                     placeholder="e.g., 01712345678"
-                    className="w-full px-4 py-2 border border-[#3d4951] rounded-lg bg-[#0b090a] text-white placeholder:text-white/40 focus:border-[#ba181b] focus:outline-none focus:ring-1 focus:ring-[#ba181b]"
+                    className="w-full px-4 py-2 border border-gray-200 rounded-lg bg-white text-gray-700 placeholder:text-gray-400 focus:border-indigo-400 focus:outline-none focus:ring-1 focus:ring-indigo-300"
                     disabled={loading}
                   />
                 </div>
                 <div>
-                  <label className="block text-sm font-medium text-white/70 mb-1">Designation</label>
+                  <label className="block text-sm font-medium text-gray-600 mb-1">Designation</label>
                   <select
                     value={formData.designation}
                     onChange={(e) => setFormData({ ...formData, designation: e.target.value as TeacherDesignation })}
-                    className="w-full px-4 py-2 border border-[#3d4951] rounded-lg bg-[#0b090a] text-white focus:border-[#ba181b] focus:outline-none focus:ring-1 focus:ring-[#ba181b]"
+                    className="w-full px-4 py-2 border border-gray-200 rounded-lg bg-white text-gray-700 focus:border-indigo-400 focus:outline-none focus:ring-1 focus:ring-indigo-300"
                     disabled={loading}
                   >
                     <option value="PROFESSOR">Professor</option>
@@ -400,7 +400,7 @@ export default function FacultyInfoPage() {
                   whileTap={{ scale: 0.98 }}
                   type="button"
                   onClick={() => setFormData({ full_name: '', email: '', phone: '', designation: 'LECTURER' })}
-                  className="flex-1 px-4 py-2 border border-[#3d4951] rounded-full text-white/70 hover:bg-white/5"
+                  className="flex-1 px-4 py-2 border border-gray-200 rounded-full text-gray-600 hover:bg-gray-50"
                   disabled={loading}
                 >
                   Reset
@@ -409,7 +409,7 @@ export default function FacultyInfoPage() {
                   whileHover={{ scale: 1.02 }}
                   whileTap={{ scale: 0.98 }}
                   type="submit"
-                  className="flex-1 px-4 py-2 bg-gradient-to-r from-[#ba181b] to-[#e5383b] text-white rounded-full flex items-center justify-center gap-2"
+                  className="flex-1 px-4 py-2 bg-indigo-600 text-white rounded-full flex items-center justify-center gap-2"
                   disabled={loading}
                 >
                   {loading ? (
@@ -441,41 +441,41 @@ export default function FacultyInfoPage() {
               initial={{ scale: 0.9, opacity: 0 }}
               animate={{ scale: 1, opacity: 1 }}
               exit={{ scale: 0.9, opacity: 0 }}
-              className="bg-[#161a1d] border border-white/10 rounded-2xl p-6 w-full max-w-md shadow-2xl"
+              className="bg-white border border-gray-200 rounded-2xl p-6 w-full max-w-md shadow-2xl"
               onClick={(e) => e.stopPropagation()}
             >
               <div className="flex items-center justify-between mb-6">
-                <h3 className="text-lg font-semibold text-white">Edit Profile</h3>
-                <button onClick={() => setEditingTeacher(null)} className="text-white/50 hover:text-white">
+                <h3 className="text-lg font-semibold text-gray-900">Edit Profile</h3>
+                <button onClick={() => setEditingTeacher(null)} className="text-gray-400 hover:text-gray-600">
                   <X className="w-5 h-5" />
                 </button>
               </div>
 
               <div className="space-y-4">
                 <div>
-                  <label className="block text-sm text-white/60 mb-1">Full Name</label>
+                  <label className="block text-sm text-gray-600 mb-1">Full Name</label>
                   <input
                     type="text"
                     value={editFormData.full_name}
                     onChange={(e) => setEditFormData({ ...editFormData, full_name: e.target.value })}
-                    className="w-full px-4 py-2 rounded-lg bg-white/5 border border-white/10 text-white focus:outline-none focus:ring-2 focus:ring-[#ba181b]/50"
+                    className="w-full px-4 py-2 rounded-lg bg-white border border-gray-200 text-gray-700 focus:outline-none focus:ring-2 focus:ring-indigo-300"
                   />
                 </div>
                 <div>
-                  <label className="block text-sm text-white/60 mb-1">Phone</label>
+                  <label className="block text-sm text-gray-600 mb-1">Phone</label>
                   <input
                     type="text"
                     value={editFormData.phone}
                     onChange={(e) => setEditFormData({ ...editFormData, phone: e.target.value })}
-                    className="w-full px-4 py-2 rounded-lg bg-white/5 border border-white/10 text-white focus:outline-none focus:ring-2 focus:ring-[#ba181b]/50"
+                    className="w-full px-4 py-2 rounded-lg bg-white border border-gray-200 text-gray-700 focus:outline-none focus:ring-2 focus:ring-indigo-300"
                   />
                 </div>
                 <div>
-                  <label className="block text-sm text-white/60 mb-1">Designation</label>
+                  <label className="block text-sm text-gray-600 mb-1">Designation</label>
                   <select
                     value={editFormData.designation}
                     onChange={(e) => setEditFormData({ ...editFormData, designation: e.target.value as TeacherDesignation })}
-                    className="w-full px-4 py-2 rounded-lg bg-white/5 border border-white/10 text-white focus:outline-none focus:ring-2 focus:ring-[#ba181b]/50"
+                    className="w-full px-4 py-2 rounded-lg bg-white border border-gray-200 text-gray-700 focus:outline-none focus:ring-2 focus:ring-indigo-300"
                   >
                     <option value="LECTURER">Lecturer</option>
                     <option value="ASSISTANT_PROFESSOR">Assistant Professor</option>
@@ -488,14 +488,14 @@ export default function FacultyInfoPage() {
               <div className="flex gap-3 mt-6">
                 <button
                   onClick={() => setEditingTeacher(null)}
-                  className="flex-1 px-4 py-2 rounded-full border border-white/20 text-white/70 hover:bg-white/5 transition-colors"
+                  className="flex-1 px-4 py-2 rounded-full border border-gray-200 text-gray-600 hover:bg-gray-50 transition-colors"
                 >
                   Cancel
                 </button>
                 <button
                   onClick={handleUpdateProfile}
                   disabled={loading}
-                  className="flex-1 px-4 py-2 rounded-full bg-gradient-to-r from-[#ba181b] to-[#e5383b] text-white flex items-center justify-center gap-2 disabled:opacity-50"
+                  className="flex-1 px-4 py-2 rounded-full bg-indigo-600 text-white flex items-center justify-center gap-2 disabled:opacity-50"
                 >
                   {loading ? <Loader2 className="w-4 h-4 animate-spin" /> : <Check className="w-4 h-4" />}
                   Save Changes
@@ -520,28 +520,28 @@ export default function FacultyInfoPage() {
               initial={{ scale: 0.9, opacity: 0 }}
               animate={{ scale: 1, opacity: 1 }}
               exit={{ scale: 0.9, opacity: 0 }}
-              className="bg-[#161a1d] border border-white/10 rounded-2xl p-6 w-full max-w-sm shadow-2xl"
+              className="bg-white border border-gray-200 rounded-2xl p-6 w-full max-w-sm shadow-2xl"
               onClick={(e) => e.stopPropagation()}
             >
               <div className="flex items-center justify-between mb-4">
-                <h3 className="text-lg font-semibold text-white">New Password</h3>
+                <h3 className="text-lg font-semibold text-gray-900">New Password</h3>
                 <button
                   onClick={() => setPasswordPopup({ show: false, password: '', teacherName: '' })}
-                  className="text-white/50 hover:text-white"
+                  className="text-gray-400 hover:text-gray-600"
                 >
                   <X className="w-5 h-5" />
                 </button>
               </div>
 
-              <p className="text-white/60 text-sm mb-2">
-                Password for <span className="text-white font-medium">{passwordPopup.teacherName}</span>
+              <p className="text-gray-500 text-sm mb-2">
+                Password for <span className="text-gray-900 font-medium">{passwordPopup.teacherName}</span>
               </p>
 
-              <div className="bg-white/5 border border-white/10 rounded-lg p-4 mb-3 flex items-center justify-between">
-                <span className="font-mono text-2xl tracking-widest text-[#e5383b]">{passwordPopup.password}</span>
+              <div className="bg-gray-50 border border-gray-200 rounded-lg p-4 mb-3 flex items-center justify-between">
+                <span className="font-mono text-2xl tracking-widest text-indigo-600">{passwordPopup.password}</span>
               </div>
 
-              <p className="text-amber-400/80 text-xs mb-4">
+              <p className="text-amber-600 text-xs mb-4">
                 ⚠ This is a NEW password. The old password has been replaced.
               </p>
 
@@ -552,7 +552,7 @@ export default function FacultyInfoPage() {
                   setTimeout(() => setSuccess(null), 2000);
                   setPasswordPopup({ show: false, password: '', teacherName: '' });
                 }}
-                className="w-full px-4 py-2 rounded-full bg-gradient-to-r from-[#ba181b] to-[#e5383b] text-white flex items-center justify-center gap-2"
+                className="w-full px-4 py-2 rounded-full bg-indigo-600 text-white flex items-center justify-center gap-2"
               >
                 <Key className="w-4 h-4" />
                 Copy to Clipboard

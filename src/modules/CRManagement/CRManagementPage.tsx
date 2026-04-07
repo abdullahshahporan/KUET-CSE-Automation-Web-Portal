@@ -114,11 +114,11 @@ export default function CRManagementPage() {
       {/* Header */}
       <div className="flex items-center justify-between">
         <div>
-          <h1 className="text-2xl font-bold text-[#5D4E37] dark:text-white flex items-center gap-3">
+          <h1 className="text-2xl font-bold text-gray-700 dark:text-white flex items-center gap-3">
             <Crown className="w-7 h-7 text-amber-500" />
             CR Management
           </h1>
-          <p className="text-[#8B7355] dark:text-[#b1a7a6] mt-1">
+          <p className="text-gray-400 dark:text-[#b1a7a6] mt-1">
             Designate Class Representatives and manage their room requests
           </p>
         </div>
@@ -141,13 +141,13 @@ export default function CRManagementPage() {
       </AnimatePresence>
 
       {/* Tabs */}
-      <div className="flex gap-1 bg-[#F5EDE4] dark:bg-[#161a1d] p-1 rounded-xl">
+      <div className="flex gap-1 bg-gray-50 dark:bg-[#161a1d] p-1 rounded-xl">
         <button onClick={() => setActiveTab('manage-cr')}
-          className={`flex-1 py-2.5 px-4 rounded-lg text-sm font-medium transition-all ${activeTab === 'manage-cr' ? 'bg-white dark:bg-[#0b090a] text-[#5D4037] dark:text-white shadow-sm' : 'text-[#8B7355] dark:text-[#b1a7a6] hover:text-[#5D4E37] dark:hover:text-white'}`}>
+          className={`flex-1 py-2.5 px-4 rounded-lg text-sm font-medium transition-all ${activeTab === 'manage-cr' ? 'bg-white dark:bg-[#0b090a] text-gray-600 dark:text-white shadow-sm' : 'text-gray-400 dark:text-[#b1a7a6] hover:text-gray-700 dark:hover:text-white'}`}>
           <Crown className="w-4 h-4 inline mr-2" />Manage CRs
         </button>
         <button onClick={() => setActiveTab('room-allocations')}
-          className={`flex-1 py-2.5 px-4 rounded-lg text-sm font-medium transition-all ${activeTab === 'room-allocations' ? 'bg-white dark:bg-[#0b090a] text-[#5D4037] dark:text-white shadow-sm' : 'text-[#8B7355] dark:text-[#b1a7a6] hover:text-[#5D4E37] dark:hover:text-white'}`}>
+          className={`flex-1 py-2.5 px-4 rounded-lg text-sm font-medium transition-all ${activeTab === 'room-allocations' ? 'bg-white dark:bg-[#0b090a] text-gray-600 dark:text-white shadow-sm' : 'text-gray-400 dark:text-[#b1a7a6] hover:text-gray-700 dark:hover:text-white'}`}>
           <Building2 className="w-4 h-4 inline mr-2" />Room Allocations
           {allocations.length > 0 && (
             <span className="ml-2 px-2 py-0.5 text-xs rounded-full bg-emerald-500/20 text-emerald-600 dark:text-emerald-400">
@@ -161,21 +161,21 @@ export default function CRManagementPage() {
       {activeTab === 'manage-cr' && (
         <div className="space-y-6">
           {/* Filters */}
-          <SpotlightCard className="p-4 rounded-xl bg-white dark:bg-[#161a1d] border border-[#E8DDD1] dark:border-[#3d4951]/50">
+          <SpotlightCard className="p-4 rounded-xl bg-white dark:bg-[#161a1d] border border-gray-200 dark:border-[#3d4951]/50">
             <div className="flex flex-wrap gap-3">
               <div className="flex-1 min-w-[200px] relative">
-                <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-[#8B7355] dark:text-[#b1a7a6]" />
+                <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400 dark:text-[#b1a7a6]" />
                 <input type="text" placeholder="Search by name or roll..."
                   value={searchTerm} onChange={e => setSearchTerm(e.target.value)}
-                  className="w-full pl-10 pr-4 py-2.5 rounded-lg bg-[#FAF7F3] dark:bg-[#0b090a] border border-[#E8DDD1] dark:border-[#3d4951] text-[#5D4E37] dark:text-white text-sm focus:outline-none focus:ring-2 focus:ring-[#5D4037]/30 dark:focus:ring-[#ba181b]/30" />
+                  className="w-full pl-10 pr-4 py-2.5 rounded-lg bg-white dark:bg-[#0b090a] border border-gray-200 dark:border-[#3d4951] text-gray-700 dark:text-white text-sm focus:outline-none focus:ring-2 focus:ring-indigo-400/30 dark:focus:ring-red-400/30" />
               </div>
               <select value={filterTerm} onChange={e => setFilterTerm(e.target.value)}
-                className="px-3 py-2.5 rounded-lg bg-[#FAF7F3] dark:bg-[#0b090a] border border-[#E8DDD1] dark:border-[#3d4951] text-[#5D4E37] dark:text-white text-sm focus:outline-none">
+                className="px-3 py-2.5 rounded-lg bg-white dark:bg-[#0b090a] border border-gray-200 dark:border-[#3d4951] text-gray-700 dark:text-white text-sm focus:outline-none">
                 <option value="all">All Terms</option>
                 {uniqueTerms.map(t => <option key={t} value={t}>{t}</option>)}
               </select>
               <select value={filterSession} onChange={e => setFilterSession(e.target.value)}
-                className="px-3 py-2.5 rounded-lg bg-[#FAF7F3] dark:bg-[#0b090a] border border-[#E8DDD1] dark:border-[#3d4951] text-[#5D4E37] dark:text-white text-sm focus:outline-none">
+                className="px-3 py-2.5 rounded-lg bg-white dark:bg-[#0b090a] border border-gray-200 dark:border-[#3d4951] text-gray-700 dark:text-white text-sm focus:outline-none">
                 <option value="all">All Sessions</option>
                 {uniqueSessions.map(s => <option key={s} value={s}>{s}</option>)}
               </select>
@@ -183,13 +183,13 @@ export default function CRManagementPage() {
           </SpotlightCard>
 
           {loading ? (
-            <div className="flex justify-center py-12"><Loader2 className="w-8 h-8 animate-spin text-[#5D4037] dark:text-[#ba181b]" /></div>
+            <div className="flex justify-center py-12"><Loader2 className="w-8 h-8 animate-spin text-gray-600 dark:text-red-600" /></div>
           ) : (
             <>
               {/* Current CRs */}
               {crStudents.length > 0 && (
                 <div>
-                  <h2 className="text-lg font-semibold text-[#5D4E37] dark:text-white mb-3 flex items-center gap-2">
+                  <h2 className="text-lg font-semibold text-gray-700 dark:text-white mb-3 flex items-center gap-2">
                     <Crown className="w-5 h-5 text-amber-500" />
                     Class Representatives ({crStudents.length})
                   </h2>
@@ -202,9 +202,9 @@ export default function CRManagementPage() {
                               <Crown className="w-5 h-5 text-amber-500" />
                             </div>
                             <div>
-                              <p className="font-semibold text-[#5D4E37] dark:text-white text-sm">{student.full_name}</p>
-                              <p className="text-xs text-[#8B7355] dark:text-[#b1a7a6]">{student.roll_no}</p>
-                              <p className="text-xs text-[#8B7355] dark:text-[#b1a7a6]">Term {student.term} · {student.session}</p>
+                              <p className="font-semibold text-gray-700 dark:text-white text-sm">{student.full_name}</p>
+                              <p className="text-xs text-gray-400 dark:text-[#b1a7a6]">{student.roll_no}</p>
+                              <p className="text-xs text-gray-400 dark:text-[#b1a7a6]">Term {student.term} · {student.session}</p>
                             </div>
                           </div>
                           <button onClick={() => handleToggleCR(student)} disabled={toggling === student.user_id}
@@ -220,31 +220,31 @@ export default function CRManagementPage() {
 
               {/* All Students */}
               <div>
-                <h2 className="text-lg font-semibold text-[#5D4E37] dark:text-white mb-3 flex items-center gap-2">
-                  <User className="w-5 h-5 text-[#5D4037] dark:text-[#ba181b]" />
+                <h2 className="text-lg font-semibold text-gray-700 dark:text-white mb-3 flex items-center gap-2">
+                  <User className="w-5 h-5 text-gray-600 dark:text-red-600" />
                   Students ({nonCRStudents.length})
                 </h2>
                 {nonCRStudents.length === 0 ? (
-                  <p className="text-center py-8 text-[#8B7355] dark:text-[#b1a7a6]">No students found matching filters</p>
+                  <p className="text-center py-8 text-gray-400 dark:text-[#b1a7a6]">No students found matching filters</p>
                 ) : (
-                  <div className="overflow-x-auto rounded-xl border border-[#E8DDD1] dark:border-[#3d4951]/50">
+                  <div className="overflow-x-auto rounded-xl border border-gray-200 dark:border-[#3d4951]/50">
                     <table className="w-full">
                       <thead>
-                        <tr className="bg-[#F5EDE4] dark:bg-[#0b090a]">
-                          <th className="text-left px-4 py-3 text-xs font-semibold text-[#8B7355] dark:text-[#b1a7a6] uppercase">Student</th>
-                          <th className="text-left px-4 py-3 text-xs font-semibold text-[#8B7355] dark:text-[#b1a7a6] uppercase">Roll</th>
-                          <th className="text-left px-4 py-3 text-xs font-semibold text-[#8B7355] dark:text-[#b1a7a6] uppercase">Term</th>
-                          <th className="text-left px-4 py-3 text-xs font-semibold text-[#8B7355] dark:text-[#b1a7a6] uppercase">Session</th>
-                          <th className="text-center px-4 py-3 text-xs font-semibold text-[#8B7355] dark:text-[#b1a7a6] uppercase">Action</th>
+                        <tr className="bg-gray-50 dark:bg-[#0b090a]">
+                          <th className="text-left px-4 py-3 text-xs font-semibold text-gray-400 dark:text-[#b1a7a6] uppercase">Student</th>
+                          <th className="text-left px-4 py-3 text-xs font-semibold text-gray-400 dark:text-[#b1a7a6] uppercase">Roll</th>
+                          <th className="text-left px-4 py-3 text-xs font-semibold text-gray-400 dark:text-[#b1a7a6] uppercase">Term</th>
+                          <th className="text-left px-4 py-3 text-xs font-semibold text-gray-400 dark:text-[#b1a7a6] uppercase">Session</th>
+                          <th className="text-center px-4 py-3 text-xs font-semibold text-gray-400 dark:text-[#b1a7a6] uppercase">Action</th>
                         </tr>
                       </thead>
                       <tbody className="divide-y divide-[#E8DDD1] dark:divide-[#3d4951]/30">
                         {nonCRStudents.map(student => (
-                          <tr key={student.user_id} className="bg-white dark:bg-[#161a1d] hover:bg-[#FAF7F3] dark:hover:bg-[#0b090a]/50 transition-colors">
-                            <td className="px-4 py-3 text-sm text-[#5D4E37] dark:text-white font-medium">{student.full_name}</td>
-                            <td className="px-4 py-3 text-sm text-[#8B7355] dark:text-[#b1a7a6]">{student.roll_no}</td>
-                            <td className="px-4 py-3 text-sm text-[#8B7355] dark:text-[#b1a7a6]">{student.term}</td>
-                            <td className="px-4 py-3 text-sm text-[#8B7355] dark:text-[#b1a7a6]">{student.session}</td>
+                          <tr key={student.user_id} className="bg-white dark:bg-[#161a1d] hover:bg-white dark:hover:bg-[#0b090a]/50 transition-colors">
+                            <td className="px-4 py-3 text-sm text-gray-700 dark:text-white font-medium">{student.full_name}</td>
+                            <td className="px-4 py-3 text-sm text-gray-400 dark:text-[#b1a7a6]">{student.roll_no}</td>
+                            <td className="px-4 py-3 text-sm text-gray-400 dark:text-[#b1a7a6]">{student.term}</td>
+                            <td className="px-4 py-3 text-sm text-gray-400 dark:text-[#b1a7a6]">{student.session}</td>
                             <td className="px-4 py-3 text-center">
                               <button onClick={() => handleToggleCR(student)} disabled={toggling === student.user_id}
                                 className="px-3 py-1.5 text-xs rounded-lg bg-amber-500/10 text-amber-600 dark:text-amber-400 hover:bg-amber-500/20 transition-colors disabled:opacity-50">
@@ -273,35 +273,35 @@ export default function CRManagementPage() {
           </div>
 
           {allocationsLoading ? (
-            <div className="flex justify-center py-12"><Loader2 className="w-8 h-8 animate-spin text-[#5D4037] dark:text-[#ba181b]" /></div>
+            <div className="flex justify-center py-12"><Loader2 className="w-8 h-8 animate-spin text-gray-600 dark:text-red-600" /></div>
           ) : allocations.length === 0 ? (
-            <div className="text-center py-12 text-[#8B7355] dark:text-[#b1a7a6]">
+            <div className="text-center py-12 text-gray-400 dark:text-[#b1a7a6]">
               <Building2 className="w-12 h-12 mx-auto mb-3 opacity-50" />
               <p>No room allocation history yet</p>
             </div>
           ) : (
-            <div className="overflow-x-auto rounded-xl border border-[#E8DDD1] dark:border-[#3d4951]/50">
+            <div className="overflow-x-auto rounded-xl border border-gray-200 dark:border-[#3d4951]/50">
               <table className="w-full">
                 <thead>
-                  <tr className="bg-[#F5EDE4] dark:bg-[#0b090a]">
-                    <th className="text-left px-4 py-3 text-xs font-semibold text-[#8B7355] dark:text-[#b1a7a6] uppercase">#</th>
-                    <th className="text-left px-4 py-3 text-xs font-semibold text-[#8B7355] dark:text-[#b1a7a6] uppercase">CR (Booked By)</th>
-                    <th className="text-left px-4 py-3 text-xs font-semibold text-[#8B7355] dark:text-[#b1a7a6] uppercase">Room</th>
-                    <th className="text-left px-4 py-3 text-xs font-semibold text-[#8B7355] dark:text-[#b1a7a6] uppercase">Course</th>
-                    <th className="text-left px-4 py-3 text-xs font-semibold text-[#8B7355] dark:text-[#b1a7a6] uppercase">Section</th>
-                    <th className="text-left px-4 py-3 text-xs font-semibold text-[#8B7355] dark:text-[#b1a7a6] uppercase">Teacher</th>
-                    <th className="text-left px-4 py-3 text-xs font-semibold text-[#8B7355] dark:text-[#b1a7a6] uppercase">Schedule</th>
-                    <th className="text-left px-4 py-3 text-xs font-semibold text-[#8B7355] dark:text-[#b1a7a6] uppercase">Date</th>
-                    <th className="text-left px-4 py-3 text-xs font-semibold text-[#8B7355] dark:text-[#b1a7a6] uppercase">Requested At</th>
-                    <th className="text-center px-4 py-3 text-xs font-semibold text-[#8B7355] dark:text-[#b1a7a6] uppercase">Details</th>
+                  <tr className="bg-gray-50 dark:bg-[#0b090a]">
+                    <th className="text-left px-4 py-3 text-xs font-semibold text-gray-400 dark:text-[#b1a7a6] uppercase">#</th>
+                    <th className="text-left px-4 py-3 text-xs font-semibold text-gray-400 dark:text-[#b1a7a6] uppercase">CR (Booked By)</th>
+                    <th className="text-left px-4 py-3 text-xs font-semibold text-gray-400 dark:text-[#b1a7a6] uppercase">Room</th>
+                    <th className="text-left px-4 py-3 text-xs font-semibold text-gray-400 dark:text-[#b1a7a6] uppercase">Course</th>
+                    <th className="text-left px-4 py-3 text-xs font-semibold text-gray-400 dark:text-[#b1a7a6] uppercase">Section</th>
+                    <th className="text-left px-4 py-3 text-xs font-semibold text-gray-400 dark:text-[#b1a7a6] uppercase">Teacher</th>
+                    <th className="text-left px-4 py-3 text-xs font-semibold text-gray-400 dark:text-[#b1a7a6] uppercase">Schedule</th>
+                    <th className="text-left px-4 py-3 text-xs font-semibold text-gray-400 dark:text-[#b1a7a6] uppercase">Date</th>
+                    <th className="text-left px-4 py-3 text-xs font-semibold text-gray-400 dark:text-[#b1a7a6] uppercase">Requested At</th>
+                    <th className="text-center px-4 py-3 text-xs font-semibold text-gray-400 dark:text-[#b1a7a6] uppercase">Details</th>
                   </tr>
                 </thead>
                 <tbody className="divide-y divide-[#E8DDD1] dark:divide-[#3d4951]/30">
                   {allocations.map((alloc, index) => (
                     <>
-                      <tr key={alloc.id} className="bg-white dark:bg-[#161a1d] hover:bg-[#FAF7F3] dark:hover:bg-[#0b090a]/50 transition-colors">
+                      <tr key={alloc.id} className="bg-white dark:bg-[#161a1d] hover:bg-white dark:hover:bg-[#0b090a]/50 transition-colors">
                         <td className="px-4 py-3">
-                          <span className="px-2 py-0.5 rounded-full text-xs font-bold bg-[#5D4037]/10 dark:bg-[#ba181b]/20 text-[#5D4037] dark:text-[#ba181b]">
+                          <span className="px-2 py-0.5 rounded-full text-xs font-bold bg-gray-600/10 dark:bg-red-600/20 text-gray-600 dark:text-red-600">
                             {index + 1}
                           </span>
                         </td>
@@ -309,8 +309,8 @@ export default function CRManagementPage() {
                           <div className="flex items-center gap-2">
                             <Crown className="w-4 h-4 text-amber-500 flex-shrink-0" />
                             <div>
-                              <p className="text-sm font-medium text-[#5D4E37] dark:text-white">{alloc.students?.full_name}</p>
-                              <p className="text-xs text-[#8B7355] dark:text-[#b1a7a6]">{alloc.students?.roll_no}</p>
+                              <p className="text-sm font-medium text-gray-700 dark:text-white">{alloc.students?.full_name}</p>
+                              <p className="text-xs text-gray-400 dark:text-[#b1a7a6]">{alloc.students?.roll_no}</p>
                             </div>
                           </div>
                         </td>
@@ -321,24 +321,24 @@ export default function CRManagementPage() {
                           </span>
                         </td>
                         <td className="px-4 py-3">
-                          <span className="text-sm font-medium text-[#5D4E37] dark:text-white flex items-center gap-1.5">
-                            <BookOpen className="w-3.5 h-3.5 text-[#5D4037] dark:text-[#ba181b]" />
+                          <span className="text-sm font-medium text-gray-700 dark:text-white flex items-center gap-1.5">
+                            <BookOpen className="w-3.5 h-3.5 text-gray-600 dark:text-red-600" />
                             {alloc.course_code}
                           </span>
                         </td>
-                        <td className="px-4 py-3 text-sm text-[#5D4E37] dark:text-white">
+                        <td className="px-4 py-3 text-sm text-gray-700 dark:text-white">
                           {alloc.section || '—'}
                         </td>
-                        <td className="px-4 py-3 text-sm text-[#8B7355] dark:text-[#b1a7a6]">
+                        <td className="px-4 py-3 text-sm text-gray-400 dark:text-[#b1a7a6]">
                           {alloc.teachers?.full_name || 'Unknown'}
                         </td>
-                        <td className="px-4 py-3 text-sm text-[#8B7355] dark:text-[#b1a7a6] whitespace-nowrap">
+                        <td className="px-4 py-3 text-sm text-gray-400 dark:text-[#b1a7a6] whitespace-nowrap">
                           {DAYS[alloc.day_of_week]}, {formatTime(alloc.start_time)}-{formatTime(alloc.end_time)}
                         </td>
-                        <td className="px-4 py-3 text-sm text-[#5D4E37] dark:text-white whitespace-nowrap">
+                        <td className="px-4 py-3 text-sm text-gray-700 dark:text-white whitespace-nowrap">
                           {alloc.request_date ? new Date(alloc.request_date).toLocaleDateString() : '—'}
                         </td>
-                        <td className="px-4 py-3 text-xs text-[#8B7355] dark:text-[#b1a7a6] whitespace-nowrap">
+                        <td className="px-4 py-3 text-xs text-gray-400 dark:text-[#b1a7a6] whitespace-nowrap">
                           <div className="flex items-center gap-1">
                             <Clock className="w-3 h-3" />
                             {new Date(alloc.created_at).toLocaleString()}
@@ -346,19 +346,19 @@ export default function CRManagementPage() {
                         </td>
                         <td className="px-4 py-3 text-center">
                           <button onClick={() => setExpandedAllocation(expandedAllocation === alloc.id ? null : alloc.id)}
-                            className="p-1.5 rounded-lg hover:bg-[#F5EDE4] dark:hover:bg-[#0b090a] transition-colors text-[#8B7355] dark:text-[#b1a7a6]">
+                            className="p-1.5 rounded-lg hover:bg-gray-50 dark:hover:bg-[#0b090a] transition-colors text-gray-400 dark:text-[#b1a7a6]">
                             {expandedAllocation === alloc.id ? <ChevronUp className="w-4 h-4" /> : <ChevronDown className="w-4 h-4" />}
                           </button>
                         </td>
                       </tr>
                       {expandedAllocation === alloc.id && (
-                        <tr key={`${alloc.id}-details`} className="bg-[#FAF7F3] dark:bg-[#0b090a]/70">
+                        <tr key={`${alloc.id}-details`} className="bg-white dark:bg-[#0b090a]/70">
                           <td colSpan={10} className="px-6 py-3">
                             <div className="grid grid-cols-2 md:grid-cols-4 gap-3 text-sm">
-                              <div><span className="text-[#8B7355] dark:text-[#b1a7a6]">Term:</span> <span className="text-[#5D4E37] dark:text-white ml-1">{alloc.term}</span></div>
-                              <div><span className="text-[#8B7355] dark:text-[#b1a7a6]">Session:</span> <span className="text-[#5D4E37] dark:text-white ml-1">{alloc.session}</span></div>
-                              {alloc.section && <div><span className="text-[#8B7355] dark:text-[#b1a7a6]">Section:</span> <span className="text-[#5D4E37] dark:text-white ml-1">{alloc.section}</span></div>}
-                              {alloc.reason && <div className="col-span-2"><span className="text-[#8B7355] dark:text-[#b1a7a6]">Reason:</span> <span className="text-[#5D4E37] dark:text-white ml-1">{alloc.reason}</span></div>}
+                              <div><span className="text-gray-400 dark:text-[#b1a7a6]">Term:</span> <span className="text-gray-700 dark:text-white ml-1">{alloc.term}</span></div>
+                              <div><span className="text-gray-400 dark:text-[#b1a7a6]">Session:</span> <span className="text-gray-700 dark:text-white ml-1">{alloc.session}</span></div>
+                              {alloc.section && <div><span className="text-gray-400 dark:text-[#b1a7a6]">Section:</span> <span className="text-gray-700 dark:text-white ml-1">{alloc.section}</span></div>}
+                              {alloc.reason && <div className="col-span-2"><span className="text-gray-400 dark:text-[#b1a7a6]">Reason:</span> <span className="text-gray-700 dark:text-white ml-1">{alloc.reason}</span></div>}
                             </div>
                           </td>
                         </tr>

@@ -17,10 +17,10 @@ const AccessRestricted: React.FC<AccessRestrictedProps> = ({
   requiredRole = 'administrators',
   message,
 }) => (
-  <div className="bg-white dark:bg-[#161a1d] rounded-2xl shadow-lg p-8 border border-[#DCC5B2] dark:border-[#3d4951] text-center">
+  <div className="bg-white rounded-2xl shadow-lg p-8 border-2 border-gray-300 text-center">
     <div className="w-16 h-16 mx-auto bg-red-500/10 rounded-full flex items-center justify-center mb-4">
       <svg
-        className="w-8 h-8 text-red-400"
+        className="w-8 h-8 text-red-500"
         fill="none"
         stroke="currentColor"
         viewBox="0 0 24 24"
@@ -33,8 +33,8 @@ const AccessRestricted: React.FC<AccessRestrictedProps> = ({
         />
       </svg>
     </div>
-    <h2 className="text-xl font-bold text-[#2C1810] dark:text-white mb-2">Access Restricted</h2>
-    <p className="text-[#6B5744] dark:text-[#b1a7a6]">
+    <h2 className="text-xl font-bold text-[#1A0E02] mb-2">Access Restricted</h2>
+    <p className="text-gray-600">
       {message || `This section is only accessible to ${requiredRole}.`}
     </p>
   </div>

@@ -407,19 +407,19 @@ export default function OptionalCourseAllocationPage() {
 
   // ── Render ─────────────────────────────────────────
 
-  const cardClass = `rounded-xl border ${isDark ? 'bg-[#161a1d] border-[#3d4951]/50' : 'bg-white border-[#E8DDD1]'}`;
-  const textPrimary = isDark ? 'text-white' : 'text-[#5D4E37]';
-  const textSecondary = isDark ? 'text-[#b1a7a6]' : 'text-[#8B7355]';
+  const cardClass = `rounded-xl border ${isDark ? 'bg-[#161a1d] border-[#3d4951]/50' : 'bg-white border-gray-200'}`;
+  const textPrimary = isDark ? 'text-white' : 'text-gray-700';
+  const textSecondary = isDark ? 'text-[#b1a7a6]' : 'text-gray-400';
   const inputClass = `w-full px-4 py-2.5 rounded-xl border text-sm transition-colors ${
     isDark
-      ? 'bg-[#0b090a] border-[#3d4951] text-white placeholder-[#6c757d] focus:border-[#ba181b]'
-      : 'bg-white border-[#E8DDD1] text-[#5D4E37] placeholder-[#8B7355] focus:border-[#5D4037]'
-  } focus:outline-none focus:ring-2 focus:ring-opacity-20 ${isDark ? 'focus:ring-[#ba181b]' : 'focus:ring-[#5D4037]'}`;
+      ? 'bg-[#0b090a] border-[#3d4951] text-white placeholder-[#6c757d] focus:border-red-400'
+      : 'bg-white border-gray-200 text-gray-700 placeholder-gray-400 focus:border-gray-300'
+  } focus:outline-none focus:ring-2 focus:ring-opacity-20 ${isDark ? 'focus:ring-red-400' : 'focus:ring-indigo-400'}`;
 
   if (loading) {
     return (
       <div className="flex items-center justify-center py-32">
-        <Loader2 className={`w-8 h-8 animate-spin ${isDark ? 'text-[#ba181b]' : 'text-[#5D4037]'}`} />
+        <Loader2 className={`w-8 h-8 animate-spin ${isDark ? 'text-red-600' : 'text-gray-600'}`} />
         <span className={`ml-3 text-lg ${textSecondary}`}>Loading optional course data...</span>
       </div>
     );
@@ -438,15 +438,15 @@ export default function OptionalCourseAllocationPage() {
 
         <div className="flex items-center gap-3">
           {/* Term selector */}
-          <div className="flex rounded-xl overflow-hidden border border-[#E8DDD1] dark:border-[#3d4951]">
+          <div className="flex rounded-xl overflow-hidden border border-gray-200 dark:border-[#3d4951]">
             {(['4-1', '4-2'] as const).map((t) => (
               <button
                 key={t}
                 onClick={() => { setSelectedTerm(t); setSelectedOffering(null); setSelectedStudentIds(new Set()); }}
                 className={`px-5 py-2.5 text-sm font-medium transition-all ${
                   selectedTerm === t
-                    ? isDark ? 'bg-[#ba181b] text-white' : 'bg-[#5D4037] text-white'
-                    : isDark ? 'bg-[#0b090a] text-[#b1a7a6] hover:text-white' : 'bg-white text-[#8B7355] hover:text-[#5D4E37]'
+                    ? isDark ? 'bg-red-600 text-white' : 'bg-gray-600 text-white'
+                    : isDark ? 'bg-[#0b090a] text-[#b1a7a6] hover:text-white' : 'bg-white text-gray-400 hover:text-gray-700'
                 }`}
               >
                 4th Year {t === '4-1' ? '1st' : '2nd'} Term
@@ -455,13 +455,13 @@ export default function OptionalCourseAllocationPage() {
           </div>
 
           {/* View mode toggle */}
-          <div className="flex rounded-xl overflow-hidden border border-[#E8DDD1] dark:border-[#3d4951]">
+          <div className="flex rounded-xl overflow-hidden border border-gray-200 dark:border-[#3d4951]">
             <button
               onClick={() => setViewMode('assign')}
               className={`px-4 py-2.5 text-sm font-medium transition-all ${
                 viewMode === 'assign'
-                  ? isDark ? 'bg-[#ba181b] text-white' : 'bg-[#5D4037] text-white'
-                  : isDark ? 'bg-[#0b090a] text-[#b1a7a6]' : 'bg-white text-[#8B7355]'
+                  ? isDark ? 'bg-red-600 text-white' : 'bg-gray-600 text-white'
+                  : isDark ? 'bg-[#0b090a] text-[#b1a7a6]' : 'bg-white text-gray-400'
               }`}
             >
               Assign
@@ -470,8 +470,8 @@ export default function OptionalCourseAllocationPage() {
               onClick={() => setViewMode('view')}
               className={`px-4 py-2.5 text-sm font-medium transition-all ${
                 viewMode === 'view'
-                  ? isDark ? 'bg-[#ba181b] text-white' : 'bg-[#5D4037] text-white'
-                  : isDark ? 'bg-[#0b090a] text-[#b1a7a6]' : 'bg-white text-[#8B7355]'
+                  ? isDark ? 'bg-red-600 text-white' : 'bg-gray-600 text-white'
+                  : isDark ? 'bg-[#0b090a] text-[#b1a7a6]' : 'bg-white text-gray-400'
               }`}
             >
               View
@@ -480,8 +480,8 @@ export default function OptionalCourseAllocationPage() {
               onClick={() => setViewMode('manage')}
               className={`px-4 py-2.5 text-sm font-medium transition-all flex items-center gap-1.5 ${
                 viewMode === 'manage'
-                  ? isDark ? 'bg-[#ba181b] text-white' : 'bg-[#5D4037] text-white'
-                  : isDark ? 'bg-[#0b090a] text-[#b1a7a6]' : 'bg-white text-[#8B7355]'
+                  ? isDark ? 'bg-red-600 text-white' : 'bg-gray-600 text-white'
+                  : isDark ? 'bg-[#0b090a] text-[#b1a7a6]' : 'bg-white text-gray-400'
               }`}
             >
               <Settings className="w-4 h-4" /> Manage
@@ -520,8 +520,8 @@ export default function OptionalCourseAllocationPage() {
         ].map((stat) => (
           <div key={stat.label} className={`${cardClass} p-4`}>
             <div className="flex items-center gap-3">
-              <div className={`p-2 rounded-lg ${isDark ? 'bg-[#ba181b]/10' : 'bg-[#5D4037]/10'}`}>
-                <stat.icon className={`w-5 h-5 ${isDark ? 'text-[#ba181b]' : 'text-[#5D4037]'}`} />
+              <div className={`p-2 rounded-lg ${isDark ? 'bg-red-600/10' : 'bg-gray-600/10'}`}>
+                <stat.icon className={`w-5 h-5 ${isDark ? 'text-red-600' : 'text-gray-600'}`} />
               </div>
               <div>
                 <p className={`text-xl font-bold ${textPrimary}`}>{stat.value}</p>
@@ -537,7 +537,7 @@ export default function OptionalCourseAllocationPage() {
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
           {/* Left: Elective Courses */}
           <div className={`${cardClass} overflow-hidden`}>
-            <div className={`px-5 py-4 border-b ${isDark ? 'border-[#3d4951]/50' : 'border-[#E8DDD1]'}`}>
+            <div className={`px-5 py-4 border-b ${isDark ? 'border-[#3d4951]/50' : 'border-gray-200'}`}>
               <h2 className={`text-lg font-semibold ${textPrimary}`}>
                 Elective Course Offerings
               </h2>
@@ -555,11 +555,11 @@ export default function OptionalCourseAllocationPage() {
                 </div>
               ) : (
                 Object.entries(groupedOfferings).map(([group, offerings]) => (
-                  <div key={group} className={`rounded-lg border ${isDark ? 'border-[#3d4951]/30' : 'border-[#E8DDD1]'}`}>
+                  <div key={group} className={`rounded-lg border ${isDark ? 'border-[#3d4951]/30' : 'border-gray-200'}`}>
                     <button
                       onClick={() => toggleGroup(group)}
                       className={`w-full flex items-center justify-between px-4 py-3 text-left ${
-                        isDark ? 'hover:bg-[#0b090a]/50' : 'hover:bg-[#F5EDE4]/50'
+                        isDark ? 'hover:bg-[#0b090a]/50' : 'hover:bg-gray-50/50'
                       } transition-colors rounded-t-lg`}
                     >
                       <div className="flex items-center gap-2">
@@ -572,7 +572,7 @@ export default function OptionalCourseAllocationPage() {
                           {groupLabel(group)}
                         </span>
                         <span className={`text-xs px-2 py-0.5 rounded-full ${
-                          isDark ? 'bg-[#3d4951]/50 text-[#b1a7a6]' : 'bg-[#F5EDE4] text-[#8B7355]'
+                          isDark ? 'bg-[#3d4951]/50 text-[#b1a7a6]' : 'bg-gray-50 text-gray-400'
                         }`}>
                           {offerings.length}
                         </span>
@@ -601,8 +601,8 @@ export default function OptionalCourseAllocationPage() {
                                   }}
                                   className={`w-full text-left p-3 rounded-lg transition-all ${
                                     isSelected
-                                      ? isDark ? 'bg-[#ba181b]/20 border-[#ba181b] border' : 'bg-[#5D4037]/10 border-[#5D4037] border'
-                                      : isDark ? 'bg-[#0b090a]/30 hover:bg-[#0b090a]/50 border border-transparent' : 'bg-[#F5EDE4]/30 hover:bg-[#F5EDE4]/60 border border-transparent'
+                                      ? isDark ? 'bg-red-600/20 border-red-400 border' : 'bg-gray-600/10 border-gray-300 border'
+                                      : isDark ? 'bg-[#0b090a]/30 hover:bg-[#0b090a]/50 border border-transparent' : 'bg-gray-50/30 hover:bg-gray-50/60 border border-transparent'
                                   }`}
                                 >
                                   <div className="flex items-center justify-between">
@@ -643,7 +643,7 @@ export default function OptionalCourseAllocationPage() {
 
           {/* Right: Student List */}
           <div className={`${cardClass} overflow-hidden`}>
-            <div className={`px-5 py-4 border-b ${isDark ? 'border-[#3d4951]/50' : 'border-[#E8DDD1]'}`}>
+            <div className={`px-5 py-4 border-b ${isDark ? 'border-[#3d4951]/50' : 'border-gray-200'}`}>
               <div className="flex items-center justify-between">
                 <div>
                   <h2 className={`text-lg font-semibold ${textPrimary}`}>
@@ -659,20 +659,20 @@ export default function OptionalCourseAllocationPage() {
                   <div className="flex items-center gap-2">
                     <button
                       onClick={() => setShowBulkModal(true)}
-                      className={`p-2 rounded-lg ${isDark ? 'hover:bg-[#0b090a]' : 'hover:bg-[#F5EDE4]'} transition-colors`}
+                      className={`p-2 rounded-lg ${isDark ? 'hover:bg-[#0b090a]' : 'hover:bg-gray-50'} transition-colors`}
                       title="Bulk assign by roll numbers"
                     >
                       <Upload className={`w-4 h-4 ${textSecondary}`} />
                     </button>
                     <button
                       onClick={handleSelectAll}
-                      className={`text-xs px-3 py-1.5 rounded-lg ${isDark ? 'bg-[#0b090a] hover:bg-[#161a1d]' : 'bg-[#F5EDE4] hover:bg-[#E8DDD1]'} ${textSecondary} transition-colors`}
+                      className={`text-xs px-3 py-1.5 rounded-lg ${isDark ? 'bg-[#0b090a] hover:bg-[#161a1d]' : 'bg-gray-50 hover:bg-[#E8DDD1]'} ${textSecondary} transition-colors`}
                     >
                       Select All
                     </button>
                     <button
                       onClick={handleDeselectAll}
-                      className={`text-xs px-3 py-1.5 rounded-lg ${isDark ? 'bg-[#0b090a] hover:bg-[#161a1d]' : 'bg-[#F5EDE4] hover:bg-[#E8DDD1]'} ${textSecondary} transition-colors`}
+                      className={`text-xs px-3 py-1.5 rounded-lg ${isDark ? 'bg-[#0b090a] hover:bg-[#161a1d]' : 'bg-gray-50 hover:bg-[#E8DDD1]'} ${textSecondary} transition-colors`}
                     >
                       Deselect
                     </button>
@@ -718,8 +718,8 @@ export default function OptionalCourseAllocationPage() {
                           isAssigned
                             ? isDark ? 'bg-emerald-900/10 border border-emerald-800/30' : 'bg-emerald-50 border border-emerald-200'
                             : isSelected
-                              ? isDark ? 'bg-[#ba181b]/10 border border-[#ba181b]/30' : 'bg-[#5D4037]/5 border border-[#5D4037]/20'
-                              : isDark ? 'hover:bg-[#0b090a]/50 border border-transparent' : 'hover:bg-[#F5EDE4]/50 border border-transparent'
+                              ? isDark ? 'bg-red-600/10 border border-red-400/30' : 'bg-gray-600/5 border border-gray-300/20'
+                              : isDark ? 'hover:bg-[#0b090a]/50 border border-transparent' : 'hover:bg-gray-50/50 border border-transparent'
                         }`}
                       >
                         <div className="flex items-center gap-3">
@@ -728,8 +728,8 @@ export default function OptionalCourseAllocationPage() {
                             isAssigned
                               ? 'bg-emerald-500 border-emerald-500'
                               : isSelected
-                                ? isDark ? 'bg-[#ba181b] border-[#ba181b]' : 'bg-[#5D4037] border-[#5D4037]'
-                                : isDark ? 'border-[#3d4951]' : 'border-[#E8DDD1]'
+                                ? isDark ? 'bg-red-600 border-red-400' : 'bg-gray-600 border-gray-300'
+                                : isDark ? 'border-[#3d4951]' : 'border-gray-200'
                           }`}>
                             {(isAssigned || isSelected) && <Check className="w-3 h-3 text-white" />}
                           </div>
@@ -758,14 +758,14 @@ export default function OptionalCourseAllocationPage() {
 
             {/* Assign Button */}
             {selectedOffering && selectedStudentIds.size > 0 && (
-              <div className={`px-5 py-4 border-t ${isDark ? 'border-[#3d4951]/50' : 'border-[#E8DDD1]'}`}>
+              <div className={`px-5 py-4 border-t ${isDark ? 'border-[#3d4951]/50' : 'border-gray-200'}`}>
                 <button
                   onClick={handleAssign}
                   disabled={assigning}
                   className={`w-full py-3 rounded-xl font-medium text-white transition-all ${
                     assigning
                       ? 'opacity-50 cursor-not-allowed'
-                      : isDark ? 'bg-[#ba181b] hover:bg-[#a0161a]' : 'bg-[#5D4037] hover:bg-[#4E342E]'
+                      : isDark ? 'bg-red-600 hover:bg-[#a0161a]' : 'bg-gray-600 hover:bg-[#4E342E]'
                   }`}
                 >
                   {assigning ? (
@@ -783,7 +783,7 @@ export default function OptionalCourseAllocationPage() {
       ) : (
         /* ── VIEW MODE ────────────────────────────────── */
         <div className={`${cardClass} overflow-hidden`}>
-          <div className={`px-5 py-4 border-b ${isDark ? 'border-[#3d4951]/50' : 'border-[#E8DDD1]'}`}>
+          <div className={`px-5 py-4 border-b ${isDark ? 'border-[#3d4951]/50' : 'border-gray-200'}`}>
             <h2 className={`text-lg font-semibold ${textPrimary}`}>
               Current Assignments ({assignments.length})
             </h2>
@@ -805,7 +805,7 @@ export default function OptionalCourseAllocationPage() {
                   <div key={student.user_id} className="px-5">
                     <button
                       onClick={() => setShowStudentAssignments(isExpanded ? null : student.user_id)}
-                      className={`w-full flex items-center justify-between py-4 text-left ${isDark ? 'hover:bg-[#0b090a]/30' : 'hover:bg-[#F5EDE4]/30'} -mx-2 px-2 rounded-lg transition-colors`}
+                      className={`w-full flex items-center justify-between py-4 text-left ${isDark ? 'hover:bg-[#0b090a]/30' : 'hover:bg-gray-50/30'} -mx-2 px-2 rounded-lg transition-colors`}
                     >
                       <div className="flex items-center gap-3">
                         {isExpanded ? <ChevronDown className="w-4 h-4" /> : <ChevronRight className="w-4 h-4" />}
@@ -813,7 +813,7 @@ export default function OptionalCourseAllocationPage() {
                         <span className={`text-sm ${textSecondary}`}>{student.full_name}</span>
                       </div>
                       <span className={`text-xs px-2 py-1 rounded-full ${
-                        isDark ? 'bg-[#3d4951]/50 text-[#b1a7a6]' : 'bg-[#F5EDE4] text-[#8B7355]'
+                        isDark ? 'bg-[#3d4951]/50 text-[#b1a7a6]' : 'bg-gray-50 text-gray-400'
                       }`}>
                         {studentAssignments.length} course{studentAssignments.length > 1 ? 's' : ''}
                       </span>
@@ -832,7 +832,7 @@ export default function OptionalCourseAllocationPage() {
                               <div
                                 key={a.id}
                                 className={`flex items-center justify-between p-3 rounded-lg ${
-                                  isDark ? 'bg-[#0b090a]/50' : 'bg-[#F5EDE4]/50'
+                                  isDark ? 'bg-[#0b090a]/50' : 'bg-gray-50/50'
                                 }`}
                               >
                                 <div>
@@ -874,7 +874,7 @@ export default function OptionalCourseAllocationPage() {
       {/* ── MANAGE MODE ────────────────────────────────── */}
       {viewMode === 'manage' && (
         <div className={`${cardClass} overflow-hidden`}>
-          <div className={`px-5 py-4 border-b ${isDark ? 'border-[#3d4951]/50' : 'border-[#E8DDD1]'}`}>
+          <div className={`px-5 py-4 border-b ${isDark ? 'border-[#3d4951]/50' : 'border-gray-200'}`}>
             <h2 className={`text-lg font-semibold ${textPrimary}`}>
               Manage Elective Course Offerings
             </h2>
@@ -892,17 +892,17 @@ export default function OptionalCourseAllocationPage() {
               </div>
             ) : (
               Object.entries(groupedCourses).map(([group, courses]) => (
-                <div key={group} className={`rounded-lg border ${isDark ? 'border-[#3d4951]/30' : 'border-[#E8DDD1]'}`}>
+                <div key={group} className={`rounded-lg border ${isDark ? 'border-[#3d4951]/30' : 'border-gray-200'}`}>
                   <button
                     onClick={() => toggleGroup(group)}
                     className={`w-full flex items-center justify-between px-4 py-3 text-left ${
-                      isDark ? 'hover:bg-[#0b090a]/50' : 'hover:bg-[#F5EDE4]/50'
+                      isDark ? 'hover:bg-[#0b090a]/50' : 'hover:bg-gray-50/50'
                     } transition-colors rounded-t-lg`}
                   >
                     <div className="flex items-center gap-2">
                       {expandedGroups.has(group) ? <ChevronDown className={`w-4 h-4 ${textSecondary}`} /> : <ChevronRight className={`w-4 h-4 ${textSecondary}`} />}
                       <span className={`font-semibold text-sm ${textPrimary}`}>{groupLabel(group)}</span>
-                      <span className={`text-xs px-2 py-0.5 rounded-full ${isDark ? 'bg-[#3d4951]/50 text-[#b1a7a6]' : 'bg-[#F5EDE4] text-[#8B7355]'}`}>
+                      <span className={`text-xs px-2 py-0.5 rounded-full ${isDark ? 'bg-[#3d4951]/50 text-[#b1a7a6]' : 'bg-gray-50 text-gray-400'}`}>
                         {courses.length} courses
                       </span>
                     </div>
@@ -927,7 +927,7 @@ export default function OptionalCourseAllocationPage() {
                               <div
                                 key={course.id}
                                 className={`flex items-center justify-between p-3 rounded-lg ${
-                                  isDark ? 'bg-[#0b090a]/30' : 'bg-[#F5EDE4]/30'
+                                  isDark ? 'bg-[#0b090a]/30' : 'bg-gray-50/30'
                                 }`}
                               >
                                 <div className="flex-1">
@@ -961,7 +961,7 @@ export default function OptionalCourseAllocationPage() {
                                       <button
                                         onClick={() => openEditModal(offering)}
                                         className={`p-2 rounded-lg transition-colors ${
-                                          isDark ? 'hover:bg-[#0b090a] text-[#b1a7a6] hover:text-white' : 'hover:bg-[#E8DDD1] text-[#8B7355] hover:text-[#5D4E37]'
+                                          isDark ? 'hover:bg-[#0b090a] text-[#b1a7a6] hover:text-white' : 'hover:bg-[#E8DDD1] text-gray-400 hover:text-gray-700'
                                         }`}
                                         title="Edit offering"
                                       >
@@ -979,7 +979,7 @@ export default function OptionalCourseAllocationPage() {
                                     <button
                                       onClick={() => openCreateModal(course)}
                                       className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-sm font-medium transition-colors ${
-                                        isDark ? 'bg-[#ba181b] hover:bg-[#a0161a] text-white' : 'bg-[#5D4037] hover:bg-[#4E342E] text-white'
+                                        isDark ? 'bg-red-600 hover:bg-[#a0161a] text-white' : 'bg-gray-600 hover:bg-[#4E342E] text-white'
                                       }`}
                                     >
                                       <Plus className="w-4 h-4" /> Create
@@ -1032,7 +1032,7 @@ export default function OptionalCourseAllocationPage() {
               <div className="flex justify-end gap-3 mt-4">
                 <button
                   onClick={() => setShowBulkModal(false)}
-                  className={`px-4 py-2 rounded-xl text-sm ${isDark ? 'bg-[#0b090a] text-[#b1a7a6]' : 'bg-[#F5EDE4] text-[#8B7355]'}`}
+                  className={`px-4 py-2 rounded-xl text-sm ${isDark ? 'bg-[#0b090a] text-[#b1a7a6]' : 'bg-gray-50 text-gray-400'}`}
                 >
                   Cancel
                 </button>
@@ -1040,7 +1040,7 @@ export default function OptionalCourseAllocationPage() {
                   onClick={handleBulkAssign}
                   disabled={!bulkInput.trim()}
                   className={`px-4 py-2 rounded-xl text-sm text-white ${
-                    isDark ? 'bg-[#ba181b] hover:bg-[#a0161a]' : 'bg-[#5D4037] hover:bg-[#4E342E]'
+                    isDark ? 'bg-red-600 hover:bg-[#a0161a]' : 'bg-gray-600 hover:bg-[#4E342E]'
                   } disabled:opacity-50`}
                 >
                   Match & Select
@@ -1071,7 +1071,7 @@ export default function OptionalCourseAllocationPage() {
                 </button>
               </div>
 
-              <div className={`p-3 rounded-lg mb-4 ${isDark ? 'bg-[#0b090a]' : 'bg-[#F5EDE4]'}`}>
+              <div className={`p-3 rounded-lg mb-4 ${isDark ? 'bg-[#0b090a]' : 'bg-gray-50'}`}>
                 <p className={`text-sm font-medium ${textPrimary}`}>{selectedCourseForCreate.code}</p>
                 <p className={`text-xs ${textSecondary}`}>{selectedCourseForCreate.title}</p>
                 <p className={`text-xs mt-1 ${textSecondary}`}>
@@ -1112,7 +1112,7 @@ export default function OptionalCourseAllocationPage() {
               <div className="flex justify-end gap-3 mt-6">
                 <button
                   onClick={() => setShowCreateModal(false)}
-                  className={`px-4 py-2 rounded-xl text-sm ${isDark ? 'bg-[#0b090a] text-[#b1a7a6]' : 'bg-[#F5EDE4] text-[#8B7355]'}`}
+                  className={`px-4 py-2 rounded-xl text-sm ${isDark ? 'bg-[#0b090a] text-[#b1a7a6]' : 'bg-gray-50 text-gray-400'}`}
                 >
                   Cancel
                 </button>
@@ -1120,7 +1120,7 @@ export default function OptionalCourseAllocationPage() {
                   onClick={handleCreateOffering}
                   disabled={!selectedTeacher || saving}
                   className={`px-4 py-2 rounded-xl text-sm text-white ${
-                    isDark ? 'bg-[#ba181b] hover:bg-[#a0161a]' : 'bg-[#5D4037] hover:bg-[#4E342E]'
+                    isDark ? 'bg-red-600 hover:bg-[#a0161a]' : 'bg-gray-600 hover:bg-[#4E342E]'
                   } disabled:opacity-50 flex items-center gap-2`}
                 >
                   {saving && <Loader2 className="w-4 h-4 animate-spin" />}
@@ -1152,7 +1152,7 @@ export default function OptionalCourseAllocationPage() {
                 </button>
               </div>
 
-              <div className={`p-3 rounded-lg mb-4 ${isDark ? 'bg-[#0b090a]' : 'bg-[#F5EDE4]'}`}>
+              <div className={`p-3 rounded-lg mb-4 ${isDark ? 'bg-[#0b090a]' : 'bg-gray-50'}`}>
                 <p className={`text-sm font-medium ${textPrimary}`}>{editingOffering.courses?.code}</p>
                 <p className={`text-xs ${textSecondary}`}>{editingOffering.courses?.title}</p>
               </div>
@@ -1189,7 +1189,7 @@ export default function OptionalCourseAllocationPage() {
               <div className="flex justify-end gap-3 mt-6">
                 <button
                   onClick={() => setShowEditModal(false)}
-                  className={`px-4 py-2 rounded-xl text-sm ${isDark ? 'bg-[#0b090a] text-[#b1a7a6]' : 'bg-[#F5EDE4] text-[#8B7355]'}`}
+                  className={`px-4 py-2 rounded-xl text-sm ${isDark ? 'bg-[#0b090a] text-[#b1a7a6]' : 'bg-gray-50 text-gray-400'}`}
                 >
                   Cancel
                 </button>
@@ -1197,7 +1197,7 @@ export default function OptionalCourseAllocationPage() {
                   onClick={handleUpdateOffering}
                   disabled={!selectedTeacher || saving}
                   className={`px-4 py-2 rounded-xl text-sm text-white ${
-                    isDark ? 'bg-[#ba181b] hover:bg-[#a0161a]' : 'bg-[#5D4037] hover:bg-[#4E342E]'
+                    isDark ? 'bg-red-600 hover:bg-[#a0161a]' : 'bg-gray-600 hover:bg-[#4E342E]'
                   } disabled:opacity-50 flex items-center gap-2`}
                 >
                   {saving && <Loader2 className="w-4 h-4 animate-spin" />}

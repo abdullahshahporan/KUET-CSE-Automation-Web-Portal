@@ -71,7 +71,7 @@ const HeroCarousel: React.FC<HeroCarouselProps> = ({ slides, universityName }) =
             className="max-w-4xl"
           >
             <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-white/10 backdrop-blur-md border border-white/20 mb-6">
-              <GraduationCap className="w-4 h-4 text-[#D4A574]" />
+              <GraduationCap className="w-4 h-4 text-gray-400" />
               <span className="text-sm text-white/90 font-medium">{universityName}</span>
             </div>
             <h1 className="text-4xl md:text-6xl lg:text-7xl font-bold text-white mb-4 leading-tight">
@@ -83,8 +83,8 @@ const HeroCarousel: React.FC<HeroCarouselProps> = ({ slides, universityName }) =
             {slide?.cta_text && (
               <Link
                 href={slide?.cta_link || '#'}
-                className="inline-flex items-center gap-2 px-8 py-4 bg-[#D4A574] text-[#2C1810] font-semibold rounded-full
-                  hover:bg-[#C4956A] transition-all hover:shadow-lg hover:shadow-[#D4A574]/30 hover:scale-105 active:scale-95"
+                className="inline-flex items-center gap-2 px-8 py-4 bg-[#D4A574] text-gray-900 font-semibold rounded-full
+                  hover:bg-gray-300 transition-all hover:shadow-lg hover:shadow-[#D4A574]/30 hover:scale-105 active:scale-95"
               >
                 {slide?.cta_text}
                 <ArrowRight className="w-5 h-5" />

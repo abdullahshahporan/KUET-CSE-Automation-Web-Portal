@@ -28,15 +28,15 @@ export default function RoutineFilters({
         <select
           value={selectedTerm}
           onChange={(e) => onTermChange(e.target.value)}
-          className="appearance-none pl-4 pr-10 py-2.5 border border-[#DCC5B2] dark:border-[#392e4e] rounded-xl bg-[#FAF7F3] dark:bg-white/5 text-[#5D4E37] dark:text-white focus:ring-2 focus:ring-[#D9A299] dark:focus:ring-[#8400ff] focus:border-transparent font-medium text-sm cursor-pointer"
+          className="appearance-none pl-4 pr-10 py-2.5 border border-gray-200 dark:border-gray-300 rounded-xl bg-white dark:bg-white/5 text-gray-700 dark:text-white focus:ring-2 focus:ring-indigo-300 dark:focus:ring-indigo-500 focus:border-transparent font-medium text-sm cursor-pointer"
         >
           {TERMS.map((t) => (
-            <option key={t.value} value={t.value} className="bg-[#FAF7F3] dark:bg-[#0d0d1a]">
+            <option key={t.value} value={t.value} className="bg-white dark:bg-gray-50">
               {t.label}
             </option>
           ))}
         </select>
-        <ChevronDown className="absolute right-3 top-1/2 -translate-y-1/2 w-4 h-4 text-[#8B7355] dark:text-white/40 pointer-events-none" />
+        <ChevronDown className="absolute right-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400 dark:text-white/40 pointer-events-none" />
       </div>
 
       {/* Session Selector */}
@@ -44,27 +44,27 @@ export default function RoutineFilters({
         <select
           value={selectedSession}
           onChange={(e) => onSessionChange(e.target.value)}
-          className="appearance-none pl-4 pr-10 py-2.5 border border-[#DCC5B2] dark:border-[#392e4e] rounded-xl bg-[#FAF7F3] dark:bg-white/5 text-[#5D4E37] dark:text-white focus:ring-2 focus:ring-[#D9A299] dark:focus:ring-[#8400ff] focus:border-transparent font-medium text-sm cursor-pointer"
+          className="appearance-none pl-4 pr-10 py-2.5 border border-gray-200 dark:border-gray-300 rounded-xl bg-white dark:bg-white/5 text-gray-700 dark:text-white focus:ring-2 focus:ring-indigo-300 dark:focus:ring-indigo-500 focus:border-transparent font-medium text-sm cursor-pointer"
         >
           {SESSIONS.map((s) => (
-            <option key={s} value={s} className="bg-[#FAF7F3] dark:bg-[#0d0d1a]">
+            <option key={s} value={s} className="bg-white dark:bg-gray-50">
               {s}
             </option>
           ))}
         </select>
-        <ChevronDown className="absolute right-3 top-1/2 -translate-y-1/2 w-4 h-4 text-[#8B7355] dark:text-white/40 pointer-events-none" />
+        <ChevronDown className="absolute right-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400 dark:text-white/40 pointer-events-none" />
       </div>
 
       {/* Section Toggle */}
-      <div className="flex rounded-xl overflow-hidden border border-[#DCC5B2] dark:border-[#392e4e]">
+      <div className="flex rounded-xl overflow-hidden border border-gray-200">
         {SECTIONS.map((sec) => (
           <button
             key={sec}
             onClick={() => onSectionChange(sec)}
             className={`px-5 py-2.5 text-sm font-medium transition-colors ${
               selectedSection === sec
-                ? 'bg-gradient-to-r from-[#D9A299] to-[#DCC5B2] dark:from-[#8400ff] dark:to-[#a855f7] text-white'
-                : 'bg-[#FAF7F3] dark:bg-white/5 text-[#8B7355] dark:text-white/60 hover:bg-[#F0E4D3] dark:hover:bg-white/10'
+                ? 'bg-indigo-600 text-white'
+                : 'bg-white text-gray-500 hover:bg-gray-50'
             }`}
           >
             SEC - {sec}

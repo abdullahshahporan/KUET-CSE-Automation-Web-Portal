@@ -1,16 +1,13 @@
 "use client";
 
 import { useAuth } from '@/contexts/AuthContext';
-import { motion } from 'framer-motion';
 import {
     AlertCircle,
     Eye,
     EyeOff,
-    GraduationCap,
     Loader2,
     Lock,
-    Mail,
-    Shield
+    Mail
 } from 'lucide-react';
 import { useRouter } from 'next/navigation';
 import { useState } from 'react';
@@ -43,190 +40,101 @@ export default function SignIn({ onToggleForm }: SignInProps) {
     }
   };
 
-  const demoCredentials = [
-    { email: 'admin@gmail.com', password: 'admin123', role: 'Admin', icon: Shield },
-    { email: 'teacher@kuet.ac.bd', password: 'teacher123', role: 'Teacher', icon: GraduationCap },
-  ];
-
-  const fillDemo = (demoEmail: string, demoPassword: string) => {
-    setEmail(demoEmail);
-    setPassword(demoPassword);
-    setError('');
-  };
-
   return (
-    <motion.div 
-      initial={{ opacity: 0, y: 20 }}
-      animate={{ opacity: 1, y: 0 }}
-      transition={{ duration: 0.5 }}
-      className="w-full max-w-md space-y-6"
-    >
+    <div className="w-full max-w-md space-y-5">
       <div className="text-center">
-        <motion.h2 
-          initial={{ opacity: 0, y: -10 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: 0.1 }}
-          className="text-3xl font-bold text-[#5D4E37] dark:text-white mb-2"
-        >
+        <h2 className="text-2xl font-bold text-gray-900 mb-1">
           Welcome Back
-        </motion.h2>
-        <motion.p 
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
-          transition={{ delay: 0.2 }}
-          className="text-sm text-[#8B7355] dark:text-slate-400"
-        >
+        </h2>
+        <p className="text-sm text-gray-500">
           Sign in to access the KUET CSE Automation Portal
-        </motion.p>
+        </p>
       </div>
 
-      {/* Demo Credentials */}
-      <motion.div 
-        initial={{ opacity: 0, scale: 0.95 }}
-        animate={{ opacity: 1, scale: 1 }}
-        transition={{ delay: 0.3 }}
-        className="p-4 rounded-xl bg-[#F0E4D3] dark:bg-indigo-900/20 border border-[#DCC5B2] dark:border-indigo-800"
-      >
-        <p className="text-xs font-medium text-[#5D4E37] dark:text-indigo-300 mb-3 flex items-center gap-2">
-          <span className="w-1.5 h-1.5 rounded-full bg-[#D9A299] dark:bg-indigo-500 animate-pulse"></span>
-          Demo Credentials (Click to fill)
-        </p>
-        <div className="grid grid-cols-2 gap-2">
-          {demoCredentials.map((cred) => (
-            <button
-              key={cred.email}
-              type="button"
-              onClick={() => fillDemo(cred.email, cred.password)}
-              className="flex items-center gap-2 px-3 py-2 rounded-lg bg-[#FAF7F3] dark:bg-slate-800 
-                         border border-[#DCC5B2] dark:border-indigo-700
-                         hover:border-[#D9A299] dark:hover:border-indigo-500
-                         transition-all duration-200 group"
-            >
-              <cred.icon className="w-4 h-4 text-[#D9A299] dark:text-indigo-500 group-hover:scale-110 transition-transform" />
-              <span className="text-xs font-medium text-[#5D4E37] dark:text-slate-300">
-                {cred.role}
-              </span>
-            </button>
-          ))}
-        </div>
-      </motion.div>
-
-      {/* Error Message */}
       {error && (
-        <motion.div 
-          initial={{ opacity: 0, x: -10 }}
-          animate={{ opacity: 1, x: 0 }}
-          className="p-4 rounded-xl bg-rose-50 dark:bg-rose-900/20 border border-rose-200 dark:border-rose-800 flex items-center gap-3"
-        >
-          <AlertCircle className="w-5 h-5 text-rose-500 flex-shrink-0" />
-          <p className="text-sm text-rose-700 dark:text-rose-300">{error}</p>
-        </motion.div>
+        <div className="p-3 rounded-lg bg-red-50 border border-red-200 flex items-center gap-3">
+          <AlertCircle className="w-4 h-4 text-red-500 flex-shrink-0" />
+          <p className="text-sm text-red-700">{error}</p>
+        </div>
       )}
 
       <form onSubmit={handleSubmit} className="space-y-4">
-        <motion.div
-          initial={{ opacity: 0, x: -20 }}
-          animate={{ opacity: 1, x: 0 }}
-          transition={{ delay: 0.4 }}
-        >
-          <label className="block text-sm font-medium text-[#5D4E37] dark:text-slate-300 mb-2">
+        <div>
+          <label className="block text-sm font-medium text-gray-900 mb-1.5">
             Email Address
           </label>
           <div className="relative">
-            <Mail className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-[#8B7355] dark:text-slate-400" />
+            <Mail className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400" />
             <input
               type="email"
               placeholder="Enter your email"
               value={email}
               onChange={(e) => setEmail(e.target.value)}
-              className="input-primary pl-12"
+              className="input-primary pl-10"
               required
             />
           </div>
-        </motion.div>
+        </div>
 
-        <motion.div
-          initial={{ opacity: 0, x: -20 }}
-          animate={{ opacity: 1, x: 0 }}
-          transition={{ delay: 0.5 }}
-        >
-          <label className="block text-sm font-medium text-[#5D4E37] dark:text-slate-300 mb-2">
+        <div>
+          <label className="block text-sm font-medium text-gray-900 mb-1.5">
             Password
           </label>
           <div className="relative">
-            <Lock className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-[#8B7355] dark:text-slate-400" />
+            <Lock className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400" />
             <input
               type={showPassword ? 'text' : 'password'}
               placeholder="Enter your password"
               value={password}
               onChange={(e) => setPassword(e.target.value)}
-              className="input-primary pl-12 pr-12"
+              className="input-primary pl-10 pr-10"
               required
             />
             <button
               type="button"
               onClick={() => setShowPassword(!showPassword)}
-              className="absolute right-4 top-1/2 -translate-y-1/2 text-[#8B7355] dark:text-slate-400 hover:text-[#5D4E37] dark:hover:text-slate-300 transition-colors"
+              className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400"
             >
-              {showPassword ? <EyeOff className="w-5 h-5" /> : <Eye className="w-5 h-5" />}
+              {showPassword ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
             </button>
           </div>
-        </motion.div>
+        </div>
 
-        <motion.div 
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
-          transition={{ delay: 0.6 }}
-          className="flex items-center justify-between"
-        >
+        <div className="flex items-center justify-between">
           <label className="flex items-center gap-2 cursor-pointer">
             <input 
               type="checkbox" 
-              className="w-4 h-4 rounded border-[#DCC5B2] dark:border-slate-600 text-[#D9A299] dark:text-indigo-600 focus:ring-[#D9A299] dark:focus:ring-indigo-500"
+              className="w-4 h-4 rounded border-gray-200 text-gray-900 focus:ring-indigo-500"
             />
-            <span className="text-sm text-[#8B7355] dark:text-slate-400">Remember me</span>
+            <span className="text-sm text-gray-500">Remember me</span>
           </label>
-          <a href="#" className="text-sm text-[#D9A299] dark:text-indigo-400 hover:text-[#5D4E37] dark:hover:text-indigo-300 font-medium transition-colors">
-            Forgot Password?
-          </a>
-        </motion.div>
+        </div>
 
-        <motion.button
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: 0.7 }}
+        <button
           type="submit"
           disabled={isLoading}
           className="w-full btn-primary flex items-center justify-center gap-2"
         >
           {isLoading ? (
             <>
-              <Loader2 className="w-5 h-5 animate-spin" />
-              Signing In...
+              <Loader2 className="w-4 h-4 animate-spin" />
+              Signing in...
             </>
           ) : (
             'Sign In'
           )}
-        </motion.button>
+        </button>
       </form>
 
-      {/* Mobile Toggle */}
-      <motion.div 
-        initial={{ opacity: 0 }}
-        animate={{ opacity: 1 }}
-        transition={{ delay: 0.8 }}
-        className="text-center lg:hidden pt-4"
-      >
-        <p className="text-sm text-[#8B7355] dark:text-slate-400">
-          Don&apos;t have an account?{' '}
-          <button
-            onClick={onToggleForm}
-            className="text-[#D9A299] dark:text-indigo-400 hover:text-[#5D4E37] dark:hover:text-indigo-300 font-semibold transition-colors"
-          >
-            Sign Up
-          </button>
-        </p>
-      </motion.div>
-    </motion.div>
+      <p className="text-center text-sm text-gray-500">
+        Don&apos;t have an account?{' '}
+        <button
+          onClick={onToggleForm}
+          className="font-semibold text-gray-900 underline"
+        >
+          Contact Admin
+        </button>
+      </p>
+    </div>
   );
 }

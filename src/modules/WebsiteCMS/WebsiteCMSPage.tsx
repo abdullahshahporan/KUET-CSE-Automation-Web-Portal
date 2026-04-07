@@ -385,14 +385,14 @@ export default function WebsiteCMSPage() {
       </AnimatePresence>
 
       {/* ── Header ── */}
-      <div className="bg-white dark:bg-[#161a1d] rounded-2xl shadow-sm border border-[#DCC5B2] dark:border-[#161a1d] p-6">
+      <div className="bg-white dark:bg-[#161a1d] rounded-2xl shadow-sm border border-gray-200 dark:border-[#161a1d] p-6">
         <div className="flex items-center gap-3 mb-2">
           <div className="w-10 h-10 bg-[#D4A574]/20 rounded-xl flex items-center justify-center">
-            <Globe className="w-5 h-5 text-[#D4A574]" />
+            <Globe className="w-5 h-5 text-gray-400" />
           </div>
           <div>
-            <h1 className="text-2xl font-bold text-[#2C1810] dark:text-white">Website CMS</h1>
-            <p className="text-sm text-[#6B5744] dark:text-[#b1a7a6]">
+            <h1 className="text-2xl font-bold text-gray-900 dark:text-white">Website CMS</h1>
+            <p className="text-sm text-gray-500 dark:text-[#b1a7a6]">
               Manage all landing page content — images, text, sections, and more.
             </p>
           </div>
@@ -400,7 +400,7 @@ export default function WebsiteCMSPage() {
       </div>
 
       {/* ── Tab navigation ── */}
-      <div className="bg-white dark:bg-[#161a1d] rounded-2xl shadow-sm border border-[#DCC5B2] dark:border-[#161a1d] p-2">
+      <div className="bg-white dark:bg-[#161a1d] rounded-2xl shadow-sm border border-gray-200 dark:border-[#161a1d] p-2">
         {/* Desktop tabs */}
         <div className="hidden lg:flex flex-wrap gap-1">
           {CMS_TABLES.map(t => {
@@ -412,8 +412,8 @@ export default function WebsiteCMSPage() {
                 onClick={() => setActiveTab(t.key)}
                 className={`flex items-center gap-1.5 px-3 py-2 rounded-lg text-xs font-medium transition-all ${
                   isActive
-                    ? 'bg-[#D4A574] text-[#2C1810] shadow-sm'
-                    : 'text-[#6B5744] dark:text-[#b1a7a6] hover:bg-[#D4A574]/10'
+                    ? 'bg-[#D4A574] text-gray-900 shadow-sm'
+                    : 'text-gray-500 dark:text-[#b1a7a6] hover:bg-[#D4A574]/10'
                 }`}
               >
                 <Icon className="w-3.5 h-3.5" />
@@ -426,7 +426,7 @@ export default function WebsiteCMSPage() {
         <div className="lg:hidden relative">
           <button
             onClick={() => setTabDropdownOpen(!tabDropdownOpen)}
-            className="w-full flex items-center justify-between px-4 py-3 rounded-lg bg-[#D4A574]/10 text-[#2C1810] dark:text-white"
+            className="w-full flex items-center justify-between px-4 py-3 rounded-lg bg-[#D4A574]/10 text-gray-900 dark:text-white"
           >
             <span className="flex items-center gap-2 text-sm font-medium">
               {React.createElement(activeConfig.icon, { className: 'w-4 h-4' })}
@@ -435,7 +435,7 @@ export default function WebsiteCMSPage() {
             <ChevronDown className={`w-4 h-4 transition-transform ${tabDropdownOpen ? 'rotate-180' : ''}`} />
           </button>
           {tabDropdownOpen && (
-            <div className="absolute top-full left-0 right-0 mt-1 z-20 bg-white dark:bg-[#161a1d] border border-[#DCC5B2] dark:border-[#161a1d] rounded-lg shadow-lg max-h-64 overflow-y-auto">
+            <div className="absolute top-full left-0 right-0 mt-1 z-20 bg-white dark:bg-[#161a1d] border border-gray-200 dark:border-[#161a1d] rounded-lg shadow-lg max-h-64 overflow-y-auto">
               {CMS_TABLES.map(t => {
                 const Icon = t.icon;
                 return (
@@ -443,7 +443,7 @@ export default function WebsiteCMSPage() {
                     key={t.key}
                     onClick={() => { setActiveTab(t.key); setTabDropdownOpen(false); }}
                     className={`w-full flex items-center gap-2 px-4 py-2.5 text-sm hover:bg-[#D4A574]/10 ${
-                      activeTab === t.key ? 'text-[#D4A574] font-medium' : 'text-[#6B5744] dark:text-[#b1a7a6]'
+                      activeTab === t.key ? 'text-gray-400 font-medium' : 'text-gray-500 dark:text-[#b1a7a6]'
                     }`}
                   >
                     <Icon className="w-4 h-4" /> {t.label}
@@ -456,29 +456,29 @@ export default function WebsiteCMSPage() {
       </div>
 
       {/* ── Table content area ── */}
-      <div className="bg-white dark:bg-[#161a1d] rounded-2xl shadow-sm border border-[#DCC5B2] dark:border-[#161a1d] overflow-hidden">
+      <div className="bg-white dark:bg-[#161a1d] rounded-2xl shadow-sm border border-gray-200 dark:border-[#161a1d] overflow-hidden">
         {/* Sub-header: description + actions */}
-        <div className="p-4 border-b border-[#DCC5B2]/50 dark:border-[#161a1d]/50">
+        <div className="p-4 border-b border-gray-200/50 dark:border-[#161a1d]/50">
           <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-3">
             <div>
-              <h2 className="text-lg font-semibold text-[#2C1810] dark:text-white flex items-center gap-2">
-                {React.createElement(activeConfig.icon, { className: 'w-5 h-5 text-[#D4A574]' })}
+              <h2 className="text-lg font-semibold text-gray-900 dark:text-white flex items-center gap-2">
+                {React.createElement(activeConfig.icon, { className: 'w-5 h-5 text-gray-400' })}
                 {activeConfig.label}
-                <span className="text-xs font-normal text-[#8B7355] dark:text-[#b1a7a6]/70 ml-2">
+                <span className="text-xs font-normal text-gray-400 dark:text-[#b1a7a6]/70 ml-2">
                   {filteredRows.length} record{filteredRows.length !== 1 ? 's' : ''}
                 </span>
               </h2>
-              <p className="text-xs text-[#8B7355] dark:text-[#b1a7a6] mt-0.5">{activeConfig.description}</p>
+              <p className="text-xs text-gray-400 dark:text-[#b1a7a6] mt-0.5">{activeConfig.description}</p>
             </div>
             <div className="flex items-center gap-2">
               {/* Search */}
               <div className="relative">
-                <Search className="w-4 h-4 absolute left-3 top-1/2 -translate-y-1/2 text-[#8B7355]" />
+                <Search className="w-4 h-4 absolute left-3 top-1/2 -translate-y-1/2 text-gray-400" />
                 <input
                   value={searchQuery}
                   onChange={e => setSearchQuery(e.target.value)}
                   placeholder="Search…"
-                  className="pl-9 pr-3 py-2 text-sm bg-[#FAF7F3] dark:bg-[#0b090a] border border-[#DCC5B2] dark:border-[#161a1d] rounded-lg text-[#2C1810] dark:text-[#f5f3f4] focus:outline-none focus:ring-2 focus:ring-[#D4A574]/40 w-48"
+                  className="pl-9 pr-3 py-2 text-sm bg-white dark:bg-[#0b090a] border border-gray-200 dark:border-[#161a1d] rounded-lg text-gray-900 dark:text-[#f5f3f4] focus:outline-none focus:ring-2 focus:ring-indigo-300/40 w-48"
                 />
               </div>
               {/* Add new */}
@@ -494,7 +494,7 @@ export default function WebsiteCMSPage() {
                   setEditingRow(blank);
                   setIsCreating(true);
                 }}
-                className="flex items-center gap-1.5 px-4 py-2 bg-[#D4A574] text-[#2C1810] text-sm font-medium rounded-lg hover:bg-[#C4956A] transition-colors"
+                className="flex items-center gap-1.5 px-4 py-2 bg-[#D4A574] text-gray-900 text-sm font-medium rounded-lg hover:bg-gray-300 transition-colors"
               >
                 <Plus className="w-4 h-4" /> Add New
               </button>
@@ -505,15 +505,15 @@ export default function WebsiteCMSPage() {
         {/* Loading state */}
         {loading ? (
           <div className="flex items-center justify-center py-20">
-            <Loader2 className="w-6 h-6 text-[#D4A574] animate-spin" />
-            <span className="ml-2 text-sm text-[#8B7355]">Loading {activeConfig.label}…</span>
+            <Loader2 className="w-6 h-6 text-gray-400 animate-spin" />
+            <span className="ml-2 text-sm text-gray-400">Loading {activeConfig.label}…</span>
           </div>
         ) : filteredRows.length === 0 ? (
           <div className="flex flex-col items-center justify-center py-20 text-center">
             <div className="w-14 h-14 bg-[#D4A574]/10 rounded-full flex items-center justify-center mb-3">
-              {React.createElement(activeConfig.icon, { className: 'w-7 h-7 text-[#D4A574]/50' })}
+              {React.createElement(activeConfig.icon, { className: 'w-7 h-7 text-gray-400/50' })}
             </div>
-            <p className="text-sm text-[#8B7355]">
+            <p className="text-sm text-gray-400">
               {searchQuery ? 'No matching records found.' : `No ${activeConfig.label.toLowerCase()} yet.`}
             </p>
             {!searchQuery && (
@@ -529,7 +529,7 @@ export default function WebsiteCMSPage() {
                   setEditingRow(blank);
                   setIsCreating(true);
                 }}
-                className="mt-3 text-sm text-[#D4A574] hover:underline flex items-center gap-1"
+                className="mt-3 text-sm text-gray-400 hover:underline flex items-center gap-1"
               >
                 <Plus className="w-3.5 h-3.5" /> Create first record
               </button>
@@ -540,16 +540,16 @@ export default function WebsiteCMSPage() {
           <div className="overflow-x-auto">
             <table className="w-full text-sm">
               <thead>
-                <tr className="bg-[#FAF7F3] dark:bg-[#0b090a]">
+                <tr className="bg-white dark:bg-[#0b090a]">
                   {activeConfig.columns.map(col => (
                     <th
                       key={col.key}
-                      className="px-4 py-3 text-left text-xs font-semibold text-[#6B5744] dark:text-[#b1a7a6] uppercase tracking-wide"
+                      className="px-4 py-3 text-left text-xs font-semibold text-gray-500 dark:text-[#b1a7a6] uppercase tracking-wide"
                     >
                       {col.label}
                     </th>
                   ))}
-                  <th className="px-4 py-3 text-right text-xs font-semibold text-[#6B5744] dark:text-[#b1a7a6] uppercase tracking-wide w-24">
+                  <th className="px-4 py-3 text-right text-xs font-semibold text-gray-500 dark:text-[#b1a7a6] uppercase tracking-wide w-24">
                     Actions
                   </th>
                 </tr>
@@ -558,10 +558,10 @@ export default function WebsiteCMSPage() {
                 {filteredRows.map((row) => (
                   <tr
                     key={row.id as string}
-                    className="hover:bg-[#FAF7F3]/60 dark:hover:bg-[#0b090a]/40 transition-colors"
+                    className="hover:bg-white/60 dark:hover:bg-[#0b090a]/40 transition-colors"
                   >
                     {activeConfig.columns.map(col => (
-                      <td key={col.key} className="px-4 py-3 text-[#2C1810] dark:text-[#f5f3f4] max-w-[200px]">
+                      <td key={col.key} className="px-4 py-3 text-gray-900 dark:text-[#f5f3f4] max-w-[200px]">
                         {renderCellValue(row, col, (id, field, val) => handleToggle(id, field, val), setImagePreview)}
                       </td>
                     ))}
@@ -569,7 +569,7 @@ export default function WebsiteCMSPage() {
                       <div className="flex items-center justify-end gap-1">
                         <button
                           onClick={() => { setEditingRow({ ...row }); setIsCreating(false); }}
-                          className="p-1.5 text-[#6B5744] dark:text-[#b1a7a6]/70 hover:text-[#D4A574] hover:bg-[#D4A574]/10 rounded-md transition-colors"
+                          className="p-1.5 text-gray-500 dark:text-[#b1a7a6]/70 hover:text-gray-400 hover:bg-[#D4A574]/10 rounded-md transition-colors"
                           title="Edit"
                         >
                           <Edit2 className="w-4 h-4" />
@@ -584,7 +584,7 @@ export default function WebsiteCMSPage() {
                             </button>
                             <button
                               onClick={() => setDeleteConfirm(null)}
-                              className="p-1.5 text-[#6B5744] hover:bg-[#6B5744]/10 rounded-md"
+                              className="p-1.5 text-gray-500 hover:bg-[#6B5744]/10 rounded-md"
                             >
                               <X className="w-4 h-4" />
                             </button>
@@ -592,7 +592,7 @@ export default function WebsiteCMSPage() {
                         ) : (
                           <button
                             onClick={() => setDeleteConfirm(row.id as string)}
-                            className="p-1.5 text-[#6B5744] dark:text-[#b1a7a6]/70 hover:text-red-500 hover:bg-red-500/10 rounded-md transition-colors"
+                            className="p-1.5 text-gray-500 dark:text-[#b1a7a6]/70 hover:text-red-500 hover:bg-red-500/10 rounded-md transition-colors"
                             title="Delete"
                           >
                             <Trash2 className="w-4 h-4" />
@@ -693,11 +693,11 @@ function renderCellValue(
   }
 
   if (col.type === 'image' || (col.key.includes('image') || col.key.includes('photo') || col.key.includes('logo'))) {
-    if (!val) return <span className="text-[#8B7355]/50 text-xs">—</span>;
+    if (!val) return <span className="text-gray-400/50 text-xs">—</span>;
     const url = getImageUrl(val as string);
     return (
       <button onClick={() => onImagePreview(url)} className="group relative">
-        <img src={url} alt="" className="w-10 h-10 rounded-md object-cover border border-[#DCC5B2]/50" />
+        <img src={url} alt="" className="w-10 h-10 rounded-md object-cover border border-gray-200/50" />
         <div className="absolute inset-0 bg-black/30 rounded-md opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center">
           <Eye className="w-3.5 h-3.5 text-white" />
         </div>
@@ -706,13 +706,13 @@ function renderCellValue(
   }
 
   if (col.type === 'url') {
-    if (!val) return <span className="text-[#8B7355]/50 text-xs">—</span>;
+    if (!val) return <span className="text-gray-400/50 text-xs">—</span>;
     return (
       <a
         href={val as string}
         target="_blank"
         rel="noopener noreferrer"
-        className="text-[#D4A574] hover:underline text-xs flex items-center gap-1 truncate max-w-[150px]"
+        className="text-gray-400 hover:underline text-xs flex items-center gap-1 truncate max-w-[150px]"
       >
         <ExternalLink className="w-3 h-3 shrink-0" />
         <span className="truncate">{val as string}</span>
@@ -721,30 +721,30 @@ function renderCellValue(
   }
 
   if (col.type === 'json') {
-    if (!val) return <span className="text-[#8B7355]/50 text-xs">—</span>;
+    if (!val) return <span className="text-gray-400/50 text-xs">—</span>;
     const arr = Array.isArray(val) ? val : [];
     return (
       <div className="flex flex-wrap gap-1 max-w-[200px]">
         {arr.slice(0, 3).map((item: string, i: number) => (
-          <span key={i} className="px-1.5 py-0.5 bg-[#D4A574]/10 text-[#6B5744] dark:text-[#D4A574] rounded text-xs">
+          <span key={i} className="px-1.5 py-0.5 bg-[#D4A574]/10 text-gray-500 dark:text-gray-400 rounded text-xs">
             {item}
           </span>
         ))}
-        {arr.length > 3 && <span className="text-xs text-[#8B7355]">+{arr.length - 3}</span>}
+        {arr.length > 3 && <span className="text-xs text-gray-400">+{arr.length - 3}</span>}
       </div>
     );
   }
 
   if (col.type === 'select') {
     return (
-      <span className="inline-block px-2 py-0.5 bg-[#D4A574]/10 text-[#6B5744] dark:text-[#D4A574] rounded text-xs font-medium">
+      <span className="inline-block px-2 py-0.5 bg-[#D4A574]/10 text-gray-500 dark:text-gray-400 rounded text-xs font-medium">
         {val as string || '—'}
       </span>
     );
   }
 
   if (col.type === 'datetime') {
-    if (!val) return <span className="text-[#8B7355]/50 text-xs">—</span>;
+    if (!val) return <span className="text-gray-400/50 text-xs">—</span>;
     try {
       return <span className="text-xs">{new Date(val as string).toLocaleDateString()}</span>;
     } catch {
@@ -758,7 +758,7 @@ function renderCellValue(
   }
 
   // Default: text / number
-  if (val == null || val === '') return <span className="text-[#8B7355]/50 text-xs">—</span>;
+  if (val == null || val === '') return <span className="text-gray-400/50 text-xs">—</span>;
   return <span className="text-xs truncate block max-w-[200px]">{String(val)}</span>;
 }
 
@@ -807,15 +807,15 @@ function EditModal({
         animate={{ opacity: 1, y: 0, scale: 1 }}
         exit={{ opacity: 0, y: 20, scale: 0.97 }}
         onClick={e => e.stopPropagation()}
-        className="bg-white dark:bg-[#161a1d] w-full max-w-lg rounded-2xl shadow-2xl border border-[#DCC5B2] dark:border-[#161a1d] overflow-hidden"
+        className="bg-white dark:bg-[#161a1d] w-full max-w-lg rounded-2xl shadow-2xl border border-gray-200 dark:border-[#161a1d] overflow-hidden"
       >
         {/* Modal header */}
-        <div className="flex items-center justify-between px-6 py-4 border-b border-[#DCC5B2]/50 dark:border-[#161a1d]/50">
-          <h3 className="text-lg font-semibold text-[#2C1810] dark:text-white">
+        <div className="flex items-center justify-between px-6 py-4 border-b border-gray-200/50 dark:border-[#161a1d]/50">
+          <h3 className="text-lg font-semibold text-gray-900 dark:text-white">
             {isCreating ? `Add ${tableLabel.replace(/s$/, '')}` : `Edit ${tableLabel.replace(/s$/, '')}`}
           </h3>
           <button onClick={onClose} className="p-1.5 hover:bg-[#D4A574]/10 rounded-lg transition-colors">
-            <X className="w-5 h-5 text-[#6B5744]" />
+            <X className="w-5 h-5 text-gray-500" />
           </button>
         </div>
 
@@ -823,7 +823,7 @@ function EditModal({
         <form onSubmit={handleSubmit} className="p-6 space-y-4 max-h-[60vh] overflow-y-auto">
           {columns.filter(c => c.editable !== false).map(col => (
             <div key={col.key}>
-              <label className="block text-xs font-medium text-[#6B5744] dark:text-[#b1a7a6] mb-1">
+              <label className="block text-xs font-medium text-gray-500 dark:text-[#b1a7a6] mb-1">
                 {col.label}
                 {col.required && <span className="text-red-500 ml-0.5">*</span>}
               </label>
@@ -833,18 +833,18 @@ function EditModal({
         </form>
 
         {/* Modal footer */}
-        <div className="flex items-center justify-end gap-2 px-6 py-4 border-t border-[#DCC5B2]/50 dark:border-[#161a1d]/50 bg-[#FAF7F3]/50 dark:bg-[#0b090a]/30">
+        <div className="flex items-center justify-end gap-2 px-6 py-4 border-t border-gray-200/50 dark:border-[#161a1d]/50 bg-white/50 dark:bg-[#0b090a]/30">
           <button
             type="button"
             onClick={onClose}
-            className="px-4 py-2 text-sm text-[#6B5744] hover:bg-[#DCC5B2]/20 rounded-lg transition-colors"
+            className="px-4 py-2 text-sm text-gray-500 hover:bg-[#DCC5B2]/20 rounded-lg transition-colors"
           >
             Cancel
           </button>
           <button
             onClick={() => onSave(formData)}
             disabled={saving}
-            className="flex items-center gap-1.5 px-4 py-2 bg-[#D4A574] text-[#2C1810] text-sm font-medium rounded-lg hover:bg-[#C4956A] disabled:opacity-50 transition-colors"
+            className="flex items-center gap-1.5 px-4 py-2 bg-[#D4A574] text-gray-900 text-sm font-medium rounded-lg hover:bg-gray-300 disabled:opacity-50 transition-colors"
           >
             {saving ? (
               <>
@@ -872,7 +872,7 @@ function renderFormField(
   onChange: (val: unknown) => void,
 ) {
   const baseInputClass =
-    'w-full px-3 py-2 text-sm bg-[#FAF7F3] dark:bg-[#0b090a] border border-[#DCC5B2] dark:border-[#161a1d] rounded-lg text-[#2C1810] dark:text-[#f5f3f4] focus:outline-none focus:ring-2 focus:ring-[#D4A574]/40 placeholder:text-[#8B7355]/50';
+    'w-full px-3 py-2 text-sm bg-white dark:bg-[#0b090a] border border-gray-200 dark:border-[#161a1d] rounded-lg text-gray-900 dark:text-[#f5f3f4] focus:outline-none focus:ring-2 focus:ring-indigo-300/40 placeholder:text-gray-400/50';
 
   switch (col.type) {
     case 'boolean':
@@ -972,7 +972,7 @@ function renderFormField(
               <img
                 src={getImageUrl(value)}
                 alt="Preview"
-                className="w-16 h-16 rounded-lg object-cover border border-[#DCC5B2]/50"
+                className="w-16 h-16 rounded-lg object-cover border border-gray-200/50"
                 onError={e => { (e.target as HTMLImageElement).style.display = 'none'; }}
               />
             </div>

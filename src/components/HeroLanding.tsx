@@ -105,7 +105,7 @@ const HeroLanding: React.FC = () => {
       <div className="min-h-screen bg-[#0b090a] flex items-center justify-center">
         <motion.div animate={{ y: [0, -18, 0] }} transition={{ repeat: Infinity, duration: 2.2, ease: 'easeInOut' }} className="flex flex-col items-center gap-4">
           <img src="/kuet-logo.png" alt="KUET" className="w-20 h-20 object-contain drop-shadow-lg" />
-          <span className="text-[#D4A574] text-sm font-medium tracking-wide">Loading...</span>
+          <span className="text-gray-400 text-sm font-medium tracking-wide">Loading...</span>
         </motion.div>
       </div>
     );
@@ -130,7 +130,7 @@ const HeroLanding: React.FC = () => {
   // ── Render ──
 
   return (
-    <div className="min-h-screen bg-[#FDF8F3] overflow-x-hidden">
+    <div className="min-h-screen bg-white overflow-x-hidden">
 
       {/* ── NAVBAR ─────────────────────────────── */}
       <Navbar
@@ -158,11 +158,11 @@ const HeroLanding: React.FC = () => {
 
       {/* ── NOTICES MARQUEE ────────────────────── */}
       {vis('notices') && data.news.length > 0 && (
-        <div className="bg-[#5D4037] text-white py-3 overflow-hidden">
+        <div className="bg-gray-600 text-white py-3 overflow-hidden">
           <div className="flex animate-marquee whitespace-nowrap">
             {[...data.news, ...data.news].map((n, i) => (
               <span key={i} className="mx-8 flex items-center gap-2 text-sm">
-                <span className="px-2 py-0.5 bg-[#D4A574] text-[#2C1810] text-xs font-bold rounded-full">{n.category}</span>
+                <span className="px-2 py-0.5 bg-indigo-100 text-indigo-700 text-xs font-bold rounded-full">{n.category}</span>
                 {n.title}
               </span>
             ))}
@@ -264,13 +264,13 @@ interface NavbarProps {
 const Navbar: React.FC<NavbarProps> = ({ scrolled, mobileOpen, onToggleMobile, links, shortName }) => (
   <nav className={`fixed top-0 inset-x-0 z-50 transition-all duration-500 ${
     scrolled
-      ? 'bg-[#FDF8F3]/95 backdrop-blur-xl shadow-lg shadow-[#5D4037]/5 border-b border-[#DCC5B2]/50'
+      ? 'bg-white/95 backdrop-blur-xl shadow-lg shadow-gray-600/5 border-b border-gray-200/50'
       : 'bg-transparent'
   }`}>
     <div className="max-w-7xl mx-auto px-4 md:px-8 flex items-center justify-between h-16 md:h-20">
       <Link href="/" className="flex items-center gap-3 group">
         <img src="/kuet-logo.png" alt="KUET" className="w-10 h-10 object-contain" />
-        <span className={`text-lg font-bold transition-colors ${scrolled ? 'text-[#2C1810]' : 'text-white'}`}>
+        <span className={`text-lg font-bold transition-colors ${scrolled ? 'text-gray-900' : 'text-white'}`}>
           {shortName}
         </span>
       </Link>
@@ -279,7 +279,7 @@ const Navbar: React.FC<NavbarProps> = ({ scrolled, mobileOpen, onToggleMobile, l
         {links.map(l => (
           <Link key={l.id} href={l.url} className={`px-3 py-2 text-sm font-medium rounded-lg transition-colors ${
             scrolled
-              ? 'text-[#6B5744] hover:text-[#2C1810] hover:bg-[#F5EDE4]'
+              ? 'text-gray-500 hover:text-gray-900 hover:bg-gray-50'
               : 'text-white/80 hover:text-white hover:bg-white/10'
           }`}>{l.label}</Link>
         ))}
@@ -288,12 +288,12 @@ const Navbar: React.FC<NavbarProps> = ({ scrolled, mobileOpen, onToggleMobile, l
       <div className="flex items-center gap-3">
         <Link href="/auth/signin" className={`hidden md:inline-flex items-center gap-2 px-5 py-2.5 rounded-full text-sm font-semibold transition-all ${
           scrolled
-            ? 'bg-[#5D4037] text-white hover:bg-[#4E342E]'
+            ? 'bg-gray-600 text-white hover:bg-[#4E342E]'
             : 'bg-white/15 backdrop-blur-md text-white border border-white/25 hover:bg-white/25'
         }`}>
           Sign In <ArrowRight className="w-4 h-4" />
         </Link>
-        <button onClick={onToggleMobile} className={`lg:hidden p-2 rounded-lg ${scrolled ? 'text-[#2C1810]' : 'text-white'}`}>
+        <button onClick={onToggleMobile} className={`lg:hidden p-2 rounded-lg ${scrolled ? 'text-gray-900' : 'text-white'}`}>
           {mobileOpen ? <X className="w-6 h-6" /> : <Menu className="w-6 h-6" />}
         </button>
       </div>
@@ -302,14 +302,14 @@ const Navbar: React.FC<NavbarProps> = ({ scrolled, mobileOpen, onToggleMobile, l
     <AnimatePresence>
       {mobileOpen && (
         <motion.div initial={{ opacity: 0, height: 0 }} animate={{ opacity: 1, height: 'auto' }} exit={{ opacity: 0, height: 0 }}
-          className="lg:hidden bg-[#FDF8F3]/98 backdrop-blur-xl border-t border-[#DCC5B2]/50">
+          className="lg:hidden bg-white/98 backdrop-blur-xl border-t border-gray-200/50">
           <div className="px-4 py-4 space-y-1">
             {links.map(l => (
               <Link key={l.id} href={l.url} onClick={onToggleMobile}
-                className="block px-4 py-3 text-[#2C1810] font-medium rounded-lg hover:bg-[#F5EDE4]">{l.label}</Link>
+                className="block px-4 py-3 text-gray-900 font-medium rounded-lg hover:bg-gray-50">{l.label}</Link>
             ))}
             <Link href="/auth/signin" onClick={onToggleMobile}
-              className="block px-4 py-3 text-white font-semibold bg-[#5D4037] rounded-lg text-center mt-2">Sign In</Link>
+              className="block px-4 py-3 text-white font-semibold bg-gray-600 rounded-lg text-center mt-2">Sign In</Link>
           </div>
         </motion.div>
       )}

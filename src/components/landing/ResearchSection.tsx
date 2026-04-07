@@ -22,7 +22,7 @@ const ResearchSection: React.FC<ResearchSectionProps> = ({ research, sectionTitl
   if (!research.length) return null;
 
   return (
-    <section className="py-20 md:py-28 bg-[#F5EDE4]">
+    <section className="py-20 md:py-28 bg-gray-50">
       <div className="max-w-7xl mx-auto px-6 md:px-8">
         <Reveal>
           <SectionHeading
@@ -33,11 +33,11 @@ const ResearchSection: React.FC<ResearchSectionProps> = ({ research, sectionTitl
         <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
           {research.map((r, i) => (
             <Reveal key={r.id} delay={i * 0.08}>
-              <div className="group bg-white rounded-2xl overflow-hidden border border-[#E8DDD1] hover:shadow-warm-lg hover:-translate-y-1 transition-all duration-300">
+              <div className="group bg-white rounded-2xl overflow-hidden border border-gray-200 hover:shadow-warm-lg hover:-translate-y-1 transition-all duration-300">
                 {r.image_path && (
                   <div className="relative overflow-hidden">
                     <img src={getImageUrl(r.image_path)} alt={r.title} className="w-full h-48 object-cover transition-transform duration-700 group-hover:scale-110" />
-                    <div className="absolute inset-0 bg-[#5D4037]/20 group-hover:bg-[#5D4037]/10 transition-all" />
+                    <div className="absolute inset-0 bg-gray-600/20 group-hover:bg-gray-700/10 transition-all" />
                     <div className="absolute bottom-0 inset-x-0 h-1/2 bg-gradient-to-t from-[#161a1d]/70 to-transparent" />
                     <span className="absolute bottom-3 left-3 text-white text-xs font-medium bg-white/20 backdrop-blur-md px-3 py-1 rounded-full">
                       {r.category}
@@ -45,11 +45,11 @@ const ResearchSection: React.FC<ResearchSectionProps> = ({ research, sectionTitl
                   </div>
                 )}
                 <div className="p-5">
-                  <h3 className="font-bold text-[#2C1810] mb-2 line-clamp-2 group-hover:text-[#5D4037]">{r.title}</h3>
-                  {r.description && <p className="text-[#6B5744] text-sm line-clamp-3">{r.description}</p>}
+                  <h3 className="font-bold text-gray-900 mb-2 line-clamp-2 group-hover:text-gray-600">{r.title}</h3>
+                  {r.description && <p className="text-gray-500 text-sm line-clamp-3">{r.description}</p>}
                   {r.external_link && (
                     <a href={r.external_link} target="_blank" rel="noopener noreferrer"
-                      className="inline-flex items-center gap-1 mt-3 text-sm font-medium text-[#5D4037] hover:text-[#D4A574]">
+                      className="inline-flex items-center gap-1 mt-3 text-sm font-medium text-gray-600 hover:text-gray-400">
                       View Paper <ExternalLink className="w-3.5 h-3.5" />
                     </a>
                   )}

@@ -108,27 +108,27 @@ export default function SchedulePage() {
       {/* Header */}
       <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
         <div>
-          <h1 className="text-2xl font-bold text-[#5D4E37] dark:text-white">Class Schedule</h1>
-          <p className="text-[#8B7355] dark:text-[#b1a7a6] mt-1">Select a date to view that day&apos;s schedule</p>
+          <h1 className="text-2xl font-bold text-gray-700 dark:text-white">Class Schedule</h1>
+          <p className="text-gray-400 dark:text-[#b1a7a6] mt-1">Select a date to view that day&apos;s schedule</p>
         </div>
         <div className="flex items-center gap-3">
           <select
             value={term}
             onChange={e => setTerm(e.target.value)}
-            className="px-4 py-2 border border-[#DCC5B2] dark:border-[#3d4951] rounded-lg bg-[#FAF7F3] dark:bg-[#0b090a] text-[#5D4E37] dark:text-white focus:ring-2 focus:ring-[#D9A299] dark:focus:ring-[#ba181b] focus:border-transparent text-sm"
+            className="px-4 py-2 border border-gray-200 dark:border-[#3d4951] rounded-lg bg-white dark:bg-[#0b090a] text-gray-700 dark:text-white focus:ring-2 focus:ring-indigo-300 dark:focus:ring-red-400 focus:border-transparent text-sm"
           >
-            <option value="all" className="bg-[#FAF7F3] dark:bg-[#0d0d1a]">All Terms</option>
+            <option value="all" className="bg-white dark:bg-gray-50">All Terms</option>
             {TERMS.map(t => (
-              <option key={t} value={t} className="bg-[#FAF7F3] dark:bg-[#161a1d]">Term {t}</option>
+              <option key={t} value={t} className="bg-white dark:bg-[#161a1d]">Term {t}</option>
             ))}
           </select>
-          <div className="flex bg-[#F0E4D3] dark:bg-[#0b090a] border border-[#DCC5B2] dark:border-[#3d4951] rounded-lg p-1">
+          <div className="flex bg-gray-100 border border-gray-200 rounded-lg p-1">
             <button
               onClick={() => setViewMode('table')}
               className={`px-3 py-1.5 rounded text-sm font-medium transition-colors ${
                 viewMode === 'table'
-                  ? 'bg-[#D9A299] dark:bg-[#ba181b] text-white'
-                  : 'text-[#5D4E37] dark:text-[#b1a7a6] hover:text-[#D9A299] dark:hover:text-white'
+                  ? 'bg-indigo-600 text-white'
+                  : 'text-gray-500 hover:text-gray-700'
               }`}
             >
               Table
@@ -137,8 +137,8 @@ export default function SchedulePage() {
               onClick={() => setViewMode('grid')}
               className={`px-3 py-1.5 rounded text-sm font-medium transition-colors ${
                 viewMode === 'grid'
-                  ? 'bg-[#D9A299] dark:bg-[#ba181b] text-white'
-                  : 'text-[#5D4E37] dark:text-[#b1a7a6] hover:text-[#D9A299] dark:hover:text-white'
+                  ? 'bg-indigo-600 text-white'
+                  : 'text-gray-500 hover:text-gray-700'
               }`}
             >
               Grid
@@ -148,7 +148,7 @@ export default function SchedulePage() {
             whileHover={{ scale: 1.02 }}
             whileTap={{ scale: 0.98 }}
             onClick={fetchSlots}
-            className="p-2 bg-[#F0E4D3] dark:bg-[#0b090a] border border-[#DCC5B2] dark:border-[#3d4951] text-[#5D4E37] dark:text-white rounded-lg hover:bg-[#E5D5C3] dark:hover:bg-[#3d4951]/30 transition-colors"
+            className="p-2 bg-gray-100 border border-gray-200 text-gray-700 rounded-lg hover:bg-gray-200 transition-colors"
             title="Refresh"
           >
             <RefreshCw className="w-5 h-5" />
@@ -160,7 +160,7 @@ export default function SchedulePage() {
       <div className="flex flex-col lg:flex-row gap-6">
         {/* ── Calendar ── */}
         <div className="lg:w-80 flex-shrink-0">
-          <div className="border border-[#DCC5B2] dark:border-[#3d4951] rounded-xl bg-[#FAF7F3] dark:bg-[#0b090a] p-4 lg:sticky lg:top-4">
+          <div className="border border-gray-200 dark:border-[#3d4951] rounded-xl bg-white dark:bg-[#0b090a] p-4 lg:sticky lg:top-4">
             {/* Month/Year header with nav arrows */}
             <div className="flex items-center justify-between mb-3">
               <button
@@ -168,11 +168,11 @@ export default function SchedulePage() {
                   if (calMonth === 0) { setCalYear(y => y - 1); setCalMonth(11); }
                   else setCalMonth(m => m - 1);
                 }}
-                className="p-1.5 rounded-lg hover:bg-[#E5D5C3] dark:hover:bg-[#3d4951]/40 text-[#5D4E37] dark:text-white transition-colors"
+                className="p-1.5 rounded-lg hover:bg-gray-100 text-gray-700 transition-colors"
               >
                 <ChevronLeft className="w-4 h-4" />
               </button>
-              <span className="text-sm font-bold text-[#5D4E37] dark:text-white tracking-wide">
+              <span className="text-sm font-bold text-gray-700 dark:text-white tracking-wide">
                 {MONTH_NAMES[calMonth]} {calYear}
               </span>
               <button
@@ -180,7 +180,7 @@ export default function SchedulePage() {
                   if (calMonth === 11) { setCalYear(y => y + 1); setCalMonth(0); }
                   else setCalMonth(m => m + 1);
                 }}
-                className="p-1.5 rounded-lg hover:bg-[#E5D5C3] dark:hover:bg-[#3d4951]/40 text-[#5D4E37] dark:text-white transition-colors"
+                className="p-1.5 rounded-lg hover:bg-gray-100 text-gray-700 transition-colors"
               >
                 <ChevronRight className="w-4 h-4" />
               </button>
@@ -189,7 +189,7 @@ export default function SchedulePage() {
             {/* Day-of-week headers */}
             <div className="grid grid-cols-7 mb-1">
               {CAL_DAY_LABELS.map(d => (
-                <div key={d} className="text-center text-[10px] font-bold uppercase tracking-wider text-[#8B7355] dark:text-[#b1a7a6] py-1">
+                <div key={d} className="text-center text-[10px] font-bold uppercase tracking-wider text-gray-400 dark:text-[#b1a7a6] py-1">
                   {d}
                 </div>
               ))}
@@ -213,18 +213,18 @@ export default function SchedulePage() {
                     className={`
                       relative w-full aspect-square flex items-center justify-center rounded-lg text-sm font-medium transition-all
                       ${isSelected
-                        ? 'bg-[#D9A299] dark:bg-[#ba181b] text-white shadow-md scale-105'
+                        ? 'bg-indigo-600 text-white shadow-md scale-105'
                         : isToday
-                          ? 'bg-[#D9A299]/20 dark:bg-[#ba181b]/20 text-[#D9A299] dark:text-[#ff6b6b] font-bold ring-1 ring-[#D9A299] dark:ring-[#ba181b]'
+                          ? 'bg-indigo-50 text-indigo-600 font-bold ring-1 ring-indigo-300'
                           : isFriSat
-                            ? 'text-[#c4a882] dark:text-[#555] hover:bg-[#E5D5C3]/50 dark:hover:bg-[#3d4951]/20'
-                            : 'text-[#5D4E37] dark:text-white/80 hover:bg-[#E5D5C3] dark:hover:bg-[#3d4951]/40'
+                            ? 'text-gray-400 hover:bg-gray-100'
+                            : 'text-gray-700 hover:bg-gray-100'
                       }
                     `}
                   >
                     {day}
                     {isToday && !isSelected && (
-                      <span className="absolute bottom-0.5 left-1/2 -translate-x-1/2 w-1 h-1 rounded-full bg-[#D9A299] dark:bg-[#ba181b]" />
+                      <span className="absolute bottom-0.5 left-1/2 -translate-x-1/2 w-1 h-1 rounded-full bg-indigo-600" />
                     )}
                   </button>
                 );
@@ -232,9 +232,9 @@ export default function SchedulePage() {
             </div>
 
             {/* Selected date display */}
-            <div className="mt-3 pt-3 border-t border-[#DCC5B2] dark:border-[#3d4951] text-center">
-              <p className="text-xs text-[#8B7355] dark:text-[#b1a7a6]">
-                Selected: <span className="font-bold text-[#5D4E37] dark:text-white">
+            <div className="mt-3 pt-3 border-t border-gray-200 dark:border-[#3d4951] text-center">
+              <p className="text-xs text-gray-400 dark:text-[#b1a7a6]">
+                Selected: <span className="font-bold text-gray-700 dark:text-white">
                   {JS_DAY_TO_NAME[new Date(selectedDate + 'T00:00:00').getUTCDay()] ?? 'Weekend'},{' '}
                   {new Date(selectedDate + 'T00:00:00').toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric', timeZone: 'UTC' })}
                 </span>
@@ -248,13 +248,13 @@ export default function SchedulePage() {
           {/* Loading */}
           {loading && (
             <div className="flex items-center justify-center py-16">
-              <Loader2 className="w-8 h-8 animate-spin text-[#D9A299] dark:text-[#ba181b]" />
+              <Loader2 className="w-8 h-8 animate-spin text-indigo-500 dark:text-red-600" />
             </div>
           )}
 
           {/* Empty State */}
           {!loading && displaySlots.length === 0 && (
-            <div className="text-center py-16 text-[#8B7355] dark:text-white/40">
+            <div className="text-center py-16 text-gray-400 dark:text-white/40">
               <p className="text-lg">No schedule entries found{term !== 'all' ? ` for Term ${term}` : ''}</p>
               <p className="text-sm mt-2">Add classes via the Class Routine page first.</p>
             </div>

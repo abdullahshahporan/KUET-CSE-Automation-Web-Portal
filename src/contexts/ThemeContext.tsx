@@ -20,16 +20,18 @@ interface ThemeContextType {
 // ── Constants ──────────────────────────────────────────
 
 const STORAGE_KEY = 'theme';
-const DEFAULT_THEME: Theme = 'dark';
+const DEFAULT_THEME: Theme = 'light';
 
 // ── Storage Helpers ────────────────────────────────────
 
 function loadTheme(): Theme {
   try {
-    return (localStorage.getItem(STORAGE_KEY) as Theme) || DEFAULT_THEME;
+    // Force light mode - clear any stale dark mode preference
+    localStorage.setItem(STORAGE_KEY, 'light');
   } catch {
-    return DEFAULT_THEME;
+    // ignore
   }
+  return 'light';
 }
 
 function applyTheme(theme: Theme): void {

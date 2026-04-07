@@ -33,8 +33,8 @@ type Step = 'upload' | 'preview' | 'result';
 
 // ── Styles ─────────────────────────────────────────────
 
-const btnPrimary = 'px-4 py-2 bg-gradient-to-r from-[#D9A299] to-[#DCC5B2] dark:from-[#ba181b] dark:to-[#e5383b] text-white rounded-lg font-medium disabled:opacity-50 transition-opacity flex items-center gap-2';
-const btnSecondary = 'px-4 py-2 border border-[#DCC5B2] dark:border-[#3d4951] text-[#5D4E37] dark:text-[#b1a7a6] rounded-lg hover:bg-[#F0E4D3] dark:hover:bg-[#3d4951]/30 transition-colors flex items-center gap-2';
+const btnPrimary = 'px-4 py-2 bg-indigo-600 text-white rounded-lg font-medium disabled:opacity-50 transition-opacity flex items-center gap-2';
+const btnSecondary = 'px-4 py-2 border border-gray-200 text-gray-700 rounded-lg hover:bg-gray-50 transition-colors flex items-center gap-2';
 
 // ── Component ──────────────────────────────────────────
 
@@ -222,27 +222,27 @@ export default function FileUploadModal({
             exit={{ scale: 0.9, opacity: 0, y: 20 }}
             transition={{ type: 'spring', damping: 25, stiffness: 300 }}
             onClick={(e) => e.stopPropagation()}
-            className="bg-[#FAF7F3] dark:bg-[#161a1d] rounded-2xl p-6 w-full max-w-3xl border border-[#DCC5B2] dark:border-[#3d4951] shadow-2xl max-h-[90vh] overflow-y-auto"
+            className="bg-white rounded-2xl p-6 w-full max-w-3xl border border-gray-200 shadow-2xl max-h-[90vh] overflow-y-auto"
           >
             {/* Header */}
             <div className="flex justify-between items-center mb-5">
-              <h2 className="text-xl font-bold text-[#5D4E37] dark:text-white">
+              <h2 className="text-xl font-bold text-gray-700 dark:text-white">
                 {step === 'upload' && `Upload ${config.entityNamePlural}`}
                 {step === 'preview' && `Preview ${config.entityNamePlural}`}
                 {step === 'result' && 'Import Results'}
               </h2>
-              <button onClick={handleClose} className="p-1.5 hover:bg-[#F0E4D3] dark:hover:bg-[#3d4951]/30 rounded-lg transition-colors">
-                <X className="w-5 h-5 text-[#8B7355] dark:text-[#b1a7a6]" />
+              <button onClick={handleClose} className="p-1.5 hover:bg-gray-50 rounded-lg transition-colors">
+                <X className="w-5 h-5 text-gray-400" />
               </button>
             </div>
 
             {/* Context Badge */}
             {config.contextFields && config.contextFields.length > 0 && (
-              <div className="text-xs text-[#8B7355] dark:text-[#b1a7a6]/70 bg-[#F0E4D3] dark:bg-[#0b090a] rounded-lg p-3 border border-[#DCC5B2] dark:border-[#3d4951] mb-4">
+              <div className="text-xs text-gray-400/70 bg-gray-50 rounded-lg p-3 border border-gray-200 mb-4">
                 {config.contextFields.map((cf, i) => (
                   <span key={cf.label}>
                     {i > 0 && <span>&nbsp;&bull;&nbsp;</span>}
-                    {cf.label}: <span className="font-medium text-[#5D4E37] dark:text-white">{cf.value}</span>
+                    {cf.label}: <span className="font-medium text-gray-700 dark:text-white">{cf.value}</span>
                   </span>
                 ))}
               </div>
@@ -255,19 +255,19 @@ export default function FileUploadModal({
                 <div
                   onDragOver={(e) => e.preventDefault()}
                   onDrop={handleDrop}
-                  className="border-2 border-dashed border-[#DCC5B2] dark:border-[#3d4951] rounded-xl p-8 text-center hover:border-[#D9A299] dark:hover:border-[#ba181b] transition-colors cursor-pointer"
+                  className="border-2 border-dashed border-gray-200 rounded-xl p-8 text-center hover:border-indigo-400 transition-colors cursor-pointer"
                   onClick={() => fileRef.current?.click()}
                 >
                   {loading ? (
                     <div className="flex flex-col items-center gap-3">
-                      <Loader2 className="w-10 h-10 animate-spin text-[#D9A299] dark:text-[#ba181b]" />
-                      <p className="text-sm text-[#8B7355] dark:text-[#b1a7a6]">Parsing file...</p>
+                      <Loader2 className="w-10 h-10 animate-spin text-indigo-500 dark:text-red-600" />
+                      <p className="text-sm text-gray-400">Parsing file...</p>
                     </div>
                   ) : (
                     <>
-                      <Upload className="w-10 h-10 mx-auto text-[#D9A299] dark:text-[#ba181b] mb-3" />
-                      <p className="text-[#5D4E37] dark:text-white font-medium">Drop file here or click to browse</p>
-                      <p className="text-xs text-[#8B7355] dark:text-[#b1a7a6] mt-1">
+                      <Upload className="w-10 h-10 mx-auto text-indigo-500 dark:text-red-600 mb-3" />
+                      <p className="text-gray-700 dark:text-white font-medium">Drop file here or click to browse</p>
+                      <p className="text-xs text-gray-400 mt-1">
                         Supports CSV, DOCX
                       </p>
                     </>
@@ -305,8 +305,8 @@ export default function FileUploadModal({
             {/* ── STEP: Preview ────────────────────── */}
             {step === 'preview' && (
               <div className="space-y-4">
-                <p className="text-sm text-[#8B7355] dark:text-[#b1a7a6]">
-                  Found <span className="font-bold text-[#5D4E37] dark:text-white">{parsedRecords.length}</span> {config.entityNamePlural.toLowerCase()}.
+                <p className="text-sm text-gray-400">
+                  Found <span className="font-bold text-gray-700 dark:text-white">{parsedRecords.length}</span> {config.entityNamePlural.toLowerCase()}.
                   Review and remove any incorrect entries before importing.
                 </p>
 
@@ -320,21 +320,21 @@ export default function FileUploadModal({
                 )}
 
                 {/* Preview Table */}
-                <div className="overflow-x-auto max-h-64 overflow-y-auto border border-[#DCC5B2] dark:border-[#3d4951] rounded-lg">
+                <div className="overflow-x-auto max-h-64 overflow-y-auto border border-gray-200 rounded-lg">
                   <table className="w-full text-xs">
-                    <thead className="bg-[#F0E4D3] dark:bg-white/5 sticky top-0">
+                    <thead className="bg-gray-50 dark:bg-white/5 sticky top-0">
                       <tr>
                         {visibleCols.map((col) => (
-                          <th key={col.key} className="p-2 text-left text-[#5D4E37] dark:text-white/70">{col.label}</th>
+                          <th key={col.key} className="p-2 text-left text-gray-700 dark:text-white/70">{col.label}</th>
                         ))}
                         <th className="p-2"></th>
                       </tr>
                     </thead>
                     <tbody>
                       {parsedRecords.map((rec, i) => (
-                        <tr key={i} className="border-t border-[#DCC5B2] dark:border-[#3d4951] hover:bg-[#F0E4D3]/50 dark:hover:bg-white/5">
+                        <tr key={i} className="border-t border-gray-200 hover:bg-gray-50/50">
                           {visibleCols.map((col) => (
-                            <td key={col.key} className="p-2 text-[#5D4E37] dark:text-white">
+                            <td key={col.key} className="p-2 text-gray-700 dark:text-white">
                               {rec[col.key] || '—'}
                             </td>
                           ))}

@@ -78,7 +78,7 @@ export default function ClassRoutinePage() {
   if (!isSupabaseConfigured()) {
     return (
       <div className="flex items-center justify-center h-64">
-        <p className="text-[#8B7355] dark:text-[#b1a7a6]">Supabase not configured.</p>
+        <p className="text-gray-400 dark:text-[#b1a7a6]">Supabase not configured.</p>
       </div>
     );
   }
@@ -88,15 +88,15 @@ export default function ClassRoutinePage() {
       {/* Header */}
       <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
         <div>
-          <h1 className="text-2xl font-bold text-[#5D4E37] dark:text-white">Class Routine</h1>
-          <p className="text-[#8B7355] dark:text-[#b1a7a6] mt-1">Manage weekly class schedules for all semesters</p>
+          <h1 className="text-2xl font-bold text-gray-700 dark:text-white">Class Routine</h1>
+          <p className="text-gray-400 dark:text-[#b1a7a6] mt-1">Manage weekly class schedules for all semesters</p>
         </div>
         <div className="flex gap-2 self-start">
           <motion.button
             whileHover={{ scale: 1.02 }}
             whileTap={{ scale: 0.98 }}
             onClick={() => setShowUploadModal(true)}
-            className="px-4 py-2 border border-[#DCC5B2] dark:border-[#3d4951] text-[#5D4E37] dark:text-[#b1a7a6] rounded-lg transition-all flex items-center gap-2 hover:bg-[#F0E4D3] dark:hover:bg-[#3d4951]/30"
+            className="px-4 py-2 border border-gray-200 dark:border-[#3d4951] text-gray-700 dark:text-[#b1a7a6] rounded-lg transition-all flex items-center gap-2 hover:bg-gray-50 dark:hover:bg-[#3d4951]/30"
           >
             <Upload className="w-5 h-5" />
             Upload Routine
@@ -105,7 +105,7 @@ export default function ClassRoutinePage() {
             whileHover={{ scale: 1.02 }}
             whileTap={{ scale: 0.98 }}
             onClick={() => setShowAddModal(true)}
-            className="px-4 py-2 bg-gradient-to-r from-[#D9A299] to-[#DCC5B2] dark:from-[#ba181b] dark:to-[#e5383b] text-white rounded-lg transition-all flex items-center gap-2 shadow-lg shadow-[#D9A299]/25 dark:shadow-[#ba181b]/25"
+            className="px-4 py-2 bg-gradient-to-r from-[#D9A299] to-[#DCC5B2] dark:from-[#ba181b] dark:to-[#e5383b] text-white rounded-lg transition-all flex items-center gap-2 shadow-lg shadow-[#D9A299]/25 dark:shadow-red-600/25"
           >
             <Plus className="w-5 h-5" />
             Add Slot
@@ -132,11 +132,11 @@ export default function ClassRoutinePage() {
       )}
 
       {/* Routine Title Banner */}
-      <SpotlightCard className="rounded-xl p-4 border border-[#DCC5B2] dark:border-[#3d4951] text-center" spotlightColor="rgba(217, 162, 153, 0.2)">
-        <h2 className="text-lg font-bold text-[#5D4E37] dark:text-white">
+      <SpotlightCard className="rounded-xl p-4 border border-gray-200 dark:border-[#3d4951] text-center" spotlightColor="rgba(217, 162, 153, 0.2)">
+        <h2 className="text-lg font-bold text-gray-700 dark:text-white">
           Class Routine – {TERMS.find(t => t.value === selectedTerm)?.label}
         </h2>
-        <p className="text-sm text-[#8B7355] dark:text-[#b1a7a6] mt-1">
+        <p className="text-sm text-gray-400 dark:text-[#b1a7a6] mt-1">
           Session: {selectedSession} &nbsp;•&nbsp; Section: {selectedSection}
         </p>
       </SpotlightCard>
@@ -144,7 +144,7 @@ export default function ClassRoutinePage() {
       {/* Loading */}
       {loading ? (
         <div className="flex items-center justify-center h-48">
-          <Loader2 className="w-8 h-8 animate-spin text-[#D9A299] dark:text-[#ba181b]" />
+          <Loader2 className="w-8 h-8 animate-spin text-indigo-500 dark:text-red-600" />
         </div>
       ) : (
         <RoutineGrid displaySlots={displaySlots} onDeleteSlot={handleDeleteSlot} />
@@ -153,8 +153,8 @@ export default function ClassRoutinePage() {
       {/* Empty state */}
       {!loading && displaySlots.length === 0 && (
         <div className="text-center py-12">
-          <p className="text-[#8B7355] dark:text-[#b1a7a6]">No routine slots found for this selection.</p>
-          <p className="text-sm text-[#8B7355] dark:text-[#b1a7a6]/70 mt-1">Click &quot;Add Slot&quot; to create the first entry.</p>
+          <p className="text-gray-400 dark:text-[#b1a7a6]">No routine slots found for this selection.</p>
+          <p className="text-sm text-gray-400 dark:text-[#b1a7a6]/70 mt-1">Click &quot;Add Slot&quot; to create the first entry.</p>
         </div>
       )}
 

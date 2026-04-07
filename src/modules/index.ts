@@ -7,7 +7,6 @@ export { CourseInfoPage } from './CourseInfo';
 export { CRManagementPage } from './CRManagement';
 export { DashboardOverview } from './Dashboard';
 export { FacultyInfoPage } from './FacultyInfo';
-export { GeoRoomManagementPage } from './GeoRoomManagement';
 export { OptionalCourseAllocationPage } from './OptionalCourseAllocation';
 export { ResultPage } from './Result';
 export { RoomAllocationPage } from './RoomAllocation';

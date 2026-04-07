@@ -1,7 +1,8 @@
 // ==========================================
 // API: /api/auth/login
-// Admin: hardcoded credentials (no DB)
+// Admin: credentials from env vars
 // Teacher: authenticates via Supabase profiles table
+// Rate-limited: max 5 attempts per IP per minute
 // ==========================================
 
 import { NextRequest } from 'next/server';
@@ -14,10 +15,27 @@ function extractError(error: unknown, fallback: string): string {
   return error instanceof Error ? error.message : fallback;
 }
 
-// ── Hardcoded admin credentials ────────────────────────
+// ── Simple in-memory rate limiter ──────────────────────
 
-const ADMIN_EMAIL = 'admin@gmail.com';
-const ADMIN_PASSWORD = 'admin123';
+const loginAttempts = new Map<string, { count: number; resetAt: number }>();
+const MAX_ATTEMPTS = 5;
+const WINDOW_MS = 60_000; // 1 minute
+
+function isRateLimited(ip: string): boolean {
+  const now = Date.now();
+  const entry = loginAttempts.get(ip);
+  if (!entry || now > entry.resetAt) {
+    loginAttempts.set(ip, { count: 1, resetAt: now + WINDOW_MS });
+    return false;
+  }
+  entry.count++;
+  return entry.count > MAX_ATTEMPTS;
+}
+
+// ── Admin credentials from environment variables ───────
+
+const ADMIN_EMAIL = (process.env.ADMIN_EMAIL || '').toLowerCase().trim();
+const ADMIN_PASSWORD = process.env.ADMIN_PASSWORD || '';
 
 // ── Designation display mapping ────────────────────────
 
@@ -32,6 +50,15 @@ const DESIGNATION_LABELS: Record<string, string> = {
 
 export async function POST(request: NextRequest) {
   try {
+    // Rate limiting by IP
+    const ip = request.headers.get('x-forwarded-for')?.split(',')[0]?.trim() || 'unknown';
+    if (isRateLimited(ip)) {
+      return new Response(
+        JSON.stringify({ success: false, error: 'Too many login attempts. Please try again later.' }),
+        { status: 429, headers: { 'Content-Type': 'application/json' } }
+      );
+    }
+
     const body = await request.json();
     const { email, password } = body;
 
@@ -43,8 +70,8 @@ export async function POST(request: NextRequest) {
 
     const normalizedEmail = email.toLowerCase().trim();
 
-    // ── Admin: hardcoded credentials (no DB lookup) ────
-    if (normalizedEmail === ADMIN_EMAIL && password === ADMIN_PASSWORD) {
+    // ── Admin: credentials from env vars ───────────────
+    if (ADMIN_EMAIL && normalizedEmail === ADMIN_EMAIL && password === ADMIN_PASSWORD) {
       return ok({
         id: 'admin-001',
         email: ADMIN_EMAIL,

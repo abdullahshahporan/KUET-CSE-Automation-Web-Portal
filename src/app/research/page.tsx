@@ -31,7 +31,7 @@ export default function ResearchPage() {
         {/* Category filters */}
         <div className="flex flex-wrap gap-3 mb-10 justify-center">
           {['ALL', 'PUBLICATION', 'JOURNAL', 'CONFERENCE', 'UGC_PROJECT', 'GRANT'].map(c => (
-            <span key={c} className="px-4 py-2 text-sm font-medium rounded-full bg-[#F5EDE4] text-[#5D4037] cursor-pointer hover:bg-[#5D4037] hover:text-white transition-all">
+            <span key={c} className="px-4 py-2 text-sm font-medium rounded-full bg-gray-50 text-gray-600 cursor-pointer hover:bg-gray-700 hover:text-white transition-all">
               {c.replace('_', ' ')}
             </span>
           ))}
@@ -41,21 +41,21 @@ export default function ResearchPage() {
           {data.research.map((r, i) => (
             <motion.div key={r.id} initial={{ opacity: 0, y: 30 }} whileInView={{ opacity: 1, y: 0 }}
               viewport={{ once: true }} transition={{ delay: i * 0.08 }}
-              className="group bg-white rounded-2xl overflow-hidden border border-[#E8DDD1] hover:shadow-warm-lg hover:-translate-y-1 transition-all duration-300">
+              className="group bg-white rounded-2xl overflow-hidden border border-gray-200 hover:shadow-warm-lg hover:-translate-y-1 transition-all duration-300">
               {r.image_path && (
                 <div className="relative overflow-hidden">
                   <img src={getImageUrl(r.image_path)} alt={r.title} className="w-full h-52 object-cover transition-transform duration-700 group-hover:scale-110" />
-                  <div className="absolute inset-0 bg-[#5D4037]/20 group-hover:bg-[#5D4037]/10 transition-all" />
+                  <div className="absolute inset-0 bg-gray-600/20 group-hover:bg-gray-700/10 transition-all" />
                   <div className="absolute bottom-0 inset-x-0 h-1/2 bg-gradient-to-t from-[#161a1d]/70 to-transparent" />
                   <span className="absolute bottom-3 left-3 text-white text-xs font-medium bg-white/20 backdrop-blur-md px-3 py-1 rounded-full">{r.category.replace('_', ' ')}</span>
                 </div>
               )}
               <div className="p-5">
-                <h3 className="font-bold text-[#2C1810] mb-2 group-hover:text-[#5D4037] transition-colors">{r.title}</h3>
-                {r.description && <p className="text-[#6B5744] text-sm line-clamp-3 mb-3">{r.description}</p>}
+                <h3 className="font-bold text-gray-900 mb-2 group-hover:text-gray-600 transition-colors">{r.title}</h3>
+                {r.description && <p className="text-gray-500 text-sm line-clamp-3 mb-3">{r.description}</p>}
                 {r.external_link && (
                   <a href={r.external_link} target="_blank" rel="noopener noreferrer"
-                    className="inline-flex items-center gap-1 text-sm font-medium text-[#5D4037] hover:text-[#D4A574]">
+                    className="inline-flex items-center gap-1 text-sm font-medium text-gray-600 hover:text-gray-400">
                     View Paper <ExternalLink className="w-3.5 h-3.5" />
                   </a>
                 )}

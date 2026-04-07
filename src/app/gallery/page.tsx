@@ -40,7 +40,7 @@ export default function GalleryPage() {
               {g.caption && (
                 <div className="absolute bottom-0 inset-x-0 p-3 translate-y-full group-hover:translate-y-0 transition-transform duration-500 z-10">
                   <p className="text-white text-sm font-medium">{g.caption}</p>
-                  <span className="text-[#D4A574] text-xs">{g.category}</span>
+                  <span className="text-gray-400 text-xs">{g.category}</span>
                 </div>
               )}
             </motion.div>

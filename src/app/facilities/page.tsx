@@ -31,22 +31,22 @@ export default function FacilitiesPage() {
           {data.labs.map((l, i) => (
             <motion.div key={l.id} initial={{ opacity: 0, y: 30 }} whileInView={{ opacity: 1, y: 0 }}
               viewport={{ once: true }} transition={{ delay: i * 0.08 }}
-              className="group bg-white rounded-2xl overflow-hidden border border-[#E8DDD1] hover:shadow-warm-lg transition-all duration-300">
+              className="group bg-white rounded-2xl overflow-hidden border border-gray-200 hover:shadow-warm-lg transition-all duration-300">
               <div className="relative overflow-hidden h-56">
                 <img src={getImageUrl(l.image_path)} alt={l.name} className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110" />
                 <div className="absolute inset-0 bg-[#3E2723]/35 group-hover:bg-[#3E2723]/20 transition-all" />
                 <div className="absolute bottom-0 inset-x-0 h-2/3 bg-gradient-to-t from-[#161a1d]/80 via-[#161a1d]/30 to-transparent" />
                 <div className="absolute bottom-4 left-4 z-10">
                   <h3 className="text-lg font-bold text-white">{l.name}</h3>
-                  {l.room_number && <p className="text-[#D4A574] text-sm">Room: {l.room_number}</p>}
+                  {l.room_number && <p className="text-gray-400 text-sm">Room: {l.room_number}</p>}
                 </div>
               </div>
               <div className="p-5">
-                {l.description && <p className="text-[#6B5744] text-sm mb-3">{l.description}</p>}
+                {l.description && <p className="text-gray-500 text-sm mb-3">{l.description}</p>}
                 {l.equipment && Array.isArray(l.equipment) && l.equipment.length > 0 && (
                   <div className="flex flex-wrap gap-2">
                     {(l.equipment as string[]).map((e, idx) => (
-                      <span key={idx} className="px-2.5 py-1 bg-[#F5EDE4] text-[#5D4037] text-xs font-medium rounded-full">{e}</span>
+                      <span key={idx} className="px-2.5 py-1 bg-gray-50 text-gray-600 text-xs font-medium rounded-full">{e}</span>
                     ))}
                   </div>
                 )}

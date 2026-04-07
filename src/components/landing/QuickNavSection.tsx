@@ -33,7 +33,7 @@ const QuickNavSection: React.FC<QuickNavSectionProps> = ({
         className="absolute inset-0 bg-cover bg-center bg-fixed"
         style={{ backgroundImage: `url(${getImageUrl(backgroundImagePath)})` }}
       />
-      <div className="absolute inset-0 bg-[#F5EDE4]/85" />
+      <div className="absolute inset-0 bg-gray-50/85" />
       <div className="absolute inset-0 bg-gradient-to-b from-[#FDF8F3] via-transparent to-[#FDF8F3]" />
 
       <div className="relative z-10 max-w-7xl mx-auto px-6 md:px-8">
@@ -51,17 +51,17 @@ const QuickNavSection: React.FC<QuickNavSectionProps> = ({
                 <Link
                   href={l.url}
                   className="group flex items-center gap-4 p-5 md:p-6 rounded-2xl
-                    bg-white/60 backdrop-blur-xl border border-white/70 shadow-lg shadow-[#5D4037]/5
+                    bg-white/60 backdrop-blur-xl border border-white/70 shadow-lg shadow-gray-600/5
                     hover:bg-white/80 hover:border-[#D4A574]/50 hover:shadow-warm-lg hover:-translate-y-1 transition-all duration-300"
                 >
-                  <div className="w-12 h-12 rounded-xl bg-[#F5EDE4]/80 backdrop-blur-md flex items-center justify-center flex-shrink-0
-                    group-hover:bg-[#5D4037] transition-colors">
-                    <Icon className="w-5 h-5 text-[#5D4037] group-hover:text-white transition-colors" />
+                  <div className="w-12 h-12 rounded-xl bg-gray-50/80 backdrop-blur-md flex items-center justify-center flex-shrink-0
+                    group-hover:bg-gray-700 transition-colors">
+                    <Icon className="w-5 h-5 text-gray-600 group-hover:text-white transition-colors" />
                   </div>
                   <div className="flex-1 min-w-0">
-                    <p className="font-semibold text-[#2C1810] group-hover:text-[#5D4037] transition-colors">{l.label}</p>
+                    <p className="font-semibold text-gray-900 group-hover:text-gray-600 transition-colors">{l.label}</p>
                   </div>
-                  <ChevronRight className="w-5 h-5 text-[#D4C8BC] group-hover:text-[#D4A574] transition-colors flex-shrink-0" />
+                  <ChevronRight className="w-5 h-5 text-[#D4C8BC] group-hover:text-gray-400 transition-colors flex-shrink-0" />
                 </Link>
               </Reveal>
             );
