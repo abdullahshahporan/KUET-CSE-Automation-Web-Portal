@@ -15,8 +15,6 @@ export interface AddRoomInput {
   capacity?: number;
   room_type?: DBRoomType;
   facilities?: string[];
-  latitude?: number;
-  longitude?: number;
   plus_code?: string;
   floor_number?: string;
 }

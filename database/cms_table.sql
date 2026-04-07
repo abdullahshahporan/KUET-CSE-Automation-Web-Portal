@@ -150,7 +150,19 @@ CREATE TABLE public.cms_tv_announcements (
   created_by text NOT NULL DEFAULT 'Admin'::text,
   created_at timestamp with time zone NOT NULL DEFAULT now(),
   updated_at timestamp with time zone NOT NULL DEFAULT now(),
+  target text NOT NULL DEFAULT 'all'::text,
   CONSTRAINT cms_tv_announcements_pkey PRIMARY KEY (id)
+);
+CREATE TABLE public.cms_tv_devices (
+  id uuid NOT NULL DEFAULT gen_random_uuid(),
+  name text NOT NULL UNIQUE,
+  label text,
+  location text,
+  is_active boolean NOT NULL DEFAULT true,
+  created_at timestamp with time zone NOT NULL DEFAULT now(),
+  updated_at timestamp with time zone NOT NULL DEFAULT now(),
+  show_room_schedule boolean NOT NULL DEFAULT true,
+  CONSTRAINT cms_tv_devices_pkey PRIMARY KEY (id)
 );
 CREATE TABLE public.cms_tv_events (
   id uuid NOT NULL DEFAULT gen_random_uuid(),
@@ -168,6 +180,7 @@ CREATE TABLE public.cms_tv_events (
   display_order integer NOT NULL DEFAULT 0,
   created_at timestamp with time zone NOT NULL DEFAULT now(),
   updated_at timestamp with time zone NOT NULL DEFAULT now(),
+  target text NOT NULL DEFAULT 'all'::text,
   CONSTRAINT cms_tv_events_pkey PRIMARY KEY (id)
 );
 CREATE TABLE public.cms_tv_settings (
@@ -187,6 +200,7 @@ CREATE TABLE public.cms_tv_ticker (
   is_active boolean NOT NULL DEFAULT true,
   sort_order integer NOT NULL DEFAULT 0,
   created_at timestamp with time zone NOT NULL DEFAULT now(),
+  target text NOT NULL DEFAULT 'all'::text,
   CONSTRAINT cms_tv_ticker_pkey PRIMARY KEY (id),
   CONSTRAINT cms_tv_ticker_announcement_id_fkey FOREIGN KEY (announcement_id) REFERENCES public.cms_tv_announcements(id)
 );
