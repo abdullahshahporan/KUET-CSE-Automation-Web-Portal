@@ -24,8 +24,6 @@ export default function RoomAllocationPage() {
     capacity: '',
     room_type: 'classroom' as DBRoomType,
     facilities: '',
-    latitude: '',
-    longitude: '',
     plus_code: '',
     floor_number: '',
   });
@@ -49,7 +47,7 @@ export default function RoomAllocationPage() {
   const resetForm = () => {
     setFormData({
       room_number: '', building_name: '', capacity: '', room_type: 'classroom',
-      facilities: '', latitude: '', longitude: '', plus_code: '', floor_number: '',
+      facilities: '', plus_code: '', floor_number: '',
     });
     setEditingRoom(null);
     setShowForm(false);
@@ -68,8 +66,6 @@ export default function RoomAllocationPage() {
         capacity: formData.capacity ? parseInt(formData.capacity) : undefined,
         room_type: formData.room_type,
         facilities: formData.facilities ? formData.facilities.split(',').map(f => f.trim()).filter(Boolean) : undefined,
-        latitude: formData.latitude ? parseFloat(formData.latitude) : undefined,
-        longitude: formData.longitude ? parseFloat(formData.longitude) : undefined,
         plus_code: formData.plus_code.trim() || undefined,
         floor_number: formData.floor_number.trim() || undefined,
       };
@@ -99,8 +95,6 @@ export default function RoomAllocationPage() {
       capacity: room.capacity?.toString() || '',
       room_type: room.room_type || 'classroom',
       facilities: room.facilities?.join(', ') || '',
-      latitude: room.latitude?.toString() || '',
-      longitude: room.longitude?.toString() || '',
       plus_code: room.plus_code || '',
       floor_number: room.floor_number || '',
     });
@@ -146,7 +140,7 @@ export default function RoomAllocationPage() {
     total: rooms.length,
     classrooms: rooms.filter(r => r.room_type === 'classroom').length,
     labs: rooms.filter(r => r.room_type === 'lab').length,
-    withLocation: rooms.filter(r => r.latitude && r.longitude).length,
+    withLocation: rooms.filter(r => r.plus_code).length,
   };
 
   if (!isSupabaseConfigured()) {
@@ -287,37 +281,15 @@ export default function RoomAllocationPage() {
                   <h3 className="text-sm font-semibold text-gray-600 uppercase tracking-wider mb-3 flex items-center gap-2">
                     <MapPin className="w-4 h-4" /> Location Info
                   </h3>
-                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                    <div>
-                      <label className="text-sm font-medium text-gray-700">Latitude</label>
-                      <input
-                        type="text"
-                        value={formData.latitude}
-                        onChange={(e) => setFormData({ ...formData, latitude: e.target.value })}
-                        className="w-full px-4 py-2.5 mt-1.5 border border-gray-200 rounded-xl bg-[#FEFCFA] text-[#3E2723] focus:ring-2 focus:ring-indigo-300 focus:border-transparent outline-none transition-all placeholder:text-[#BCAAA4]"
-                        placeholder="e.g., 22.899484"
-                      />
-                    </div>
-                    <div>
-                      <label className="text-sm font-medium text-gray-700">Longitude</label>
-                      <input
-                        type="text"
-                        value={formData.longitude}
-                        onChange={(e) => setFormData({ ...formData, longitude: e.target.value })}
-                        className="w-full px-4 py-2.5 mt-1.5 border border-gray-200 rounded-xl bg-[#FEFCFA] text-[#3E2723] focus:ring-2 focus:ring-indigo-300 focus:border-transparent outline-none transition-all placeholder:text-[#BCAAA4]"
-                        placeholder="e.g., 89.501513"
-                      />
-                    </div>
-                    <div className="md:col-span-2">
-                      <label className="text-sm font-medium text-gray-700">Plus Code (optional)</label>
-                      <input
-                        type="text"
-                        value={formData.plus_code}
-                        onChange={(e) => setFormData({ ...formData, plus_code: e.target.value })}
-                        className="w-full px-4 py-2.5 mt-1.5 border border-gray-200 rounded-xl bg-[#FEFCFA] text-[#3E2723] focus:ring-2 focus:ring-indigo-300 focus:border-transparent outline-none transition-all placeholder:text-[#BCAAA4]"
-                        placeholder="e.g., VGX2+QJQ Khulna"
-                      />
-                    </div>
+                  <div>
+                    <label className="text-sm font-medium text-gray-700">Plus Code</label>
+                    <input
+                      type="text"
+                      value={formData.plus_code}
+                      onChange={(e) => setFormData({ ...formData, plus_code: e.target.value })}
+                      className="w-full px-4 py-2.5 mt-1.5 border border-gray-200 rounded-xl bg-[#FEFCFA] text-[#3E2723] focus:ring-2 focus:ring-indigo-300 focus:border-transparent outline-none transition-all placeholder:text-[#BCAAA4]"
+                      placeholder="e.g., VGX2+QJQ Khulna"
+                    />
                   </div>
                 </div>
 
@@ -507,25 +479,19 @@ export default function RoomAllocationPage() {
                         <span className="font-medium text-[#3E2723]">{room.floor_number}</span>
                       </div>
                     )}
-                    {(room.latitude && room.longitude) && (
-                      <div className="flex items-center justify-between text-sm">
-                        <span className="text-gray-400 flex items-center gap-1">
-                          <MapPin className="w-3 h-3" /> Location
-                        </span>
-                        <a
-                          href={`https://www.google.com/maps?q=${room.latitude},${room.longitude}`}
-                          target="_blank"
-                          rel="noopener noreferrer"
-                          className="text-gray-600 hover:text-[#3E2723] underline underline-offset-2 text-xs font-medium"
-                        >
-                          View on Map
-                        </a>
-                      </div>
-                    )}
                     {room.plus_code && (
                       <div className="flex items-center justify-between text-sm">
-                        <span className="text-gray-400">Plus Code</span>
-                        <span className="font-mono text-xs text-gray-600 bg-gray-50 px-2 py-0.5 rounded">{room.plus_code}</span>
+                        <span className="text-gray-400 flex items-center gap-1">
+                          <MapPin className="w-3 h-3" /> Plus Code
+                        </span>
+                        <a
+                          href={`https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(room.plus_code)}`}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          className="font-mono text-xs text-gray-600 hover:text-[#3E2723] underline underline-offset-2 bg-gray-50 px-2 py-0.5 rounded"
+                        >
+                          {room.plus_code}
+                        </a>
                       </div>
                     )}
                   </div>

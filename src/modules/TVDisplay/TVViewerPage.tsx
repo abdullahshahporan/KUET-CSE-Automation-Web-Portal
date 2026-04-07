@@ -138,10 +138,10 @@ export default function TVViewerPage({ onMenuChange }: { onMenuChange?: (id: str
                 whileHover={{ scale: 1.02 }}
                 whileTap={{ scale: 0.98 }}
                 onClick={() => setSelectedTarget(device.name)}
-                className={`flex items-center gap-2 px-4 py-2.5 rounded-lg text-sm font-medium transition-all ${
+                className={`flex items-center gap-2 px-4 py-2.5 rounded-lg text-sm font-medium transition-colors ${
                   selectedTarget === device.name
-                    ? 'bg-gradient-to-r from-[#D9A299] to-[#DCC5B2] dark:from-[#ba181b] dark:to-[#e5383b] text-white shadow-md'
-                    : 'border border-gray-200 dark:border-[#3d4951] text-gray-400 dark:text-[#b1a7a6] hover:bg-gray-50 dark:hover:bg-[#0b090a]'
+                    ? 'bg-slate-800 text-white shadow-sm'
+                    : 'border border-gray-200 dark:border-[#3d4951] text-gray-500 hover:bg-gray-100'
                 }`}
               >
                 <Tv className="w-4 h-4" />
@@ -291,6 +291,22 @@ function TVPreview({ target, showRoomSchedule }: { target: string; showRoomSched
   const currentEvent = events[eventPage] ?? null;
   const prevEvents = () => setEventPage(p => (p <= 0 ? maxPage : p - 1));
   const nextEvents = () => setEventPage(p => (p >= maxPage ? 0 : p + 1));
+
+  // Breaking News (check device-specific first, then 'all')
+  const breakingNewsActive = (() => {
+    const deviceExpires = settings[`breaking_news_expires_at_${target}`];
+    if (deviceExpires && new Date(deviceExpires).getTime() > Date.now()) return true;
+    const allExpires = settings.breaking_news_expires_at_all;
+    if (allExpires && new Date(allExpires).getTime() > Date.now()) return true;
+    return false;
+  })();
+  const breakingNewsText = (() => {
+    const deviceExpires = settings[`breaking_news_expires_at_${target}`];
+    if (deviceExpires && new Date(deviceExpires).getTime() > Date.now()) {
+      return settings[`breaking_news_text_${target}`] || '';
+    }
+    return settings.breaking_news_text_all || '';
+  })();
 
   if (loading) {
     return (
@@ -503,8 +519,32 @@ function TVPreview({ target, showRoomSchedule }: { target: string; showRoomSched
         )}
       </main>
 
-      {/* TICKER BAR */}
-      {ticker.length > 0 && (
+      {/* BREAKING NEWS or TICKER + HEADLINES */}
+      {breakingNewsActive ? (
+        <div className="flex-shrink-0 flex items-stretch overflow-hidden" style={{ height: '54px' }}>
+          <div className="flex-shrink-0 px-4 flex items-center gap-2"
+            style={{ background: 'linear-gradient(135deg, #b71c1c 0%, #d32f2f 100%)' }}>
+            <div className="w-2 h-2 rounded-full bg-white animate-pulse" />
+            <span className="text-white font-black text-xs tracking-[0.25em] uppercase whitespace-nowrap">
+              BREAKING
+            </span>
+          </div>
+          <div className="flex-1 flex items-center overflow-hidden px-4"
+            style={{ background: 'linear-gradient(135deg, #c62828 0%, #e53935 100%)' }}>
+            <div className="flex h-full items-center animate-marquee whitespace-nowrap">
+              {[breakingNewsText, breakingNewsText].map((text, i) => (
+                <span key={i} className="mx-8 inline-flex items-center gap-3 text-sm font-bold text-white">
+                  <span className="w-1.5 h-1.5 rounded-full bg-white/70 flex-shrink-0" />
+                  {text}
+                </span>
+              ))}
+            </div>
+          </div>
+        </div>
+      ) : (
+        <>
+          {/* TICKER BAR */}
+          {ticker.length > 0 && (
         <div className="flex-shrink-0 flex items-stretch overflow-hidden" style={{ height: '28px' }}>
           <div className="flex-shrink-0 px-3 flex items-center gap-1.5"
             style={{ background: `linear-gradient(135deg, ${C.teal}, ${C.tealDark})` }}>
@@ -558,6 +598,8 @@ function TVPreview({ target, showRoomSchedule }: { target: string; showRoomSched
             </div>
           </div>
         </div>
+      )}
+        </>
       )}
 
       <style jsx>{`

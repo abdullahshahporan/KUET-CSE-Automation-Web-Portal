@@ -9,7 +9,7 @@ export default function AuthCard() {
   const [isSignUp, setIsSignUp] = useState(false);
 
   return (
-    <div className="flex items-center justify-center min-h-screen p-4 bg-[#F5F0EB]">
+    <div className="flex items-center justify-center min-h-screen p-4 bg-gray-50">
       <div className="w-full max-w-4xl">
         {/* Desktop Layout */}
         <div className="hidden lg:flex bg-white rounded-lg shadow-md overflow-hidden min-h-[520px] border border-gray-200">

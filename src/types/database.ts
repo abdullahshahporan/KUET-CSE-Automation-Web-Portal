@@ -109,8 +109,6 @@ export interface DBRoom {
   room_type: DBRoomType | null;
   facilities: string[] | null;
   is_active: boolean;
-  latitude: number | null;
-  longitude: number | null;
   plus_code: string | null;
   floor_number: string | null;
 }

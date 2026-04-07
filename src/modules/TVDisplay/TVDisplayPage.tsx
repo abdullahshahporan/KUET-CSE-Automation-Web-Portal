@@ -26,11 +26,12 @@ import {
     updateDevice,
     updateEvent,
     updateSetting,
+    upsertSetting,
     updateTicker,
 } from '@/services/tvDisplayService';
 import type { CmsTvAnnouncement, CmsTvDevice, CmsTvEvent, CmsTvTicker, TvAnnouncementPriority, TvAnnouncementType, TvTarget } from '@/types/cms';
 import { AnimatePresence, motion } from 'framer-motion';
-import { BarChart3, Bell, Calendar, ExternalLink, Eye, MapPin, Monitor, Plus, Settings, Tv, Zap } from 'lucide-react';
+import { AlertTriangle, BarChart3, Bell, Calendar, Clock as ClockIcon, Eye, MapPin, Monitor, Plus, Settings, Tv, Zap } from 'lucide-react';
 import { useCallback, useEffect, useState } from 'react';
 
 type AdminTab = 'announcements' | 'ticker' | 'events' | 'devices' | 'settings';
@@ -360,6 +361,66 @@ export default function TVDisplayPage({ onMenuChange }: { onMenuChange?: (id: st
     await loadData();
   };
 
+  // ── Breaking News (per-TV target) ──
+  const [breakingNewsText, setBreakingNewsText] = useState('');
+  const [breakingNewsDuration, setBreakingNewsDuration] = useState<15 | 30>(15);
+  const [breakingNewsTarget, setBreakingNewsTarget] = useState<string>('all');
+  const [activatingBreaking, setActivatingBreaking] = useState(false);
+
+  // Collect all active breaking news across all targets
+  const activeBreakingTargets = (() => {
+    const targets: { target: string; text: string; expires: string; timeLeft: string }[] = [];
+    const allTargets = ['all', ...devices.filter(d => d.is_active).map(d => d.name)];
+    for (const t of allTargets) {
+      const suffix = `_${t}`;
+      const expires = settings[`breaking_news_expires_at${suffix}`];
+      if (!expires) continue;
+      const diff = new Date(expires).getTime() - Date.now();
+      if (diff <= 0) continue;
+      const mins = Math.floor(diff / 60000);
+      const secs = Math.floor((diff % 60000) / 1000);
+      targets.push({
+        target: t,
+        text: settings[`breaking_news_text${suffix}`] || '',
+        expires,
+        timeLeft: `${mins}m ${secs}s`,
+      });
+    }
+    return targets;
+  })();
+
+  const breakingNewsActive = activeBreakingTargets.length > 0;
+
+  const handleActivateBreakingNews = async () => {
+    if (!breakingNewsText.trim()) return;
+    setActivatingBreaking(true);
+    try {
+      const suffix = `_${breakingNewsTarget}`;
+      const expiresAt = new Date(Date.now() + breakingNewsDuration * 60 * 1000).toISOString();
+      await upsertSetting(`breaking_news_text${suffix}`, breakingNewsText.trim());
+      await upsertSetting(`breaking_news_expires_at${suffix}`, expiresAt);
+      setBreakingNewsText('');
+      await loadData();
+    } catch (err) {
+      console.error('Failed to activate breaking news:', err);
+      alert('Failed to activate breaking news.');
+    } finally {
+      setActivatingBreaking(false);
+    }
+  };
+
+  const handleDeactivateBreakingNews = async (target: string) => {
+    setActivatingBreaking(true);
+    try {
+      await upsertSetting(`breaking_news_expires_at_${target}`, '');
+      await loadData();
+    } catch (err) {
+      console.error('Failed to deactivate breaking news:', err);
+    } finally {
+      setActivatingBreaking(false);
+    }
+  };
+
   // ── Badge helpers ──
   const getTypeBadge = (type: string) => {
     const styles: Record<string, string> = {
@@ -412,17 +473,8 @@ export default function TVDisplayPage({ onMenuChange }: { onMenuChange?: (id: st
             <motion.button
               whileHover={{ scale: 1.02 }}
               whileTap={{ scale: 0.98 }}
-              onClick={() => window.open('/tv-display', '_blank')}
-              className="inline-flex items-center justify-center gap-2 px-4 py-2.5 border border-gray-200 dark:border-[#3d4951] text-gray-700 dark:text-[#d3d3d3] hover:bg-gray-50 dark:hover:bg-[#0b090a] font-medium rounded-lg transition-all"
-            >
-              <ExternalLink className="w-4 h-4" />
-              Open TV Display
-            </motion.button>
-            <motion.button
-              whileHover={{ scale: 1.02 }}
-              whileTap={{ scale: 0.98 }}
               onClick={() => { setActiveTab('announcements'); setShowForm(true); }}
-              className="inline-flex items-center justify-center gap-2 px-5 py-2.5 bg-gradient-to-r from-[#D9A299] to-[#DCC5B2] dark:from-[#ba181b] dark:to-[#e5383b] hover:from-[#C88989] hover:to-[#CCB5A2] dark:hover:from-[#e32a2d] dark:hover:to-[#ea5f62] text-white font-medium rounded-lg transition-all shadow-lg shadow-[#D9A299]/25 dark:shadow-red-600/25"
+              className="inline-flex items-center justify-center gap-2 px-5 py-2.5 bg-slate-800 hover:bg-slate-700 text-white font-medium rounded-lg transition-colors"
             >
               <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4v16m8-8H4" />
@@ -461,6 +513,89 @@ export default function TVDisplayPage({ onMenuChange }: { onMenuChange?: (id: st
         </div>
       </SpotlightCard>
 
+      {/* ── Breaking News Control ── */}
+      <div className={`rounded-2xl border p-5 mb-6 ${breakingNewsActive ? 'border-red-300 bg-red-50' : 'border-gray-200 bg-white'}`}>
+        <div className="flex items-center gap-3 mb-4">
+          <div className={`w-10 h-10 rounded-xl flex items-center justify-center ${breakingNewsActive ? 'bg-red-600' : 'bg-gray-100'}`}>
+            <AlertTriangle className={`w-5 h-5 ${breakingNewsActive ? 'text-white' : 'text-gray-500'}`} />
+          </div>
+          <div className="flex-1">
+            <h3 className="text-lg font-bold text-gray-800">Breaking News</h3>
+            <p className="text-xs text-gray-500">
+              {breakingNewsActive
+                ? <>{activeBreakingTargets.length} active — Ticker &amp; headlines hidden on targeted TVs</>
+                : 'Activate to replace the ticker & headline bars on TV displays'}
+            </p>
+          </div>
+        </div>
+
+        {/* Active breaking news list */}
+        {activeBreakingTargets.length > 0 && (
+          <div className="space-y-2 mb-4">
+            {activeBreakingTargets.map(item => (
+              <div key={item.target} className="flex items-center gap-3 px-4 py-3 rounded-lg bg-red-100 border border-red-200">
+                <span className="px-2 py-0.5 rounded bg-red-600 text-white text-xs font-bold uppercase">{item.target === 'all' ? 'All TVs' : item.target}</span>
+                <span className="flex-1 text-red-800 font-semibold text-sm truncate">{item.text}</span>
+                <span className="text-xs text-red-600 font-medium">{item.timeLeft}</span>
+                <button
+                  onClick={() => handleDeactivateBreakingNews(item.target)}
+                  disabled={activatingBreaking}
+                  className="px-3 py-1.5 border border-red-300 text-red-700 font-medium rounded-lg hover:bg-red-200 transition-colors text-xs disabled:opacity-50"
+                >
+                  Deactivate
+                </button>
+              </div>
+            ))}
+          </div>
+        )}
+
+        {/* New breaking news form */}
+        <div className="flex items-end gap-3">
+          <div className="flex-1">
+            <label className="block text-sm font-medium text-gray-700 mb-1.5">Breaking News Text</label>
+            <input
+              type="text"
+              value={breakingNewsText}
+              onChange={(e) => setBreakingNewsText(e.target.value)}
+              placeholder="Enter breaking news headline..."
+              className="w-full px-4 py-2.5 border border-gray-200 rounded-lg bg-white text-gray-900 placeholder-gray-400 focus:ring-2 focus:ring-red-400 focus:border-transparent transition-all text-sm"
+            />
+          </div>
+          <div className="flex-shrink-0">
+            <label className="block text-sm font-medium text-gray-700 mb-1.5">Target TV</label>
+            <select
+              value={breakingNewsTarget}
+              onChange={(e) => setBreakingNewsTarget(e.target.value)}
+              className="px-3 py-2.5 border border-gray-200 rounded-lg bg-white text-gray-900 text-sm focus:ring-2 focus:ring-red-400 focus:border-transparent"
+            >
+              <option value="all">All TVs</option>
+              {devices.filter(d => d.is_active).map(d => (
+                <option key={d.id} value={d.name}>{d.name}{d.label ? ` (${d.label})` : ''}</option>
+              ))}
+            </select>
+          </div>
+          <div className="flex-shrink-0">
+            <label className="block text-sm font-medium text-gray-700 mb-1.5">Duration</label>
+            <select
+              value={breakingNewsDuration}
+              onChange={(e) => setBreakingNewsDuration(Number(e.target.value) as 15 | 30)}
+              className="px-3 py-2.5 border border-gray-200 rounded-lg bg-white text-gray-900 text-sm focus:ring-2 focus:ring-red-400 focus:border-transparent"
+            >
+              <option value={15}>15 Minutes</option>
+              <option value={30}>30 Minutes</option>
+            </select>
+          </div>
+          <button
+            onClick={handleActivateBreakingNews}
+            disabled={activatingBreaking || !breakingNewsText.trim()}
+            className="flex-shrink-0 inline-flex items-center gap-2 px-5 py-2.5 bg-red-600 hover:bg-red-700 text-white font-semibold rounded-lg transition-colors text-sm disabled:opacity-50"
+          >
+            <AlertTriangle className="w-4 h-4" />
+            {activatingBreaking ? 'Activating...' : 'Go Live'}
+          </button>
+        </div>
+      </div>
+
       {/* ── Tab Navigation ── */}
       <div className="flex items-center gap-2 mb-6 border-b border-gray-200 dark:border-[#3d4951] pb-3">
         {([
@@ -475,10 +610,10 @@ export default function TVDisplayPage({ onMenuChange }: { onMenuChange?: (id: st
             <button
               key={tab.id}
               onClick={() => setActiveTab(tab.id)}
-              className={`flex items-center gap-2 px-4 py-2 rounded-lg text-sm font-medium transition-all ${
+              className={`flex items-center gap-2 px-4 py-2 rounded-lg text-sm font-medium transition-colors ${
                 activeTab === tab.id
-                  ? 'bg-gradient-to-r from-[#D9A299] to-[#DCC5B2] dark:from-[#ba181b] dark:to-[#e5383b] text-white shadow-md'
-                  : 'text-gray-400 dark:text-[#b1a7a6] hover:bg-gray-50 dark:hover:bg-[#0b090a]'
+                  ? 'bg-slate-800 text-white shadow-sm'
+                  : 'text-gray-500 hover:bg-gray-100'
               }`}
             >
               <Icon className="w-4 h-4" />
@@ -603,7 +738,7 @@ export default function TVDisplayPage({ onMenuChange }: { onMenuChange?: (id: st
                 <button
                   type="submit"
                   disabled={saving}
-                  className="flex-1 px-4 py-3 bg-gradient-to-r from-[#D9A299] to-[#DCC5B2] dark:from-[#ba181b] dark:to-[#e5383b] text-white rounded-lg hover:from-[#C88989] hover:to-[#CCB5A2] dark:hover:from-[#e32a2d] dark:hover:to-[#ea5f62] font-medium transition-all disabled:opacity-50"
+                  className="flex-1 px-4 py-3 bg-slate-800 hover:bg-slate-700 text-white rounded-lg font-medium transition-colors disabled:opacity-50"
                 >
                   {saving ? 'Saving...' : editingId ? 'Update' : 'Create'}
                 </button>
@@ -705,7 +840,7 @@ export default function TVDisplayPage({ onMenuChange }: { onMenuChange?: (id: st
                 <button type="button" onClick={resetTickerForm} className="flex-1 px-4 py-3 border border-gray-200 dark:border-[#3d4951] rounded-lg text-gray-700 dark:text-[#d3d3d3] hover:bg-gray-50 dark:hover:bg-[#0b090a] font-medium transition-colors">
                   Cancel
                 </button>
-                <button type="submit" disabled={saving} className="flex-1 px-4 py-3 bg-gradient-to-r from-[#D9A299] to-[#DCC5B2] dark:from-[#ba181b] dark:to-[#e5383b] text-white rounded-lg font-medium transition-all disabled:opacity-50">
+                <button type="submit" disabled={saving} className="flex-1 px-4 py-3 bg-slate-800 hover:bg-slate-700 text-white rounded-lg font-medium transition-colors disabled:opacity-50">
                   {saving ? 'Saving...' : editingTickerId ? 'Update' : 'Create'}
                 </button>
               </div>
@@ -806,7 +941,7 @@ export default function TVDisplayPage({ onMenuChange }: { onMenuChange?: (id: st
                   />
                   {uploading['speaker_image_url'] && <p className="text-xs mt-1 text-gray-400 dark:text-[#b1a7a6]">Uploading...</p>}
                   {eventFormData.speaker_image_url && !uploading['speaker_image_url'] && (
-                    <img src={eventFormData.speaker_image_url} alt="Preview" className="mt-2 h-16 w-16 rounded-full object-cover border-2 border-[#D9A299] dark:border-red-400" />
+                    <img src={eventFormData.speaker_image_url} alt="Preview" className="mt-2 h-16 w-16 rounded-full object-cover border-2 border-slate-400" />
                   )}
                 </div>
               </div>
@@ -814,7 +949,7 @@ export default function TVDisplayPage({ onMenuChange }: { onMenuChange?: (id: st
                 <button type="button" onClick={resetEventForm} className="flex-1 px-4 py-3 border border-gray-200 dark:border-[#3d4951] rounded-lg text-gray-700 dark:text-[#d3d3d3] hover:bg-gray-50 dark:hover:bg-[#0b090a] font-medium transition-colors">
                   Cancel
                 </button>
-                <button type="submit" disabled={saving} className="flex-1 px-4 py-3 bg-gradient-to-r from-[#D9A299] to-[#DCC5B2] dark:from-[#ba181b] dark:to-[#e5383b] text-white rounded-lg font-medium transition-all disabled:opacity-50">
+                <button type="submit" disabled={saving} className="flex-1 px-4 py-3 bg-slate-800 hover:bg-slate-700 text-white rounded-lg font-medium transition-colors disabled:opacity-50">
                   {saving ? 'Saving...' : editingEventId ? 'Update' : 'Create'}
                 </button>
               </div>
@@ -1018,7 +1153,7 @@ export default function TVDisplayPage({ onMenuChange }: { onMenuChange?: (id: st
               whileHover={{ scale: 1.02 }}
               whileTap={{ scale: 0.98 }}
               onClick={() => setShowTickerForm(true)}
-              className="inline-flex items-center gap-2 px-4 py-2 bg-gradient-to-r from-[#D9A299] to-[#DCC5B2] dark:from-[#ba181b] dark:to-[#e5383b] text-white font-medium rounded-lg transition-all text-sm"
+              className="inline-flex items-center gap-2 px-4 py-2 bg-slate-800 hover:bg-slate-700 text-white font-medium rounded-lg transition-colors text-sm"
             >
               <Zap className="w-4 h-4" />
               New Ticker Item
@@ -1109,7 +1244,7 @@ export default function TVDisplayPage({ onMenuChange }: { onMenuChange?: (id: st
               whileHover={{ scale: 1.02 }}
               whileTap={{ scale: 0.98 }}
               onClick={() => setShowEventForm(true)}
-              className="inline-flex items-center gap-2 px-4 py-2 bg-gradient-to-r from-[#D9A299] to-[#DCC5B2] dark:from-[#ba181b] dark:to-[#e5383b] text-white font-medium rounded-lg transition-all text-sm"
+              className="inline-flex items-center gap-2 px-4 py-2 bg-slate-800 hover:bg-slate-700 text-white font-medium rounded-lg transition-colors text-sm"
             >
               <Calendar className="w-4 h-4" />
               New Event
@@ -1286,7 +1421,7 @@ function SettingsTab({ settings, onSave }: { settings: Record<string, string>; o
                   <button
                     onClick={() => handleSave(key)}
                     disabled={savingKey === key}
-                    className="px-4 py-2 bg-gradient-to-r from-[#D9A299] to-[#DCC5B2] dark:from-[#ba181b] dark:to-[#e5383b] text-white rounded-lg text-sm font-medium transition-all disabled:opacity-50 hover:from-[#C88989] hover:to-[#CCB5A2] dark:hover:from-[#e32a2d] dark:hover:to-[#ea5f62]"
+                    className="px-4 py-2 bg-slate-800 hover:bg-slate-700 text-white rounded-lg text-sm font-medium transition-colors disabled:opacity-50"
                   >
                     {savingKey === key ? 'Saving...' : 'Save'}
                   </button>
@@ -1374,7 +1509,7 @@ function DevicesTab({ devices, onReload }: { devices: CmsTvDevice[]; onReload: (
           whileHover={{ scale: 1.02 }}
           whileTap={{ scale: 0.98 }}
           onClick={() => setShowForm(true)}
-          className="inline-flex items-center gap-2 px-4 py-2 bg-gradient-to-r from-[#D9A299] to-[#DCC5B2] dark:from-[#ba181b] dark:to-[#e5383b] text-white font-medium rounded-lg transition-all text-sm"
+          className="inline-flex items-center gap-2 px-4 py-2 bg-slate-800 hover:bg-slate-700 text-white font-medium rounded-lg transition-colors text-sm"
         >
           <Plus className="w-4 h-4" />
           Add TV Device
@@ -1433,7 +1568,7 @@ function DevicesTab({ devices, onReload }: { devices: CmsTvDevice[]; onReload: (
                   <button type="button" onClick={resetForm} className="flex-1 px-4 py-3 border border-gray-200 dark:border-[#3d4951] rounded-lg text-gray-700 dark:text-[#d3d3d3] hover:bg-gray-50 dark:hover:bg-[#0b090a] font-medium transition-colors">
                     Cancel
                   </button>
-                  <button type="submit" disabled={saving} className="flex-1 px-4 py-3 bg-gradient-to-r from-[#D9A299] to-[#DCC5B2] dark:from-[#ba181b] dark:to-[#e5383b] text-white rounded-lg font-medium transition-all disabled:opacity-50">
+                  <button type="submit" disabled={saving} className="flex-1 px-4 py-3 bg-slate-800 hover:bg-slate-700 text-white rounded-lg font-medium transition-colors disabled:opacity-50">
                     {saving ? 'Saving...' : editingId ? 'Update' : 'Add Device'}
                   </button>
                 </div>
@@ -1465,7 +1600,7 @@ function DevicesTab({ devices, onReload }: { devices: CmsTvDevice[]; onReload: (
                 <div className="flex items-center gap-3">
                   <div className={`w-12 h-12 rounded-xl flex items-center justify-center ${
                     device.is_active
-                      ? 'bg-gradient-to-br from-[#D9A299] to-[#DCC5B2] dark:from-[#ba181b] dark:to-[#e5383b]'
+                      ? 'bg-slate-800'
                       : 'bg-gray-50 dark:bg-[#3d4951]/30'
                   }`}>
                     <Tv className="w-6 h-6 text-white" />

@@ -253,10 +253,26 @@ CREATE TABLE public.geo_attendance_rooms (
   is_active boolean NOT NULL DEFAULT true,
   created_at timestamp with time zone NOT NULL DEFAULT now(),
   section text,
+  geo_room_location_id uuid,
+  range_meters integer NOT NULL DEFAULT 30,
   CONSTRAINT geo_attendance_rooms_pkey PRIMARY KEY (id),
   CONSTRAINT geo_attendance_rooms_session_fkey FOREIGN KEY (session_id) REFERENCES public.class_sessions(id),
+  CONSTRAINT geo_attendance_rooms_geo_room_location_id_fkey FOREIGN KEY (geo_room_location_id) REFERENCES public.geo_room_locations(id),
   CONSTRAINT geo_attendance_rooms_teacher_fkey FOREIGN KEY (teacher_user_id) REFERENCES public.teachers(user_id),
   CONSTRAINT geo_attendance_rooms_offering_fkey FOREIGN KEY (offering_id) REFERENCES public.course_offerings(id)
+);
+CREATE TABLE public.geo_room_locations (
+  id uuid NOT NULL DEFAULT gen_random_uuid(),
+  room_name text NOT NULL UNIQUE,
+  latitude double precision NOT NULL,
+  longitude double precision NOT NULL,
+  plus_code text,
+  building_name text DEFAULT 'CSE Building'::text,
+  floor_number text,
+  is_active boolean NOT NULL DEFAULT true,
+  created_at timestamp with time zone NOT NULL DEFAULT now(),
+  updated_at timestamp with time zone NOT NULL DEFAULT now(),
+  CONSTRAINT geo_room_locations_pkey PRIMARY KEY (id)
 );
 CREATE TABLE public.notices (
   id uuid NOT NULL DEFAULT gen_random_uuid(),
@@ -362,6 +378,8 @@ CREATE TABLE public.rooms (
   room_type text,
   facilities ARRAY,
   is_active boolean NOT NULL DEFAULT true,
+  plus_code text,
+  floor_number text,
   CONSTRAINT rooms_pkey PRIMARY KEY (room_number)
 );
 CREATE TABLE public.routine_slots (
