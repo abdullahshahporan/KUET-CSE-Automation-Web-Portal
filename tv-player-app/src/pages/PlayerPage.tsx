@@ -96,6 +96,22 @@ export default function PlayerPage() {
   const headlinePrefix = settings.headline_prefix || 'HEADLINES';
   const eventRotationSec = parseInt(settings.event_rotation_sec || '8', 10);
 
+  // Breaking News (check device-specific first, then 'all')
+  const breakingNewsActive = (() => {
+    const deviceExpires = settings[`breaking_news_expires_at_${target}`];
+    if (deviceExpires && new Date(deviceExpires).getTime() > Date.now()) return true;
+    const allExpires = settings.breaking_news_expires_at_all;
+    if (allExpires && new Date(allExpires).getTime() > Date.now()) return true;
+    return false;
+  })();
+  const breakingNewsText = (() => {
+    const deviceExpires = settings[`breaking_news_expires_at_${target}`];
+    if (deviceExpires && new Date(deviceExpires).getTime() > Date.now()) {
+      return settings[`breaking_news_text_${target}`] || '';
+    }
+    return settings.breaking_news_text_all || '';
+  })();
+
   // ── Fetch data ──
   const fetchData = useCallback(async () => {
     try {
@@ -469,71 +485,97 @@ export default function PlayerPage() {
         )}
       </main>
 
-      {/* =========== TICKER BAR =========== */}
-      {ticker.length > 0 && (
-        <div className="flex-shrink-0 flex items-stretch overflow-hidden" style={{ height: '36px' }}>
-          <div className="flex-shrink-0 px-4 flex items-center gap-2" style={{ background: `linear-gradient(135deg, ${C.teal}, ${C.tealDark})` }}>
-            <Zap className="w-3.5 h-3.5 text-white" />
-            <span className="text-white font-black text-[11px] tracking-[0.2em] uppercase whitespace-nowrap">
-              {ticker[tickerIndex]?.label || 'SPECIAL UPDATE'}
+      {/* =========== BREAKING NEWS or TICKER + HEADLINES =========== */}
+      {breakingNewsActive ? (
+        <div className="flex-shrink-0 flex items-stretch overflow-hidden" style={{ height: '54px' }}>
+          <div className="flex-shrink-0 px-4 flex items-center gap-2"
+            style={{ background: 'linear-gradient(135deg, #b71c1c 0%, #d32f2f 100%)' }}>
+            <div className="w-2 h-2 rounded-full bg-white animate-pulse" />
+            <span className="text-white font-black text-xs tracking-[0.25em] uppercase whitespace-nowrap">
+              BREAKING
             </span>
           </div>
-          <div className="flex-1 px-4 flex items-center overflow-hidden" style={{ background: C.navy, borderTop: `1px solid ${C.border}` }}>
-            <AnimatePresence mode="wait">
-              <motion.div
-                key={tickerIndex}
-                initial={{ opacity: 0, x: 30 }}
-                animate={{ opacity: 1, x: 0 }}
-                exit={{ opacity: 0, x: -30 }}
-                transition={{ duration: 0.3 }}
-                className="flex items-center gap-3 whitespace-nowrap overflow-hidden"
-              >
-                {ticker[tickerIndex] && (
-                  <>
-                    <span
-                      className="flex-shrink-0 px-2 py-0.5 rounded text-[10px] font-bold border"
-                      style={{ background: 'rgba(0,121,107,0.2)', color: C.tealLight, borderColor: 'rgba(0,121,107,0.4)' }}
-                    >
-                      {ticker[tickerIndex].type.split('-').map((w) => w.charAt(0).toUpperCase() + w.slice(1)).join(' ')}
-                    </span>
-                    <span className="text-white font-semibold text-sm truncate">{ticker[tickerIndex].text}</span>
-                    {ticker[tickerIndex].course_code && (
-                      <span className="text-xs flex-shrink-0" style={{ color: C.textMuted }}>{ticker[tickerIndex].course_code}</span>
-                    )}
-                  </>
-                )}
-              </motion.div>
-            </AnimatePresence>
-            <div className="flex-shrink-0 ml-auto flex items-center gap-1 pl-4">
-              {ticker.map((_, i) => (
-                <div key={i} className="w-1.5 h-1.5 rounded-full" style={{ background: i === tickerIndex ? C.teal : C.textDim }} />
-              ))}
-            </div>
-          </div>
-        </div>
-      )}
-
-      {/* =========== HEADLINES MARQUEE =========== */}
-      {announcements.length > 0 && (
-        <div className="flex-shrink-0 flex items-stretch overflow-hidden" style={{ height: '34px' }}>
-          <div className="flex-shrink-0 px-4 flex items-center gap-2" style={{ background: C.gold }}>
-            <Radio className="w-3 h-3 animate-pulse" style={{ color: C.navyDark }} />
-            <span className="font-black text-[11px] tracking-[0.2em] uppercase whitespace-nowrap" style={{ color: C.navyDark }}>
-              {headlinePrefix}
-            </span>
-          </div>
-          <div className="flex-1 overflow-hidden" style={{ background: C.navyDark }}>
+          <div className="flex-1 flex items-center overflow-hidden px-4"
+            style={{ background: 'linear-gradient(135deg, #c62828 0%, #e53935 100%)' }}>
             <div className="flex h-full items-center animate-marquee whitespace-nowrap">
-              {[...announcements, ...announcements].map((a, i) => (
-                <span key={`${a.id}-${i}`} className="mx-8 inline-flex items-center gap-3 text-sm">
-                  <span className="w-1.5 h-1.5 rounded-full flex-shrink-0" style={{ background: C.gold }} />
-                  <span className="font-semibold" style={{ color: 'rgba(255,255,255,0.85)' }}>{a.title}</span>
-                  <span style={{ color: C.textMuted }}>{a.content.slice(0, 80)}</span>
+              {[breakingNewsText, breakingNewsText].map((text, i) => (
+                <span key={i} className="mx-8 inline-flex items-center gap-3 text-sm font-bold text-white">
+                  <span className="w-1.5 h-1.5 rounded-full bg-white/70 flex-shrink-0" />
+                  {text}
                 </span>
               ))}
             </div>
           </div>
         </div>
+      ) : (
+        <>
+          {/* TICKER BAR */}
+          {ticker.length > 0 && (
+            <div className="flex-shrink-0 flex items-stretch overflow-hidden" style={{ height: '36px' }}>
+              <div className="flex-shrink-0 px-4 flex items-center gap-2" style={{ background: `linear-gradient(135deg, ${C.teal}, ${C.tealDark})` }}>
+                <Zap className="w-3.5 h-3.5 text-white" />
+                <span className="text-white font-black text-[11px] tracking-[0.2em] uppercase whitespace-nowrap">
+                  {ticker[tickerIndex]?.label || 'SPECIAL UPDATE'}
+                </span>
+              </div>
+              <div className="flex-1 px-4 flex items-center overflow-hidden" style={{ background: C.navy, borderTop: `1px solid ${C.border}` }}>
+                <AnimatePresence mode="wait">
+                  <motion.div
+                    key={tickerIndex}
+                    initial={{ opacity: 0, x: 30 }}
+                    animate={{ opacity: 1, x: 0 }}
+                    exit={{ opacity: 0, x: -30 }}
+                    transition={{ duration: 0.3 }}
+                    className="flex items-center gap-3 whitespace-nowrap overflow-hidden"
+                  >
+                    {ticker[tickerIndex] && (
+                      <>
+                        <span
+                          className="flex-shrink-0 px-2 py-0.5 rounded text-[10px] font-bold border"
+                          style={{ background: 'rgba(0,121,107,0.2)', color: C.tealLight, borderColor: 'rgba(0,121,107,0.4)' }}
+                        >
+                          {ticker[tickerIndex].type.split('-').map((w) => w.charAt(0).toUpperCase() + w.slice(1)).join(' ')}
+                        </span>
+                        <span className="text-white font-semibold text-sm truncate">{ticker[tickerIndex].text}</span>
+                        {ticker[tickerIndex].course_code && (
+                          <span className="text-xs flex-shrink-0" style={{ color: C.textMuted }}>{ticker[tickerIndex].course_code}</span>
+                        )}
+                      </>
+                    )}
+                  </motion.div>
+                </AnimatePresence>
+                <div className="flex-shrink-0 ml-auto flex items-center gap-1 pl-4">
+                  {ticker.map((_, i) => (
+                    <div key={i} className="w-1.5 h-1.5 rounded-full" style={{ background: i === tickerIndex ? C.teal : C.textDim }} />
+                  ))}
+                </div>
+              </div>
+            </div>
+          )}
+
+          {/* HEADLINES MARQUEE */}
+          {announcements.length > 0 && (
+            <div className="flex-shrink-0 flex items-stretch overflow-hidden" style={{ height: '34px' }}>
+              <div className="flex-shrink-0 px-4 flex items-center gap-2" style={{ background: C.gold }}>
+                <Radio className="w-3 h-3 animate-pulse" style={{ color: C.navyDark }} />
+                <span className="font-black text-[11px] tracking-[0.2em] uppercase whitespace-nowrap" style={{ color: C.navyDark }}>
+                  {headlinePrefix}
+                </span>
+              </div>
+              <div className="flex-1 overflow-hidden" style={{ background: C.navyDark }}>
+                <div className="flex h-full items-center animate-marquee whitespace-nowrap">
+                  {[...announcements, ...announcements].map((a, i) => (
+                    <span key={`${a.id}-${i}`} className="mx-8 inline-flex items-center gap-3 text-sm">
+                      <span className="w-1.5 h-1.5 rounded-full flex-shrink-0" style={{ background: C.gold }} />
+                      <span className="font-semibold" style={{ color: 'rgba(255,255,255,0.85)' }}>{a.title}</span>
+                      <span style={{ color: C.textMuted }}>{a.content.slice(0, 80)}</span>
+                    </span>
+                  ))}
+                </div>
+              </div>
+            </div>
+          )}
+        </>
       )}
     </div>
   );
