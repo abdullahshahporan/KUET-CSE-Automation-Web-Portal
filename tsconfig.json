@@ -36,6 +36,8 @@
   ],
   "exclude": [
     "node_modules",
-    "supabase/functions"
+    "supabase/functions",
+    "tv-player-app",
+    "tv-player-app/**"
   ]
 }
