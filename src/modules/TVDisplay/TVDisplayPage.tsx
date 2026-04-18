@@ -1334,7 +1334,7 @@ export default function TVDisplayPage({ onMenuChange }: { onMenuChange?: (id: st
 
       {/* ══════ TAB: TV Devices ══════ */}
       {activeTab === 'devices' && (
-        <DevicesTab devices={devices} onReload={loadData} />
+        <DevicesTab devices={devices} settings={settings} onReload={loadData} />
       )}
     </div>
   );
@@ -1440,11 +1440,37 @@ function SettingsTab({ settings, onSave }: { settings: Record<string, string>; o
 // Devices Tab Component
 // ══════════════════════════════════════
 
-function DevicesTab({ devices, onReload }: { devices: CmsTvDevice[]; onReload: () => Promise<void> }) {
+function DevicesTab({
+  devices,
+  settings,
+  onReload,
+}: {
+  devices: CmsTvDevice[];
+  settings: Record<string, string>;
+  onReload: () => Promise<void>;
+}) {
   const [showForm, setShowForm] = useState(false);
   const [editingId, setEditingId] = useState<string | null>(null);
   const [saving, setSaving] = useState(false);
   const [formData, setFormData] = useState({ name: '', label: '', location: '' });
+
+  const getDeviceSectionEnabled = (
+    deviceName: string,
+    section: 'events' | 'ticker' | 'headlines'
+  ) => {
+    const value = settings[`tv_show_${section}_${deviceName}`];
+    if (!value) return true;
+    return value !== 'false' && value !== '0';
+  };
+
+  const handleToggleDeviceSection = async (
+    deviceName: string,
+    section: 'events' | 'ticker' | 'headlines',
+    currentValue: boolean
+  ) => {
+    await upsertSetting(`tv_show_${section}_${deviceName}`, (!currentValue).toString());
+    await onReload();
+  };
 
   const resetForm = () => {
     setFormData({ name: '', label: '', location: '' });
@@ -1645,6 +1671,37 @@ function DevicesTab({ devices, onReload }: { devices: CmsTvDevice[]; onReload: (
                     device.show_room_schedule ? 'translate-x-6' : 'translate-x-1'
                   }`} />
                 </button>
+              </div>
+
+              <div className="mb-4 px-3 py-3 rounded-lg border border-gray-200 dark:border-[#3d4951] bg-white/50 dark:bg-[#0b090a]/50 space-y-2.5">
+                <p className="text-xs font-medium text-gray-400 dark:text-[#b1a7a6] uppercase tracking-wide">
+                  Display Content
+                </p>
+
+                {(['events', 'ticker', 'headlines'] as const).map((section) => {
+                  const enabled = getDeviceSectionEnabled(device.name, section);
+                  const label = section === 'events' ? 'Events Panel' : section === 'ticker' ? 'Ticker Bar' : 'Headlines Bar';
+
+                  return (
+                    <div key={section} className="flex items-center justify-between">
+                      <span className="text-sm text-gray-700 dark:text-[#d3d3d3]">{label}</span>
+                      <button
+                        onClick={async () => {
+                          await handleToggleDeviceSection(device.name, section, enabled);
+                        }}
+                        className={`relative inline-flex h-5 w-10 items-center rounded-full transition-colors ${
+                          enabled ? 'bg-emerald-500' : 'bg-gray-300 dark:bg-gray-600'
+                        }`}
+                      >
+                        <span
+                          className={`inline-block h-3.5 w-3.5 transform rounded-full bg-white transition-transform ${
+                            enabled ? 'translate-x-5' : 'translate-x-1'
+                          }`}
+                        />
+                      </button>
+                    </div>
+                  );
+                })}
               </div>
 
               <div className="flex items-center gap-2 pt-3 border-t border-gray-200 dark:border-[#3d4951]">

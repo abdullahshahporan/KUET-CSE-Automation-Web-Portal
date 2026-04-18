@@ -306,6 +306,17 @@ function TVPreview({ target, showRoomSchedule }: { target: string; showRoomSched
     return settings.breaking_news_text_all || '';
   })();
 
+  const isTargetSectionEnabled = (section: 'events' | 'ticker' | 'headlines') => {
+    const value = settings[`tv_show_${section}_${target}`];
+    if (!value) return true;
+    return value !== 'false' && value !== '0';
+  };
+
+  const showEventsPanel = isTargetSectionEnabled('events');
+  const showTickerBar = isTargetSectionEnabled('ticker');
+  const showHeadlinesBar = isTargetSectionEnabled('headlines');
+  const showBreakingBar = breakingNewsActive && showTickerBar;
+
   if (loading) {
     return (
       <div className="h-full flex items-center justify-center" style={{ background: C.navyDark }}>
@@ -347,6 +358,7 @@ function TVPreview({ target, showRoomSchedule }: { target: string; showRoomSched
       {/* MAIN CONTENT */}
       <main className="flex-1 min-h-0 flex overflow-hidden">
         {/* LEFT: Events */}
+        {showEventsPanel && (
         <section className={`${showRoomSchedule ? 'flex-[80]' : 'flex-1'} min-w-0 flex flex-col p-3 ${showRoomSchedule ? 'pr-1.5' : ''} overflow-hidden`}>
           <div className="flex-shrink-0 flex items-center justify-between mb-1.5">
             <h2 className="text-xs font-black tracking-[0.2em] uppercase" style={{ color: C.gold }}>
@@ -395,10 +407,11 @@ function TVPreview({ target, showRoomSchedule }: { target: string; showRoomSched
             </AnimatePresence>
           </div>
         </section>
+        )}
 
         {/* RIGHT: Schedule */}
         {showRoomSchedule && (
-        <section className="flex-[20] min-w-0 flex flex-col p-3 pl-1.5 overflow-hidden gap-1.5">
+        <section className={`${showEventsPanel ? 'flex-[20] pl-1.5' : 'flex-1 pl-3'} min-w-0 flex flex-col p-3 overflow-hidden gap-1.5`}>
           <h2 className="flex-shrink-0 text-[10px] font-black tracking-[0.18em] uppercase" style={{ color: C.gold }}>
             Live Room Schedule
           </h2>
@@ -519,10 +532,21 @@ function TVPreview({ target, showRoomSchedule }: { target: string; showRoomSched
           </div>
         </section>
         )}
+
+        {!showEventsPanel && !showRoomSchedule && (
+          <section className="flex-1 min-w-0 p-3 flex items-center justify-center">
+            <div className="text-center rounded-xl px-4 py-6"
+              style={{ background: 'rgba(255,255,255,0.04)', border: `1px solid ${C.border}` }}>
+              <Monitor className="w-10 h-10 mx-auto mb-2" style={{ color: C.textMuted }} />
+              <p className="text-sm font-medium" style={{ color: C.textMuted }}>No main panel enabled for {target}</p>
+              <p className="text-[10px] mt-1" style={{ color: C.textDim }}>Enable Events or Room Schedule from TV Devices settings</p>
+            </div>
+          </section>
+        )}
       </main>
 
       {/* BREAKING NEWS or TICKER + HEADLINES */}
-      {breakingNewsActive ? (
+      {showBreakingBar ? (
         <div className="flex-shrink-0 flex items-stretch overflow-hidden" style={{ height: '54px' }}>
           <div className="flex-shrink-0 px-4 flex items-center gap-2"
             style={{ background: 'linear-gradient(135deg, #b71c1c 0%, #d32f2f 100%)' }}>
@@ -546,7 +570,7 @@ function TVPreview({ target, showRoomSchedule }: { target: string; showRoomSched
       ) : (
         <>
           {/* TICKER BAR */}
-          {ticker.length > 0 && (
+          {showTickerBar && ticker.length > 0 && (
         <div className="flex-shrink-0 flex items-stretch overflow-hidden" style={{ height: '28px' }}>
           <div className="flex-shrink-0 px-3 flex items-center gap-1.5"
             style={{ background: `linear-gradient(135deg, ${C.teal}, ${C.tealDark})` }}>
@@ -580,7 +604,7 @@ function TVPreview({ target, showRoomSchedule }: { target: string; showRoomSched
       )}
 
       {/* HEADLINES MARQUEE */}
-      {announcements.length > 0 && (
+      {showHeadlinesBar && announcements.length > 0 && (
         <div className="flex-shrink-0 flex items-stretch overflow-hidden" style={{ height: '26px' }}>
           <div className="flex-shrink-0 px-3 flex items-center gap-1.5" style={{ background: C.gold }}>
             <Radio className="w-2.5 h-2.5 animate-pulse" style={{ color: C.navyDark }} />

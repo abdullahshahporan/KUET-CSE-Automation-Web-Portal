@@ -96,6 +96,16 @@ export default function PlayerPage() {
   const headlinePrefix = settings.headline_prefix || 'HEADLINES';
   const eventRotationSec = parseInt(settings.event_rotation_sec || '8', 10);
 
+  const isTargetSectionEnabled = (section: 'events' | 'ticker' | 'headlines') => {
+    const value = settings[`tv_show_${section}_${target}`];
+    if (!value) return true;
+    return value !== 'false' && value !== '0';
+  };
+
+  const showEventsPanel = isTargetSectionEnabled('events');
+  const showTickerBar = isTargetSectionEnabled('ticker');
+  const showHeadlinesBar = isTargetSectionEnabled('headlines');
+
   // ── Fetch data ──
   const fetchData = useCallback(async () => {
     try {
@@ -243,18 +253,6 @@ export default function PlayerPage() {
     );
   }
 
-  // ── No content fallback ──
-  if (announcements.length === 0 && events.length === 0 && ticker.length === 0) {
-    return (
-      <div className="h-screen flex items-center justify-center" style={{ background: C.navyDark, color: C.white }}>
-        <div className="text-center">
-          <h2 className="text-5xl font-bold mb-6" style={{ color: 'rgba(255,255,255,0.2)' }}>{target}</h2>
-          <p className="text-2xl" style={{ color: C.textDim }}>No content available. Send content from the admin panel.</p>
-        </div>
-      </div>
-    );
-  }
-
   return (
     <div className="h-screen overflow-hidden flex flex-col select-none" style={{ background: C.navyDark, color: C.white }}>
 
@@ -288,6 +286,7 @@ export default function PlayerPage() {
       <main className="flex-1 min-h-0 flex overflow-hidden">
 
         {/* Events panel */}
+        {showEventsPanel && (
         <section className={`${showRoomSchedule ? 'flex-[80]' : 'flex-1'} min-w-0 flex flex-col p-4 ${showRoomSchedule ? 'pr-2' : ''} overflow-hidden`}>
           <div className="flex-shrink-0 flex items-center justify-between mb-2">
             <h2 className="text-sm font-black tracking-[0.2em] uppercase" style={{ color: C.gold }}>
@@ -343,10 +342,11 @@ export default function PlayerPage() {
             </AnimatePresence>
           </div>
         </section>
+        )}
 
         {/* RIGHT: Room Schedule (conditional) */}
         {showRoomSchedule && (
-        <section className="flex-[20] min-w-0 flex flex-col p-4 pl-2 overflow-hidden gap-2">
+        <section className={`${showEventsPanel ? 'flex-[20] pl-2' : 'flex-1 pl-4'} min-w-0 flex flex-col p-4 overflow-hidden gap-2`}>
           <h2 className="flex-shrink-0 text-xs font-black tracking-[0.18em] uppercase" style={{ color: C.gold }}>
             Live Room Schedule
           </h2>
@@ -467,10 +467,21 @@ export default function PlayerPage() {
           </div>
         </section>
         )}
+
+        {!showEventsPanel && !showRoomSchedule && (
+          <section className="flex-1 min-w-0 p-4 flex items-center justify-center">
+            <div className="text-center rounded-2xl px-6 py-8"
+              style={{ background: 'rgba(255,255,255,0.04)', border: `1px solid ${C.border}` }}>
+              <Monitor className="w-12 h-12 mx-auto mb-3" style={{ color: C.textMuted }} />
+              <p className="text-lg font-medium" style={{ color: C.textMuted }}>No main panel enabled for {target}</p>
+              <p className="text-sm mt-1" style={{ color: C.textDim }}>Enable Events or Room Schedule from TV Devices settings</p>
+            </div>
+          </section>
+        )}
       </main>
 
       {/* =========== TICKER BAR =========== */}
-      {ticker.length > 0 && (
+      {showTickerBar && ticker.length > 0 && (
         <div className="flex-shrink-0 flex items-stretch overflow-hidden" style={{ height: '36px' }}>
           <div className="flex-shrink-0 px-4 flex items-center gap-2" style={{ background: `linear-gradient(135deg, ${C.teal}, ${C.tealDark})` }}>
             <Zap className="w-3.5 h-3.5 text-white" />
@@ -514,7 +525,7 @@ export default function PlayerPage() {
       )}
 
       {/* =========== HEADLINES MARQUEE =========== */}
-      {announcements.length > 0 && (
+      {showHeadlinesBar && announcements.length > 0 && (
         <div className="flex-shrink-0 flex items-stretch overflow-hidden" style={{ height: '34px' }}>
           <div className="flex-shrink-0 px-4 flex items-center gap-2" style={{ background: C.gold }}>
             <Radio className="w-3 h-3 animate-pulse" style={{ color: C.navyDark }} />
