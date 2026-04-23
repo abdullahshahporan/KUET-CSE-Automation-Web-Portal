@@ -1,6 +1,7 @@
 "use client";
 
 import { useAuth } from '@/contexts/AuthContext';
+import { canAccessMenu } from '@/lib/adminPermissions';
 import {
     BookOpen,
     Building2,
@@ -80,7 +81,9 @@ export default function Sidebar({ activeItem, onMenuChange, isCollapsed, onToggl
   ];
 
   const isTeacher = user?.role === 'teacher';
-  const filteredMenuItems = isTeacher && !isAdminLike ? teacherMenuItems : adminMenuItems;
+  const filteredMenuItems = isTeacher && !isAdminLike
+    ? teacherMenuItems
+    : adminMenuItems.filter((item) => canAccessMenu(user ?? null, item.id));
 
   const handleLogout = () => {
     logout();

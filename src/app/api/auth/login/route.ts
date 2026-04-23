@@ -11,6 +11,25 @@ import { comparePassword } from '@/lib/passwordUtils';
 import { getSupabaseAdmin, isSupabaseAdminConfigured } from '@/lib/supabaseAdmin';
 import { createSessionToken, ServerUserRole, setSessionCookie } from '@/lib/serverAuth';
 
+interface AdminPermissions {
+  all?: boolean;
+  menus?: string[];
+  source?: string;
+}
+
+function normalizeAdminPermissions(raw: unknown): AdminPermissions | null {
+  if (!raw || typeof raw !== 'object') return null;
+
+  const candidate = raw as { all?: unknown; menus?: unknown; source?: unknown };
+  return {
+    all: candidate.all === true,
+    menus: Array.isArray(candidate.menus)
+      ? candidate.menus.filter((menu): menu is string => typeof menu === 'string' && menu.trim().length > 0)
+      : [],
+    source: typeof candidate.source === 'string' ? candidate.source : undefined,
+  };
+}
+
 function extractError(error: unknown, fallback: string): string {
   return error instanceof Error ? error.message : fallback;
 }
@@ -106,6 +125,7 @@ export async function POST(request: NextRequest) {
     let name = normalizedEmail;
     let department = 'Computer Science & Engineering';
     let designation: string | undefined;
+    let permissions: AdminPermissions | null = null;
 
     if (profile.role === 'TEACHER' || profile.role === 'HEAD') {
       const { data: teacher } = await db
@@ -130,7 +150,7 @@ export async function POST(request: NextRequest) {
           .maybeSingle(),
         db
           .from('admins')
-          .select('full_name')
+          .select('full_name, permissions')
           .eq('user_id', profile.user_id)
           .maybeSingle(),
       ]);
@@ -138,6 +158,7 @@ export async function POST(request: NextRequest) {
       name = staff?.full_name || admin?.full_name || 'Administrator';
       department = staff?.department || department;
       designation = staff?.designation || 'Administrator';
+      permissions = normalizeAdminPermissions(admin?.permissions ?? null);
     }
 
     // 4. Update last_login
@@ -151,6 +172,7 @@ export async function POST(request: NextRequest) {
       email: profile.email,
       name,
       role: normalizeRole(profile.role),
+      permissions,
       department,
       designation,
     };

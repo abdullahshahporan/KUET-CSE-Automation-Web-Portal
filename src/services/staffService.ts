@@ -7,11 +7,21 @@ export interface AddStaffInput {
   phone?: string;
   designation: string;
   is_admin: boolean;
+  permissions?: {
+    all: boolean;
+    menus: string[];
+    source?: string;
+  };
   password?: string;
 }
 
 export interface AddStaffResponse extends ServiceResult<StaffWithAuth> {
   generatedPassword?: string;
+}
+
+export interface StaffPermissionInput {
+  all: boolean;
+  menus: string[];
 }
 
 const ENDPOINT = '/staffs';
@@ -41,4 +51,15 @@ export async function setStaffAdmin(
 
 export async function deactivateStaff(userId: string): Promise<ServiceResult<void>> {
   return apiClient.delete(ENDPOINT, { userId });
+}
+
+export async function setStaffPermissions(
+  userId: string,
+  permissions: StaffPermissionInput,
+): Promise<ServiceResult<void>> {
+  return apiClient.patch(ENDPOINT, {
+    userId,
+    action: 'set_permissions',
+    permissions,
+  });
 }

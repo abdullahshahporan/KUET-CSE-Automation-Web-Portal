@@ -6,6 +6,44 @@ import { requireField, requireFields, runValidations, validateEmail } from '@/li
 import { getSupabaseAdmin, isSupabaseAdminConfigured } from '@/lib/supabaseAdmin';
 import { requireServerSession } from '@/lib/serverAuth';
 
+interface AdminPermissions {
+  all?: boolean;
+  menus?: string[];
+  source?: string;
+}
+
+function normalizeAdminPermissions(raw: unknown): AdminPermissions {
+  if (!raw || typeof raw !== 'object') {
+    return { all: false, menus: [], source: 'staff_management_custom' };
+  }
+
+  const candidate = raw as { all?: unknown; menus?: unknown; source?: unknown };
+  const menus = Array.isArray(candidate.menus)
+    ? candidate.menus.filter((menu): menu is string => typeof menu === 'string' && menu.trim().length > 0)
+    : [];
+
+  return {
+    all: candidate.all === true,
+    menus,
+    source: typeof candidate.source === 'string' ? candidate.source : 'staff_management_custom',
+  };
+}
+
+async function loadAdminPermissionsMap() {
+  const { data: adminRows, error } = await getSupabaseAdmin()
+    .from('admins')
+    .select('user_id, permissions');
+
+  if (error) throw error;
+
+  return new Map(
+    (adminRows ?? []).map((admin) => [
+      admin.user_id,
+      normalizeAdminPermissions(admin.permissions),
+    ]),
+  );
+}
+
 function extractErrorMessage(error: unknown, fallback: string): string {
   return error instanceof Error ? error.message : fallback;
 }
@@ -37,7 +75,14 @@ export async function GET(request: NextRequest) {
       .order('created_at', { ascending: false });
 
     if (error) throw error;
-    return NextResponse.json(data || []);
+
+    const permissionMap = await loadAdminPermissionsMap();
+    const withPermissions = (data ?? []).map((staff) => ({
+      ...staff,
+      admin_permissions: permissionMap.get(staff.user_id) ?? null,
+    }));
+
+    return NextResponse.json(withPermissions);
   } catch (error: unknown) {
     return internalError(extractErrorMessage(error, 'Failed to fetch staff'));
   }
@@ -51,7 +96,7 @@ export async function POST(request: NextRequest) {
 
   try {
     const body = await request.json();
-    const { full_name, email, phone, designation, is_admin, password } = body;
+    const { full_name, email, phone, designation, is_admin, password, permissions } = body;
 
     const validationError = runValidations(
       requireFields({ full_name, email, designation }),
@@ -89,11 +134,18 @@ export async function POST(request: NextRequest) {
     if (staffError) throw staffError;
 
     if (is_admin) {
+      const normalizedPermissions = normalizeAdminPermissions(permissions);
       await db.from('admins').upsert({
         user_id: userId,
         full_name,
         phone: phone || null,
-        permissions: { all: true, source: 'staff_management' },
+        permissions: normalizedPermissions.all
+          ? { all: true, source: normalizedPermissions.source }
+          : {
+              all: false,
+              menus: normalizedPermissions.menus,
+              source: normalizedPermissions.source,
+            },
       });
     }
 
@@ -107,7 +159,18 @@ export async function POST(request: NextRequest) {
       .single();
 
     if (fetchError) throw fetchError;
-    return ok({ ...data, generatedPassword: plainPassword });
+
+    let adminPermissions: AdminPermissions | null = null;
+    if (is_admin) {
+      const { data: adminRow } = await db
+        .from('admins')
+        .select('permissions')
+        .eq('user_id', userId)
+        .maybeSingle();
+      adminPermissions = normalizeAdminPermissions(adminRow?.permissions ?? null);
+    }
+
+    return ok({ ...data, admin_permissions: adminPermissions, generatedPassword: plainPassword });
   } catch (error: unknown) {
     return internalError(extractErrorMessage(error, 'Failed to add staff'));
   }
@@ -125,18 +188,43 @@ export async function PATCH(request: NextRequest) {
     const idCheck = requireField(userId, 'User ID');
     if (!idCheck.valid) return badRequest(idCheck.error!);
 
-    if (action !== 'set_admin') return badRequest('Invalid action');
+    if (action !== 'set_admin' && action !== 'set_permissions') {
+      return badRequest('Invalid action');
+    }
 
     const db = getSupabaseAdmin();
-    const makeAdmin = !!body.is_admin;
-
     const { data: staff, error: staffFetchError } = await db
       .from('staffs')
-      .select('user_id, full_name, phone')
+      .select('user_id, full_name, phone, is_admin')
       .eq('user_id', userId)
       .single();
 
     if (staffFetchError) throw staffFetchError;
+
+    if (action === 'set_permissions') {
+      const normalizedPermissions = normalizeAdminPermissions(body.permissions);
+
+      if (!staff.is_admin) {
+        return badRequest('Only admin staff can receive module permissions');
+      }
+
+      await db.from('admins').upsert({
+        user_id: userId,
+        full_name: staff.full_name,
+        phone: staff.phone || null,
+        permissions: normalizedPermissions.all
+          ? { all: true, source: normalizedPermissions.source }
+          : {
+              all: false,
+              menus: normalizedPermissions.menus,
+              source: normalizedPermissions.source,
+            },
+      });
+
+      return noContent();
+    }
+
+    const makeAdmin = !!body.is_admin;
 
     await db.from('staffs').update({ is_admin: makeAdmin }).eq('user_id', userId);
     await db

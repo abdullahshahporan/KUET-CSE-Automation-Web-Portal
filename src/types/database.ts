@@ -80,8 +80,15 @@ export interface Staff {
   updated_at: string;
 }
 
+export interface AdminPermissions {
+  all?: boolean;
+  menus?: string[];
+  source?: string;
+}
+
 export interface StaffWithAuth extends Staff {
   profile: Profile;
+  admin_permissions?: AdminPermissions | null;
 }
 
 // ── Course ─────────────────────────────────────────────

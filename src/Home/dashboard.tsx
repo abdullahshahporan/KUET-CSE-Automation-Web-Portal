@@ -9,6 +9,7 @@
 import AccessRestricted from '@/components/AccessRestricted';
 import Sidebar from '@/components/Sidebar';
 import { useAuth, UserRole } from '@/contexts/AuthContext';
+import { canAccessMenu } from '@/lib/adminPermissions';
 import { AddStudentPage } from '@/modules/AddStudent';
 import { AddFacultyPage } from '@/modules/AddFaculty';
 import { ClassRoutinePage } from '@/modules/ClassRoutine';
@@ -110,6 +111,12 @@ export default function Dashboard() {
     }
   }, [isLoading, user?.role, activeMenu]);
 
+  useEffect(() => {
+    if (!isLoading && user && !canAccessMenu(user, activeMenu)) {
+      setActiveMenu(DEFAULT_PAGE);
+    }
+  }, [isLoading, user, activeMenu]);
+
   // Redirect if not authenticated
   useEffect(() => {
     if (!isLoading && !isAuthenticated) {
@@ -123,6 +130,10 @@ export default function Dashboard() {
   // Resolve current page from registry
   const pageContent = useMemo(() => {
     const entry = PAGE_REGISTRY[activeMenu] ?? PAGE_REGISTRY[DEFAULT_PAGE];
+
+    if (!canAccessMenu(user, activeMenu)) {
+      return <AccessRestricted message="You are not allowed to access this module." />;
+    }
 
     // Role guard
     if (entry.requiredRole && user?.role !== 'head' && user?.role !== entry.requiredRole) {

@@ -1,9 +1,40 @@
 "use client";
 
-import { addStaff, deactivateStaff, getAllStaffs, setStaffAdmin } from '@/services/staffService';
+import { createPermissionPayload, normalizeAdminPermissions } from '@/lib/adminPermissions';
+import { addStaff, deactivateStaff, getAllStaffs, setStaffAdmin, setStaffPermissions } from '@/services/staffService';
 import type { StaffWithAuth } from '@/types/database';
 import { AlertCircle, Loader2, ShieldCheck, ShieldOff, UserPlus } from 'lucide-react';
 import { useEffect, useMemo, useState } from 'react';
+
+const ADMIN_MODULE_OPTIONS = [
+  { id: 'tv-display', label: 'TV Display' },
+  { id: 'faculty-info', label: 'Faculty Info' },
+  { id: 'room-info', label: 'Room Info' },
+  { id: 'course-info', label: 'Course Info' },
+  { id: 'course-allocation', label: 'Course Allocation' },
+  { id: 'class-routine', label: 'Class Routine' },
+  { id: 'schedule', label: 'Schedule' },
+  { id: 'add-faculty', label: 'Add Faculty' },
+  { id: 'add-student', label: 'Add Student' },
+  { id: 'staff-management', label: 'Staff Management' },
+  { id: 'cr-management', label: 'CR Management' },
+  { id: 'optional-courses', label: 'Optional Courses' },
+  { id: 'term-upgrade', label: 'Term Upgrade' },
+  { id: 'result', label: 'Result' },
+  { id: 'website-cms', label: 'Website CMS' },
+];
+
+function readStaffPermissions(staff: StaffWithAuth): { all: boolean; menus: string[] } {
+  const normalized = normalizeAdminPermissions(staff.admin_permissions);
+  if (!normalized) {
+    return { all: staff.is_admin, menus: [] };
+  }
+
+  return {
+    all: normalized.all === true,
+    menus: normalized.menus ?? [],
+  };
+}
 
 export default function StaffManagementPage() {
   const [staffs, setStaffs] = useState<StaffWithAuth[]>([]);
@@ -18,6 +49,13 @@ export default function StaffManagementPage() {
     phone: '',
     designation: 'Administrative Staff',
     is_admin: true,
+    admin_access_mode: 'full' as 'full' | 'custom',
+    admin_menus: [] as string[],
+  });
+  const [editingPermissionsFor, setEditingPermissionsFor] = useState<StaffWithAuth | null>(null);
+  const [permissionForm, setPermissionForm] = useState({
+    all: true,
+    menus: [] as string[],
   });
 
   useEffect(() => {
@@ -46,7 +84,13 @@ export default function StaffManagementPage() {
     setError(null);
     setSuccess(null);
 
-    const result = await addStaff(formData);
+    const result = await addStaff({
+      ...formData,
+      permissions: formData.is_admin
+        ? createPermissionPayload(formData.admin_access_mode === 'full', formData.admin_menus)
+        : undefined,
+    });
+
     if (result.success) {
       if (result.generatedPassword) {
         await navigator.clipboard.writeText(result.generatedPassword).catch(() => {});
@@ -60,6 +104,8 @@ export default function StaffManagementPage() {
         phone: '',
         designation: 'Administrative Staff',
         is_admin: true,
+        admin_access_mode: 'full',
+        admin_menus: [],
       });
       setShowForm(false);
       await loadStaffs();
@@ -85,6 +131,29 @@ export default function StaffManagementPage() {
     } else {
       setError(result.error || 'Failed to update admin access');
     }
+    setLoading(false);
+  }
+
+  async function handleSavePermissions() {
+    if (!editingPermissionsFor) return;
+
+    setLoading(true);
+    setError(null);
+    setSuccess(null);
+
+    const result = await setStaffPermissions(
+      editingPermissionsFor.user_id,
+      createPermissionPayload(permissionForm.all, permissionForm.menus),
+    );
+
+    if (result.success) {
+      setSuccess('Module permissions updated successfully.');
+      setEditingPermissionsFor(null);
+      await loadStaffs();
+    } else {
+      setError(result.error || 'Failed to update module permissions');
+    }
+
     setLoading(false);
   }
 
@@ -119,7 +188,7 @@ export default function StaffManagementPage() {
         <div>
           <h1 className="text-2xl font-bold text-gray-900">Staff & Admin Access</h1>
           <p className="mt-1 text-sm text-gray-500">
-            Add department staff and grant admin access only when needed.
+            Assign full or module-specific permissions for each admin account.
           </p>
         </div>
         <button
@@ -170,7 +239,7 @@ export default function StaffManagementPage() {
                 required
               />
             </div>
-            <label className="flex items-center gap-2 text-sm font-medium text-gray-700">
+            <label className="flex items-center gap-2 text-sm font-medium text-gray-700 md:col-span-2">
               <input
                 type="checkbox"
                 checked={formData.is_admin}
@@ -179,6 +248,53 @@ export default function StaffManagementPage() {
               />
               Allow this staff member to login as admin
             </label>
+
+            {formData.is_admin && (
+              <div className="space-y-3 rounded-lg border border-gray-200 bg-gray-50 p-3 md:col-span-2">
+                <p className="text-sm font-semibold text-gray-700">Admin Module Access</p>
+                <div className="flex flex-wrap gap-4">
+                  <label className="flex items-center gap-2 text-sm text-gray-700">
+                    <input
+                      type="radio"
+                      checked={formData.admin_access_mode === 'full'}
+                      onChange={() => setFormData({ ...formData, admin_access_mode: 'full' })}
+                    />
+                    Full access
+                  </label>
+                  <label className="flex items-center gap-2 text-sm text-gray-700">
+                    <input
+                      type="radio"
+                      checked={formData.admin_access_mode === 'custom'}
+                      onChange={() => setFormData({ ...formData, admin_access_mode: 'custom' })}
+                    />
+                    Custom module access
+                  </label>
+                </div>
+
+                {formData.admin_access_mode === 'custom' && (
+                  <div className="grid gap-2 sm:grid-cols-2 lg:grid-cols-3">
+                    {ADMIN_MODULE_OPTIONS.map((module) => (
+                      <label key={module.id} className="flex items-center gap-2 text-sm text-gray-700">
+                        <input
+                          type="checkbox"
+                          checked={formData.admin_menus.includes(module.id)}
+                          onChange={(event) => {
+                            setFormData((prev) => ({
+                              ...prev,
+                              admin_menus: event.target.checked
+                                ? [...prev.admin_menus, module.id]
+                                : prev.admin_menus.filter((menu) => menu !== module.id),
+                            }));
+                          }}
+                        />
+                        {module.label}
+                      </label>
+                    ))}
+                  </div>
+                )}
+              </div>
+            )}
+
             <div className="flex justify-end gap-3 md:col-span-2">
               <button
                 type="button"
@@ -233,47 +349,132 @@ export default function StaffManagementPage() {
                   No staff accounts found.
                 </td>
               </tr>
-            ) : filteredStaffs.map((staff) => (
-              <tr key={staff.user_id}>
-                <td className="px-5 py-4 text-sm font-semibold text-gray-900">{staff.full_name}</td>
-                <td className="px-5 py-4 text-sm text-gray-600">{staff.profile.email}</td>
-                <td className="px-5 py-4 text-sm text-gray-600">{staff.designation}</td>
-                <td className="px-5 py-4">
-                  <span className={`rounded-full px-2.5 py-1 text-xs font-semibold ${
-                    staff.is_admin
-                      ? 'bg-emerald-50 text-emerald-700'
-                      : 'bg-gray-100 text-gray-600'
-                  }`}>
-                    {staff.is_admin ? 'Admin' : 'Staff'}
-                  </span>
-                </td>
-                <td className="px-5 py-4 text-sm text-gray-600">
-                  {staff.profile.is_active ? 'Active' : 'Inactive'}
-                </td>
-                <td className="px-5 py-4">
-                  <div className="flex gap-2">
-                    <button
-                      onClick={() => handleAdminToggle(staff)}
-                      disabled={loading || !staff.profile.is_active}
-                      className="inline-flex items-center gap-1 rounded-lg border border-gray-200 px-3 py-1.5 text-xs font-semibold text-gray-700 disabled:opacity-50"
-                    >
-                      {staff.is_admin ? <ShieldOff className="h-3.5 w-3.5" /> : <ShieldCheck className="h-3.5 w-3.5" />}
-                      {staff.is_admin ? 'Remove Admin' : 'Make Admin'}
-                    </button>
-                    <button
-                      onClick={() => handleDeactivate(staff)}
-                      disabled={loading || !staff.profile.is_active}
-                      className="rounded-lg border border-red-200 px-3 py-1.5 text-xs font-semibold text-red-600 disabled:opacity-50"
-                    >
-                      Deactivate
-                    </button>
-                  </div>
-                </td>
-              </tr>
-            ))}
+            ) : filteredStaffs.map((staff) => {
+              const permissions = readStaffPermissions(staff);
+              const accessLabel = !staff.is_admin
+                ? 'Staff'
+                : permissions.all
+                  ? 'Admin (All Modules)'
+                  : `Admin (Custom: ${permissions.menus.length})`;
+
+              return (
+                <tr key={staff.user_id}>
+                  <td className="px-5 py-4 text-sm font-semibold text-gray-900">{staff.full_name}</td>
+                  <td className="px-5 py-4 text-sm text-gray-600">{staff.profile.email}</td>
+                  <td className="px-5 py-4 text-sm text-gray-600">{staff.designation}</td>
+                  <td className="px-5 py-4">
+                    <span className={`rounded-full px-2.5 py-1 text-xs font-semibold ${
+                      staff.is_admin
+                        ? 'bg-emerald-50 text-emerald-700'
+                        : 'bg-gray-100 text-gray-600'
+                    }`}>
+                      {accessLabel}
+                    </span>
+                  </td>
+                  <td className="px-5 py-4 text-sm text-gray-600">
+                    {staff.profile.is_active ? 'Active' : 'Inactive'}
+                  </td>
+                  <td className="px-5 py-4">
+                    <div className="flex gap-2">
+                      <button
+                        onClick={() => handleAdminToggle(staff)}
+                        disabled={loading || !staff.profile.is_active}
+                        className="inline-flex items-center gap-1 rounded-lg border border-gray-200 px-3 py-1.5 text-xs font-semibold text-gray-700 disabled:opacity-50"
+                      >
+                        {staff.is_admin ? <ShieldOff className="h-3.5 w-3.5" /> : <ShieldCheck className="h-3.5 w-3.5" />}
+                        {staff.is_admin ? 'Remove Admin' : 'Make Admin'}
+                      </button>
+
+                      {staff.is_admin && (
+                        <button
+                          onClick={() => {
+                            setEditingPermissionsFor(staff);
+                            setPermissionForm(permissions);
+                          }}
+                          disabled={loading || !staff.profile.is_active}
+                          className="rounded-lg border border-indigo-200 px-3 py-1.5 text-xs font-semibold text-indigo-700 disabled:opacity-50"
+                        >
+                          Permissions
+                        </button>
+                      )}
+
+                      <button
+                        onClick={() => handleDeactivate(staff)}
+                        disabled={loading || !staff.profile.is_active}
+                        className="rounded-lg border border-red-200 px-3 py-1.5 text-xs font-semibold text-red-600 disabled:opacity-50"
+                      >
+                        Deactivate
+                      </button>
+                    </div>
+                  </td>
+                </tr>
+              );
+            })}
           </tbody>
         </table>
       </div>
+
+      {editingPermissionsFor && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/30 p-4">
+          <div className="w-full max-w-2xl rounded-xl bg-white p-5 shadow-xl">
+            <h2 className="text-lg font-bold text-gray-900">Edit Module Permissions</h2>
+            <p className="mt-1 text-sm text-gray-600">
+              {editingPermissionsFor.full_name} can always access Dashboard. Choose additional modules below.
+            </p>
+
+            <div className="mt-4 space-y-3">
+              <label className="flex items-center gap-2 text-sm font-medium text-gray-700">
+                <input
+                  type="checkbox"
+                  checked={permissionForm.all}
+                  onChange={(event) => setPermissionForm((prev) => ({ ...prev, all: event.target.checked }))}
+                />
+                Full access to all admin modules
+              </label>
+
+              <div className="grid gap-2 sm:grid-cols-2 lg:grid-cols-3">
+                {ADMIN_MODULE_OPTIONS.map((module) => (
+                  <label key={module.id} className="flex items-center gap-2 text-sm text-gray-700">
+                    <input
+                      type="checkbox"
+                      disabled={permissionForm.all}
+                      checked={permissionForm.menus.includes(module.id)}
+                      onChange={(event) => {
+                        setPermissionForm((prev) => ({
+                          ...prev,
+                          menus: event.target.checked
+                            ? [...prev.menus, module.id]
+                            : prev.menus.filter((menu) => menu !== module.id),
+                        }));
+                      }}
+                    />
+                    {module.label}
+                  </label>
+                ))}
+              </div>
+            </div>
+
+            <div className="mt-5 flex justify-end gap-3">
+              <button
+                type="button"
+                onClick={() => setEditingPermissionsFor(null)}
+                className="rounded-lg border border-gray-200 px-4 py-2 text-sm font-semibold text-gray-700"
+              >
+                Cancel
+              </button>
+              <button
+                type="button"
+                onClick={() => void handleSavePermissions()}
+                disabled={loading}
+                className="inline-flex items-center gap-2 rounded-lg bg-gray-900 px-4 py-2 text-sm font-semibold text-white disabled:opacity-60"
+              >
+                {loading && <Loader2 className="h-4 w-4 animate-spin" />}
+                Save Permissions
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 }

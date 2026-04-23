@@ -10,6 +10,11 @@ export interface ServerSessionUser {
   email: string;
   name: string;
   role: ServerUserRole;
+  permissions?: {
+    all?: boolean;
+    menus?: string[];
+    source?: string;
+  } | null;
 }
 
 interface SessionPayload extends ServerSessionUser {
@@ -98,6 +103,7 @@ export function verifySessionToken(token: string | undefined): ServerSessionUser
     email: decoded.email,
     name: decoded.name,
     role: decoded.role,
+    permissions: decoded.permissions ?? null,
   };
 }
 
