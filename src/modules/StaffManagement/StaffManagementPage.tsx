@@ -1,9 +1,9 @@
 "use client";
 
 import { createPermissionPayload, normalizeAdminPermissions } from '@/lib/adminPermissions';
-import { addStaff, deactivateStaff, getAllStaffs, setStaffAdmin, setStaffPermissions } from '@/services/staffService';
+import { addStaff, deactivateStaff, getAllStaffs, removeStaffFully, setStaffAdmin, setStaffPermissions } from '@/services/staffService';
 import type { StaffWithAuth } from '@/types/database';
-import { AlertCircle, Loader2, ShieldCheck, ShieldOff, UserPlus } from 'lucide-react';
+import { AlertCircle, Loader2, ShieldCheck, ShieldOff, Trash2, UserPlus } from 'lucide-react';
 import { useEffect, useMemo, useState } from 'react';
 
 const ADMIN_MODULE_OPTIONS = [
@@ -96,7 +96,11 @@ export default function StaffManagementPage() {
         await navigator.clipboard.writeText(result.generatedPassword).catch(() => {});
         setSuccess(`Staff added. Temporary password copied: ${result.generatedPassword}`);
       } else {
-        setSuccess('Staff added successfully.');
+        setSuccess(
+          formData.is_admin
+            ? 'Admin added successfully. Initial password is the mobile number.'
+            : 'Staff added successfully.',
+        );
       }
       setFormData({
         full_name: '',
@@ -170,6 +174,25 @@ export default function StaffManagementPage() {
     setLoading(false);
   }
 
+  async function handleRemoveFully(staff: StaffWithAuth) {
+    const confirmMessage = `Remove ${staff.full_name} permanently? This will delete staff and login records and cannot be undone.`;
+    if (!confirm(confirmMessage)) return;
+
+    setLoading(true);
+    setError(null);
+    setSuccess(null);
+
+    const result = await removeStaffFully(staff.user_id);
+    if (result.success) {
+      setSuccess('Staff removed permanently.');
+      await loadStaffs();
+    } else {
+      setError(result.error || 'Failed to remove staff permanently');
+    }
+
+    setLoading(false);
+  }
+
   return (
     <div className="space-y-6">
       {success && (
@@ -223,12 +246,18 @@ export default function StaffManagementPage() {
               />
             </div>
             <div>
-              <label className="mb-1 block text-sm font-medium text-gray-700">Phone</label>
+              <label className="mb-1 block text-sm font-medium text-gray-700">
+                Mobile No{formData.is_admin ? ' *' : ''}
+              </label>
               <input
                 value={formData.phone}
                 onChange={(event) => setFormData({ ...formData, phone: event.target.value })}
                 className="input-primary"
+                required={formData.is_admin}
               />
+              {formData.is_admin && (
+                <p className="mt-1 text-xs text-gray-500">Used as the initial password for this admin account.</p>
+              )}
             </div>
             <div>
               <label className="mb-1 block text-sm font-medium text-gray-700">Designation</label>
@@ -404,6 +433,15 @@ export default function StaffManagementPage() {
                         className="rounded-lg border border-red-200 px-3 py-1.5 text-xs font-semibold text-red-600 disabled:opacity-50"
                       >
                         Deactivate
+                      </button>
+
+                      <button
+                        onClick={() => void handleRemoveFully(staff)}
+                        disabled={loading}
+                        className="inline-flex items-center gap-1 rounded-lg border border-red-300 px-3 py-1.5 text-xs font-semibold text-red-700 disabled:opacity-50"
+                      >
+                        <Trash2 className="h-3.5 w-3.5" />
+                        Remove Fully
                       </button>
                     </div>
                   </td>

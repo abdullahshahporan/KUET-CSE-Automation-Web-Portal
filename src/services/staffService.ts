@@ -53,6 +53,10 @@ export async function deactivateStaff(userId: string): Promise<ServiceResult<voi
   return apiClient.delete(ENDPOINT, { userId });
 }
 
+export async function removeStaffFully(userId: string): Promise<ServiceResult<void>> {
+  return apiClient.delete(ENDPOINT, { userId, mode: 'hard' });
+}
+
 export async function setStaffPermissions(
   userId: string,
   permissions: StaffPermissionInput,

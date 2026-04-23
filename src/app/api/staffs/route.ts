@@ -97,18 +97,23 @@ export async function POST(request: NextRequest) {
   try {
     const body = await request.json();
     const { full_name, email, phone, designation, is_admin, password, permissions } = body;
+    const isAdmin = !!is_admin;
+    const normalizedPhone = typeof phone === 'string' ? phone.trim() : '';
 
     const validationError = runValidations(
       requireFields({ full_name, email, designation }),
       validateEmail(email ?? ''),
     );
     if (validationError) return badRequest(validationError);
+    if (isAdmin && !normalizedPhone) {
+      return badRequest('Mobile number is required for admin accounts');
+    }
 
     const db = getSupabaseAdmin();
     const userId = crypto.randomUUID();
-    const plainPassword = password || generateSecurePassword(12);
+    const plainPassword = isAdmin ? normalizedPhone : (password || generateSecurePassword(12));
     const passwordHash = await hashPassword(plainPassword);
-    const role = is_admin ? 'ADMIN' : 'STAFF';
+    const role = isAdmin ? 'ADMIN' : 'STAFF';
 
     const { error: profileError } = await db.from('profiles').insert({
       user_id: userId,
@@ -126,19 +131,19 @@ export async function POST(request: NextRequest) {
     const { error: staffError } = await db.from('staffs').insert({
       user_id: userId,
       full_name,
-      phone: phone || null,
+      phone: normalizedPhone || null,
       designation,
-      is_admin: !!is_admin,
+      is_admin: isAdmin,
     });
 
     if (staffError) throw staffError;
 
-    if (is_admin) {
+    if (isAdmin) {
       const normalizedPermissions = normalizeAdminPermissions(permissions);
       await db.from('admins').upsert({
         user_id: userId,
         full_name,
-        phone: phone || null,
+        phone: normalizedPhone || null,
         permissions: normalizedPermissions.all
           ? { all: true, source: normalizedPermissions.source }
           : {
@@ -161,7 +166,7 @@ export async function POST(request: NextRequest) {
     if (fetchError) throw fetchError;
 
     let adminPermissions: AdminPermissions | null = null;
-    if (is_admin) {
+    if (isAdmin) {
       const { data: adminRow } = await db
         .from('admins')
         .select('permissions')
@@ -170,7 +175,11 @@ export async function POST(request: NextRequest) {
       adminPermissions = normalizeAdminPermissions(adminRow?.permissions ?? null);
     }
 
-    return ok({ ...data, admin_permissions: adminPermissions, generatedPassword: plainPassword });
+    return ok({
+      ...data,
+      admin_permissions: adminPermissions,
+      generatedPassword: isAdmin ? undefined : plainPassword,
+    });
   } catch (error: unknown) {
     return internalError(extractErrorMessage(error, 'Failed to add staff'));
   }
@@ -256,8 +265,39 @@ export async function DELETE(request: NextRequest) {
   if (guard) return guard;
 
   try {
-    const userId = new URL(request.url).searchParams.get('userId');
+    const url = new URL(request.url);
+    const userId = url.searchParams.get('userId');
+    const mode = (url.searchParams.get('mode') || '').toLowerCase();
+    const hardDelete = mode === 'hard' || mode === 'permanent' || mode === 'full';
     if (!userId) return badRequest('User ID required');
+
+    if (hardDelete) {
+      if (userId === auth.user.id) {
+        return badRequest('You cannot remove your own account');
+      }
+
+      const db = getSupabaseAdmin();
+
+      const { error: adminDeleteError } = await db
+        .from('admins')
+        .delete()
+        .eq('user_id', userId);
+      if (adminDeleteError) throw adminDeleteError;
+
+      const { error: staffDeleteError } = await db
+        .from('staffs')
+        .delete()
+        .eq('user_id', userId);
+      if (staffDeleteError) throw staffDeleteError;
+
+      const { error: profileDeleteError } = await db
+        .from('profiles')
+        .delete()
+        .eq('user_id', userId);
+      if (profileDeleteError) throw profileDeleteError;
+
+      return noContent();
+    }
 
     const { error } = await getSupabaseAdmin()
       .from('profiles')
