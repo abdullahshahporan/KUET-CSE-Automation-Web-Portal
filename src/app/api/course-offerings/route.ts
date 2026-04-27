@@ -26,6 +26,19 @@ function serviceGuard() {
   return null;
 }
 
+function deriveTermFromCode(code: string): string | null {
+  const digits = code.replace(/\D/g, '');
+  if (digits.length < 2) return null;
+
+  const year = Number.parseInt(digits[0], 10);
+  const semester = Number.parseInt(digits[1], 10);
+  if (year >= 1 && year <= 4 && semester >= 1 && semester <= 2) {
+    return `${year}-${semester}`;
+  }
+
+  return null;
+}
+
 /** Resolve a term from the curriculum table or course code pattern. */
 async function resolveTerm(db: ReturnType<typeof getSupabaseAdmin>, courseId: string, providedTerm?: string): Promise<string> {
   if (providedTerm) return providedTerm;
@@ -40,7 +53,7 @@ async function resolveTerm(db: ReturnType<typeof getSupabaseAdmin>, courseId: st
 
   if (curriculumEntry?.term) return curriculumEntry.term;
 
-  // Try course code pattern (e.g., CSE 3200 → "3-1")
+  // Try course code pattern (e.g., CSE 3211 → "3-2")
   const { data: courseData } = await db
     .from('courses')
     .select('code')
@@ -48,10 +61,9 @@ async function resolveTerm(db: ReturnType<typeof getSupabaseAdmin>, courseId: st
     .single();
 
   if (courseData?.code) {
-    const match = courseData.code.match(/\d/);
-    if (match) {
-      const year = Math.min(Math.ceil(parseInt(match[0]) / 1), 4);
-      return `${year}-1`;
+    const derivedTerm = deriveTermFromCode(courseData.code);
+    if (derivedTerm) {
+      return derivedTerm;
     }
   }
 
