@@ -10,7 +10,7 @@
 // ==========================================
 
 import { getRoutineSlots } from '@/services/routineService';
-import { fetchTvDisplayData } from '@/services/tvDisplayService';
+import { fetchTvDisplayData, DEFAULT_LAYOUT } from '@/services/tvDisplayService';
 import type { CmsTvAnnouncement, CmsTvEvent, CmsTvTicker } from '@/types/cms';
 import type { DBRoutineSlotWithDetails } from '@/types/database';
 import { AnimatePresence, motion } from 'framer-motion';
@@ -81,9 +81,27 @@ export default function TvDisplayPublicPage() {
   const [tickerIndex, setTickerIndex] = useState(0);
   const [upcomingIdx, setUpcomingIdx] = useState(0); // which upcoming period is shown (0 or 1)
   const autoRotateRef = useRef<NodeJS.Timeout | null>(null);
+  
+  // Safe Client-side URL param parsing
+  const [target, setTarget] = useState<string>('all');
+  useEffect(() => {
+    if (typeof window !== 'undefined') {
+      const t = new URLSearchParams(window.location.search).get('target');
+      if (t) setTarget(t);
+    }
+  }, []);
 
   const headlinePrefix = settings.headline_prefix || 'HEADLINES';
   const eventRotationSec = parseInt(settings.event_rotation_sec || '8', 10);
+
+  // Layout flex ratios and heights from settings (falling back to global then defaults)
+  const eventsFlex = parseInt(settings[`events_flex_${target}`] || settings.events_flex_all || String(DEFAULT_LAYOUT.events_flex), 10);
+  const scheduleFlex = parseInt(settings[`schedule_flex_${target}`] || settings.schedule_flex_all || String(DEFAULT_LAYOUT.schedule_flex), 10);
+  const currentFlex = parseInt(settings[`current_flex_${target}`] || settings.current_flex_all || String(DEFAULT_LAYOUT.current_flex), 10);
+  const upcomingFlex = parseInt(settings[`upcoming_flex_${target}`] || settings.upcoming_flex_all || String(DEFAULT_LAYOUT.upcoming_flex), 10);
+  const tickerHeight = parseInt(settings[`ticker_height_${target}`] || settings.ticker_height_all || String(DEFAULT_LAYOUT.ticker_height), 10);
+  const headlinesHeight = parseInt(settings[`headlines_height_${target}`] || settings.headlines_height_all || String(DEFAULT_LAYOUT.headlines_height), 10);
+  const breakingHeight = parseInt(settings[`breaking_height_${target}`] || settings.breaking_height_all || String(DEFAULT_LAYOUT.breaking_height), 10);
 
   // -- Fetch all data --
   const fetchData = useCallback(async () => {
@@ -212,7 +230,10 @@ export default function TvDisplayPublicPage() {
       <main className="flex-1 min-h-0 flex overflow-hidden">
 
         {/* ----- LEFT PANEL: News & Events (58%) ----- */}
-        <section className="flex-[80] min-w-0 flex flex-col p-4 pr-2 overflow-hidden">
+        <section
+          className="min-w-0 flex flex-col p-4 overflow-hidden"
+          style={{ flex: eventsFlex, paddingRight: '8px' }}
+        >
           <div className="flex-shrink-0 flex items-center justify-between mb-2">
             <h2 className="text-sm font-black tracking-[0.2em] uppercase" style={{ color: C.gold }}>
               Department News &amp; Events
@@ -258,14 +279,18 @@ export default function TvDisplayPublicPage() {
         </section>
 
         {/* - RIGHT PANEL: Live Room Schedule (42%) - */}
-        <section className="flex-[20] min-w-0 flex flex-col p-4 pl-2 overflow-hidden gap-2">
+        <section
+          className="min-w-0 flex flex-col p-4 overflow-hidden gap-2"
+          style={{ flex: scheduleFlex, paddingLeft: '8px' }}
+        >
           <h2 className="flex-shrink-0 text-xs font-black tracking-[0.18em] uppercase" style={{ color: C.gold }}>
             Live Room Schedule
           </h2>
 
           {/* - CURRENT PERIOD (top ~55%) - */}
-          <div className="flex-[55] min-h-0 rounded-2xl overflow-hidden flex flex-col"
+          <div className="min-h-0 rounded-2xl overflow-hidden flex flex-col"
             style={{
+              flex: currentFlex,
               background: currentPeriod
                 ? 'linear-gradient(135deg, #004d40 0%, #00695c 60%, #00796b 100%)'
                 : `linear-gradient(135deg, ${C.navy} 0%, ${C.navyDark} 100%)`,
@@ -332,8 +357,12 @@ export default function TvDisplayPublicPage() {
           </div>
 
           {/* -- UPCOMING PERIODS (bottom ~45%, slides every 20 s) -- */}
-          <div className="flex-[45] min-h-0 rounded-2xl overflow-hidden flex flex-col"
-            style={{ background: C.navyLight, border: `1px solid rgba(0,121,107,0.25)` }}>
+          <div className="min-h-0 rounded-2xl overflow-hidden flex flex-col"
+            style={{
+              flex: upcomingFlex,
+              background: C.navyLight,
+              border: `1px solid rgba(0,121,107,0.25)`,
+            }}>
             <div className="flex-shrink-0 px-3 py-2 flex items-center justify-between"
               style={{ borderBottom: `1px solid ${C.border}` }}>
               <span className="text-[10px] font-black tracking-[0.18em] uppercase" style={{ color: C.tealLight }}>
@@ -401,7 +430,7 @@ export default function TvDisplayPublicPage() {
 
       {/* =========== BREAKING NEWS or TICKER + HEADLINES =========== */}
       {breakingNewsActive ? (
-        <div className="flex-shrink-0 flex items-stretch overflow-hidden" style={{ height: '70px' }}>
+        <div className="flex-shrink-0 flex items-stretch overflow-hidden" style={{ height: `${breakingHeight}px` }}>
           <div className="flex-shrink-0 px-5 flex items-center gap-3"
             style={{ background: 'linear-gradient(135deg, #b71c1c 0%, #d32f2f 100%)' }}>
             <div className="w-2.5 h-2.5 rounded-full bg-white animate-pulse" />
@@ -425,7 +454,7 @@ export default function TvDisplayPublicPage() {
         <>
           {/* =========== TICKER BAR =========== */}
           {ticker.length > 0 && (
-            <div className="flex-shrink-0 flex items-stretch overflow-hidden" style={{ height: '36px' }}>
+            <div className="flex-shrink-0 flex items-stretch overflow-hidden" style={{ height: `${tickerHeight}px` }}>
               <div className="flex-shrink-0 px-4 flex items-center gap-2"
                 style={{ background: `linear-gradient(135deg, ${C.teal}, ${C.tealDark})` }}>
                 <Zap className="w-3.5 h-3.5 text-white" />
@@ -467,7 +496,7 @@ export default function TvDisplayPublicPage() {
 
           {/* =========== HEADLINES MARQUEE =========== */}
           {announcements.length > 0 && (
-            <div className="flex-shrink-0 flex items-stretch overflow-hidden" style={{ height: '34px' }}>
+            <div className="flex-shrink-0 flex items-stretch overflow-hidden" style={{ height: `${headlinesHeight}px` }}>
               <div className="flex-shrink-0 px-4 flex items-center gap-2" style={{ background: C.gold }}>
                 <Radio className="w-3 h-3 animate-pulse" style={{ color: C.navyDark }} />
                 <span className="font-black text-[11px] tracking-[0.2em] uppercase whitespace-nowrap" style={{ color: C.navyDark }}>

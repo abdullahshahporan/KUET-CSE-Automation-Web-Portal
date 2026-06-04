@@ -28,10 +28,13 @@ import {
     updateSetting,
     upsertSetting,
     updateTicker,
+    upsertLayoutSettings,
+    DEFAULT_LAYOUT,
+    type LayoutSettings,
 } from '@/services/tvDisplayService';
 import type { CmsTvAnnouncement, CmsTvDevice, CmsTvEvent, CmsTvTicker, TvAnnouncementPriority, TvAnnouncementType, TvTarget } from '@/types/cms';
 import { AnimatePresence, motion } from 'framer-motion';
-import { AlertTriangle, BarChart3, Bell, Calendar, Clock as ClockIcon, Eye, MapPin, Monitor, Plus, Settings, Tv, Zap } from 'lucide-react';
+import { AlertTriangle, BarChart3, Bell, Calendar, Clock as ClockIcon, Eye, MapPin, Monitor, Plus, RotateCcw, Settings, SlidersHorizontal, Tv, Zap } from 'lucide-react';
 import { useCallback, useEffect, useState } from 'react';
 
 type AdminTab = 'announcements' | 'ticker' | 'events' | 'devices' | 'settings';
@@ -600,7 +603,6 @@ export default function TVDisplayPage({ onMenuChange }: { onMenuChange?: (id: st
           { id: 'ticker' as AdminTab, label: 'Ticker Items', icon: Zap },
           { id: 'events' as AdminTab, label: 'Events', icon: Calendar },
           { id: 'devices' as AdminTab, label: 'TV Devices', icon: Tv },
-          { id: 'settings' as AdminTab, label: 'Settings', icon: Settings },
         ]).map(tab => {
           const Icon = tab.icon;
           return (
@@ -1336,10 +1338,7 @@ export default function TVDisplayPage({ onMenuChange }: { onMenuChange?: (id: st
         </div>
       )}
 
-      {/* ══════ TAB: Settings ══════ */}
-      {activeTab === 'settings' && (
-        <SettingsTab settings={settings} onSave={handleSaveSetting} />
-      )}
+
 
       {/* ══════ TAB: TV Devices ══════ */}
       {activeTab === 'devices' && (
@@ -1551,6 +1550,9 @@ function DevicesTab({
         </motion.button>
       </div>
 
+      {/* Global Layout Sizing Config */}
+      <LayoutConfigPanel devices={devices} settings={settings} onReload={onReload} />
+
       {/* Device form modal */}
       <AnimatePresence>
         {showForm && (
@@ -1713,6 +1715,8 @@ function DevicesTab({
                 })}
               </div>
 
+
+
               <div className="flex items-center gap-2 pt-3 border-t border-gray-200 dark:border-[#3d4951]">
                 <button
                   onClick={() => handleToggle(device.id, device.is_active)}
@@ -1740,6 +1744,346 @@ function DevicesTab({
               </div>
             </motion.div>
           ))}
+        </div>
+      )}
+    </div>
+  );
+}
+
+// ══════════════════════════════════════
+// Layout Configuration Panel Component
+// ══════════════════════════════════════
+
+function LayoutConfigPanel({
+  devices,
+  settings,
+  onReload,
+}: {
+  devices: CmsTvDevice[];
+  settings: Record<string, string>;
+  onReload: () => Promise<void>;
+}) {
+  const [target, setTarget] = useState<string>('all');
+  const [expanded, setExpanded] = useState(false);
+  const [saving, setSaving] = useState(false);
+
+  // Read current values from settings or defaults based on target
+  const eventsFlex = parseInt(settings[`events_flex_${target}`] || String(DEFAULT_LAYOUT.events_flex), 10);
+  const currentFlex = parseInt(settings[`current_flex_${target}`] || String(DEFAULT_LAYOUT.current_flex), 10);
+  const tickerHeight = parseInt(settings[`ticker_height_${target}`] || String(DEFAULT_LAYOUT.ticker_height), 10);
+  const headlinesHeight = parseInt(settings[`headlines_height_${target}`] || String(DEFAULT_LAYOUT.headlines_height), 10);
+  const breakingHeight = parseInt(settings[`breaking_height_${target}`] || String(DEFAULT_LAYOUT.breaking_height), 10);
+
+  const [localEvents, setLocalEvents] = useState(eventsFlex);
+  const [localCurrent, setLocalCurrent] = useState(currentFlex);
+  const [localTicker, setLocalTicker] = useState(tickerHeight);
+  const [localHeadlines, setLocalHeadlines] = useState(headlinesHeight);
+  const [localBreaking, setLocalBreaking] = useState(breakingHeight);
+
+  // Sync state when settings or target changes
+  useEffect(() => {
+    setLocalEvents(eventsFlex);
+    setLocalCurrent(currentFlex);
+    setLocalTicker(tickerHeight);
+    setLocalHeadlines(headlinesHeight);
+    setLocalBreaking(breakingHeight);
+  }, [target, eventsFlex, currentFlex, tickerHeight, headlinesHeight, breakingHeight, settings]);
+
+  const scheduleFlex = 100 - localEvents;
+  const upcomingFlex = 100 - localCurrent;
+
+  const isDefault =
+    localEvents === DEFAULT_LAYOUT.events_flex &&
+    localCurrent === DEFAULT_LAYOUT.current_flex &&
+    localTicker === DEFAULT_LAYOUT.ticker_height &&
+    localHeadlines === DEFAULT_LAYOUT.headlines_height &&
+    localBreaking === DEFAULT_LAYOUT.breaking_height;
+
+  const hasChanges =
+    localEvents !== eventsFlex ||
+    localCurrent !== currentFlex ||
+    localTicker !== tickerHeight ||
+    localHeadlines !== headlinesHeight ||
+    localBreaking !== breakingHeight;
+
+  const handleSave = async () => {
+    setSaving(true);
+    try {
+      const layout: LayoutSettings = {
+        events_flex: localEvents,
+        schedule_flex: scheduleFlex,
+        current_flex: localCurrent,
+        upcoming_flex: upcomingFlex,
+        ticker_height: localTicker,
+        headlines_height: localHeadlines,
+        breaking_height: localBreaking,
+      };
+      const res = await upsertLayoutSettings(target, layout);
+      if (!res.success) {
+        alert(res.error || 'Failed to save layout settings');
+      }
+      await onReload();
+    } catch (err) {
+      console.error('Failed to save layout:', err);
+      alert('Failed to save layout settings.');
+    } finally {
+      setSaving(false);
+    }
+  };
+
+  const handleReset = async () => {
+    setLocalEvents(DEFAULT_LAYOUT.events_flex);
+    setLocalCurrent(DEFAULT_LAYOUT.current_flex);
+    setLocalTicker(DEFAULT_LAYOUT.ticker_height);
+    setLocalHeadlines(DEFAULT_LAYOUT.headlines_height);
+    setLocalBreaking(DEFAULT_LAYOUT.breaking_height);
+    setSaving(true);
+    try {
+      await upsertLayoutSettings(target, DEFAULT_LAYOUT);
+      await onReload();
+    } catch (err) {
+      console.error('Failed to reset layout:', err);
+    } finally {
+      setSaving(false);
+    }
+  };
+
+  const getTargetLabel = () => {
+    if (target === 'all') return 'All TVs (Global Defaults)';
+    const dev = devices.find((d) => d.name === target);
+    return dev ? `${dev.name} ${dev.label ? `(${dev.label})` : ''}` : target;
+  };
+
+  return (
+    <div className="mb-6 rounded-2xl border border-gray-200 dark:border-[#3d4951] bg-white dark:bg-transparent overflow-hidden shadow-sm backdrop-blur-md">
+      {/* Header / Toggle */}
+      <button
+        onClick={() => setExpanded(!expanded)}
+        className="w-full flex items-center justify-between px-6 py-4 hover:bg-gray-50/50 dark:hover:bg-[#161a1d]/50 transition-colors"
+      >
+        <div className="flex items-center gap-3">
+          <SlidersHorizontal className="w-5 h-5 text-indigo-500 dark:text-red-600" />
+          <div className="text-left">
+            <span className="text-sm font-bold text-gray-700 dark:text-white">
+              Layout Sizing Configuration ({target === 'all' ? 'Global' : target})
+            </span>
+            <p className="text-xs text-gray-400 dark:text-[#b1a7a6]">
+              Resize Events, Schedule, Ticker, Headlines, and Breaking News per TV or globally
+            </p>
+          </div>
+          {!isDefault && (
+            <span className="px-2 py-0.5 rounded text-[10px] font-bold bg-indigo-100 dark:bg-red-500/20 text-indigo-600 dark:text-red-400">
+              CUSTOM
+            </span>
+          )}
+        </div>
+        <svg
+          className={`w-5 h-5 text-gray-400 transition-transform ${expanded ? 'rotate-180' : ''}`}
+          fill="none" stroke="currentColor" viewBox="0 0 24 24"
+        >
+          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
+        </svg>
+      </button>
+
+      {/* Expandable Content */}
+      {expanded && (
+        <div className="px-6 pb-6 space-y-5 border-t border-gray-200 dark:border-[#3d4951] pt-6">
+          {/* Target TV Selector */}
+          <div className="flex items-center gap-3 bg-slate-50 dark:bg-[#161a1d] p-3 rounded-xl border border-gray-200 dark:border-[#3d4951] max-w-sm">
+            <label className="text-xs font-bold text-gray-500 dark:text-[#b1a7a6] whitespace-nowrap">
+              Configure Target:
+            </label>
+            <select
+              value={target}
+              onChange={(e) => setTarget(e.target.value)}
+              className="flex-1 px-3 py-1.5 border border-gray-200 dark:border-[#3d4951] rounded-lg bg-white dark:bg-[#0b090a] text-gray-700 dark:text-white text-xs font-semibold focus:ring-2 focus:ring-indigo-300 dark:focus:ring-red-400 focus:border-transparent transition-all outline-none"
+            >
+              <option value="all">All TVs (Global Defaults)</option>
+              {devices.map((dev) => (
+                <option key={dev.id} value={dev.name}>
+                  {dev.name} {dev.label ? `(${dev.label})` : ''}
+                </option>
+              ))}
+            </select>
+          </div>
+
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+            {/* Events vs Schedule Width */}
+            <div className="space-y-2">
+              <div className="flex items-center justify-between">
+                <label className="text-xs font-semibold text-gray-500 dark:text-[#b1a7a6]">
+                  Events Panel Width
+                </label>
+                <span className="text-xs font-mono font-bold text-indigo-500 dark:text-red-400">
+                  {localEvents}% / {scheduleFlex}%
+                </span>
+              </div>
+              <input
+                type="range"
+                min={20}
+                max={90}
+                value={localEvents}
+                onChange={(e) => setLocalEvents(Number(e.target.value))}
+                className="w-full h-1.5 rounded-full appearance-none cursor-pointer accent-indigo-500 dark:accent-red-600"
+                style={{ background: `linear-gradient(to right, #6366f1 ${localEvents}%, #e5e7eb ${localEvents}%)` }}
+              />
+              {/* Preview bar */}
+              <div className="flex rounded-lg overflow-hidden h-4 border border-gray-200 dark:border-[#3d4951]">
+                <div
+                  className="flex items-center justify-center text-[9px] font-bold text-white"
+                  style={{ width: `${localEvents}%`, background: '#091428' }}
+                >
+                  Events ({localEvents}%)
+                </div>
+                <div
+                  className="flex items-center justify-center text-[9px] font-bold text-white"
+                  style={{ width: `${scheduleFlex}%`, background: '#00796b' }}
+                >
+                  Schedule ({scheduleFlex}%)
+                </div>
+              </div>
+            </div>
+
+            {/* Current vs Upcoming Height */}
+            <div className="space-y-2">
+              <div className="flex items-center justify-between">
+                <label className="text-xs font-semibold text-gray-500 dark:text-[#b1a7a6]">
+                  Current Period Height
+                </label>
+                <span className="text-xs font-mono font-bold text-emerald-500 dark:text-emerald-400">
+                  {localCurrent}% / {upcomingFlex}%
+                </span>
+              </div>
+              <input
+                type="range"
+                min={20}
+                max={80}
+                value={localCurrent}
+                onChange={(e) => setLocalCurrent(Number(e.target.value))}
+                className="w-full h-1.5 rounded-full appearance-none cursor-pointer accent-emerald-500"
+                style={{ background: `linear-gradient(to right, #10b981 ${localCurrent}%, #e5e7eb ${localCurrent}%)` }}
+              />
+              {/* Preview bar */}
+              <div className="flex rounded-lg overflow-hidden h-4 border border-gray-200 dark:border-[#3d4951]">
+                <div
+                  className="flex items-center justify-center text-[9px] font-bold text-white"
+                  style={{ width: `${localCurrent}%`, background: '#004d40' }}
+                >
+                  NOW ({localCurrent}%)
+                </div>
+                <div
+                  className="flex items-center justify-center text-[9px] font-bold text-white"
+                  style={{ width: `${upcomingFlex}%`, background: '#132e4f' }}
+                >
+                  Upcoming ({upcomingFlex}%)
+                </div>
+              </div>
+            </div>
+
+            {/* Ticker Bar Height */}
+            <div className="space-y-2">
+              <div className="flex items-center justify-between">
+                <label className="text-xs font-semibold text-gray-500 dark:text-[#b1a7a6]">
+                  Ticker Bar Height
+                </label>
+                <span className="text-xs font-mono font-bold text-teal-500 dark:text-teal-400">
+                  {localTicker}px
+                </span>
+              </div>
+              <input
+                type="range"
+                min={20}
+                max={80}
+                value={localTicker}
+                onChange={(e) => setLocalTicker(Number(e.target.value))}
+                className="w-full h-1.5 rounded-full appearance-none cursor-pointer accent-teal-500"
+                style={{ background: `linear-gradient(to right, #00796b ${((localTicker - 20) / 60) * 100}%, #e5e7eb ${((localTicker - 20) / 60) * 100}%)` }}
+              />
+              {/* Visual preview slot */}
+              <div 
+                className="rounded-lg flex items-center justify-center text-[9px] font-bold text-white border border-gray-200 dark:border-[#3d4951] transition-all"
+                style={{ height: `${Math.max(16, localTicker * 0.6)}px`, background: 'linear-gradient(135deg, #00796b, #004d40)' }}
+              >
+                Ticker Preview ({localTicker}px)
+              </div>
+            </div>
+
+            {/* Headlines Bar Height */}
+            <div className="space-y-2">
+              <div className="flex items-center justify-between">
+                <label className="text-xs font-semibold text-gray-500 dark:text-[#b1a7a6]">
+                  Headlines Bar Height
+                </label>
+                <span className="text-xs font-mono font-bold text-amber-500 dark:text-amber-400">
+                  {localHeadlines}px
+                </span>
+              </div>
+              <input
+                type="range"
+                min={20}
+                max={80}
+                value={localHeadlines}
+                onChange={(e) => setLocalHeadlines(Number(e.target.value))}
+                className="w-full h-1.5 rounded-full appearance-none cursor-pointer accent-amber-500"
+                style={{ background: `linear-gradient(to right, #d97706 ${((localHeadlines - 20) / 60) * 100}%, #e5e7eb ${((localHeadlines - 20) / 60) * 100}%)` }}
+              />
+              {/* Visual preview slot */}
+              <div 
+                className="rounded-lg flex items-center justify-center text-[9px] font-bold text-[#091428] border border-gray-200 dark:border-[#3d4951] transition-all"
+                style={{ height: `${Math.max(16, localHeadlines * 0.6)}px`, background: 'linear-gradient(135deg, #ffc107, #ffb300)' }}
+              >
+                Headlines Preview ({localHeadlines}px)
+              </div>
+            </div>
+
+            {/* Breaking News Height */}
+            <div className="space-y-2">
+              <div className="flex items-center justify-between">
+                <label className="text-xs font-semibold text-gray-500 dark:text-[#b1a7a6]">
+                  Breaking News Height
+                </label>
+                <span className="text-xs font-mono font-bold text-rose-500 dark:text-rose-400">
+                  {localBreaking}px
+                </span>
+              </div>
+              <input
+                type="range"
+                min={30}
+                max={120}
+                value={localBreaking}
+                onChange={(e) => setLocalBreaking(Number(e.target.value))}
+                className="w-full h-1.5 rounded-full appearance-none cursor-pointer accent-rose-500"
+                style={{ background: `linear-gradient(to right, #f43f5e ${((localBreaking - 30) / 90) * 100}%, #e5e7eb ${((localBreaking - 30) / 90) * 100}%)` }}
+              />
+              {/* Visual preview slot */}
+              <div 
+                className="rounded-lg flex items-center justify-center text-[9px] font-bold text-white border border-rose-300 dark:border-rose-900/40 transition-all animate-breaking-pulse"
+                style={{ height: `${Math.max(16, localBreaking * 0.6)}px`, background: 'linear-gradient(135deg, #e11d48, #be123c)' }}
+              >
+                Breaking Preview ({localBreaking}px)
+              </div>
+            </div>
+          </div>
+
+          {/* Actions */}
+          <div className="flex items-center justify-end gap-3 pt-3 border-t border-gray-100 dark:border-[#3d4951]/50">
+            <button
+              onClick={handleReset}
+              disabled={saving || isDefault}
+              className="flex items-center gap-1.5 px-4 py-2 border border-gray-200 dark:border-[#3d4951] text-gray-500 dark:text-[#b1a7a6] hover:bg-gray-50 dark:hover:bg-[#161a1d] rounded-lg text-xs font-medium transition-colors disabled:opacity-40"
+              title="Reset to defaults"
+            >
+              <RotateCcw className="w-3.5 h-3.5" />
+              Reset Defaults
+            </button>
+            <button
+              onClick={handleSave}
+              disabled={saving || !hasChanges}
+              className="flex items-center justify-center gap-1.5 px-5 py-2 bg-slate-800 hover:bg-slate-700 text-white rounded-lg text-xs font-semibold transition-colors disabled:opacity-40"
+            >
+              {saving ? 'Saving…' : `Save Layout Configuration`}
+            </button>
+          </div>
         </div>
       )}
     </div>

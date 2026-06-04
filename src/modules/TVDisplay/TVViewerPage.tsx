@@ -202,6 +202,21 @@ function TVPreview({ target, showRoomSchedule }: { target: string; showRoomSched
   const headlinePrefix = settings.headline_prefix || 'HEADLINES';
   const eventRotationSec = parseInt(settings.event_rotation_sec || '8', 10);
 
+  // Layout flex ratios and heights from settings (falling back to global then defaults)
+  const eventsFlex = parseInt(settings[`events_flex_${target}`] || settings.events_flex_all || '80', 10);
+  const scheduleFlex = parseInt(settings[`schedule_flex_${target}`] || settings.schedule_flex_all || '20', 10);
+  const currentFlex = parseInt(settings[`current_flex_${target}`] || settings.current_flex_all || '55', 10);
+  const upcomingFlex = parseInt(settings[`upcoming_flex_${target}`] || settings.upcoming_flex_all || '45', 10);
+
+  const tickerHeightRaw = parseInt(settings[`ticker_height_${target}`] || settings.ticker_height_all || '38', 10);
+  const headlinesHeightRaw = parseInt(settings[`headlines_height_${target}`] || settings.headlines_height_all || '36', 10);
+  const breakingHeightRaw = parseInt(settings[`breaking_height_${target}`] || settings.breaking_height_all || '54', 10);
+
+  // Scaled down sizes for preview view (using 0.75 scaling factor)
+  const tickerHeight = Math.round(tickerHeightRaw * 0.75);
+  const headlinesHeight = Math.round(headlinesHeightRaw * 0.75);
+  const breakingHeight = Math.round(breakingHeightRaw * 0.75);
+
   // Fetch data filtered by target — always fetch everything independently of showRoomSchedule
   const fetchData = useCallback(async () => {
     try {
@@ -405,7 +420,13 @@ function TVPreview({ target, showRoomSchedule }: { target: string; showRoomSched
       <main className="flex-1 min-h-0 flex overflow-hidden">
         {/* LEFT: Events */}
         {showEventsPanel && (
-        <section className={`${showRoomSchedule ? 'flex-[80]' : 'flex-1'} min-w-0 flex flex-col p-3 ${showRoomSchedule ? 'pr-1.5' : ''} overflow-hidden`}>
+         <section
+          className="min-w-0 flex flex-col p-3 overflow-hidden"
+          style={{
+            flex: showRoomSchedule ? eventsFlex : 1,
+            paddingRight: showRoomSchedule ? '6px' : '12px'
+          }}
+        >
           <div className="flex-shrink-0 flex items-center justify-between mb-1.5">
             <h2 className="text-xs font-black tracking-[0.2em] uppercase" style={{ color: C.gold }}>
               News &amp; Events
@@ -457,14 +478,21 @@ function TVPreview({ target, showRoomSchedule }: { target: string; showRoomSched
 
         {/* RIGHT: Schedule */}
         {showRoomSchedule && (
-        <section className={`${showEventsPanel ? 'flex-[20] pl-1.5' : 'flex-1 pl-3'} min-w-0 flex flex-col p-3 overflow-hidden gap-1.5`}>
+         <section
+          className="min-w-0 flex flex-col p-3 overflow-hidden gap-1.5"
+          style={{
+            flex: showEventsPanel ? scheduleFlex : 1,
+            paddingLeft: showEventsPanel ? '6px' : '12px'
+          }}
+        >
           <h2 className="flex-shrink-0 text-[10px] font-black tracking-[0.18em] uppercase" style={{ color: C.gold }}>
             Live Room Schedule
           </h2>
 
           {/* CURRENT PERIOD */}
-          <div className="flex-[55] min-h-0 rounded-xl overflow-hidden flex flex-col"
+           <div className="min-h-0 rounded-xl overflow-hidden flex flex-col"
             style={{
+              flex: currentFlex,
               background: currentPeriod
                 ? 'linear-gradient(135deg, #004d40 0%, #00695c 60%, #00796b 100%)'
                 : `linear-gradient(135deg, ${C.navy} 0%, ${C.navyDark} 100%)`,
@@ -521,8 +549,12 @@ function TVPreview({ target, showRoomSchedule }: { target: string; showRoomSched
           </div>
 
           {/* UPCOMING */}
-          <div className="flex-[45] min-h-0 rounded-xl overflow-hidden flex flex-col"
-            style={{ background: C.navyLight, border: `1px solid rgba(0,121,107,0.25)` }}>
+           <div className="min-h-0 rounded-xl overflow-hidden flex flex-col"
+            style={{
+              flex: upcomingFlex,
+              background: C.navyLight,
+              border: `1px solid rgba(0,121,107,0.25)`
+            }}>
             <div className="flex-shrink-0 px-2 py-1.5 flex items-center justify-between"
               style={{ borderBottom: `1px solid ${C.border}` }}>
               <span className="text-[9px] font-black tracking-[0.18em] uppercase" style={{ color: C.tealLight }}>
@@ -593,7 +625,7 @@ function TVPreview({ target, showRoomSchedule }: { target: string; showRoomSched
 
       {/* BREAKING NEWS or TICKER + HEADLINES */}
       {showBreakingBar ? (
-        <div className="flex-shrink-0 flex items-stretch overflow-hidden" style={{ height: '54px' }}>
+        <div className="flex-shrink-0 flex items-stretch overflow-hidden" style={{ height: `${breakingHeight}px` }}>
           <div className="flex-shrink-0 px-4 flex items-center gap-2"
             style={{ background: 'linear-gradient(135deg, #b71c1c 0%, #d32f2f 100%)' }}>
             <div className="w-2 h-2 rounded-full bg-white animate-pulse" />
@@ -617,7 +649,7 @@ function TVPreview({ target, showRoomSchedule }: { target: string; showRoomSched
         <>
           {/* TICKER BAR */}
           {showTickerBar && ticker.length > 0 && (
-        <div className="flex-shrink-0 flex items-stretch overflow-hidden" style={{ height: '28px' }}>
+        <div className="flex-shrink-0 flex items-stretch overflow-hidden" style={{ height: `${tickerHeight}px` }}>
           <div className="flex-shrink-0 px-3 flex items-center gap-1.5"
             style={{ background: `linear-gradient(135deg, ${C.teal}, ${C.tealDark})` }}>
             <Zap className="w-3 h-3 text-white" />
@@ -651,7 +683,7 @@ function TVPreview({ target, showRoomSchedule }: { target: string; showRoomSched
 
       {/* HEADLINES MARQUEE */}
       {showHeadlinesBar && announcements.length > 0 && (
-        <div className="flex-shrink-0 flex items-stretch overflow-hidden" style={{ height: '26px' }}>
+        <div className="flex-shrink-0 flex items-stretch overflow-hidden" style={{ height: `${headlinesHeight}px` }}>
           <div className="flex-shrink-0 px-3 flex items-center gap-1.5" style={{ background: C.gold }}>
             <Radio className="w-2.5 h-2.5 animate-pulse" style={{ color: C.navyDark }} />
             <span className="font-black text-[10px] tracking-[0.2em] uppercase whitespace-nowrap" style={{ color: C.navyDark }}>

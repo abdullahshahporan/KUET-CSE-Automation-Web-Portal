@@ -266,6 +266,70 @@ export async function upsertSetting(
   return { success: true };
 }
 
+// ── Layout Settings for TV Stack Resize ────────────────
+
+export interface LayoutSettings {
+  events_flex: number;
+  schedule_flex: number;
+  current_flex: number;
+  upcoming_flex: number;
+  ticker_height: number;
+  headlines_height: number;
+  breaking_height: number;
+}
+
+export const DEFAULT_LAYOUT: LayoutSettings = {
+  events_flex: 80,
+  schedule_flex: 20,
+  current_flex: 55,
+  upcoming_flex: 45,
+  ticker_height: 38,
+  headlines_height: 36,
+  breaking_height: 54,
+};
+
+/**
+ * Fetch layout flex settings for a specific TV device.
+ * Falls back to global settings, then to defaults if not set.
+ */
+export async function fetchLayoutSettings(target: string): Promise<LayoutSettings> {
+  const settings = await fetchTvSettings();
+  return {
+    events_flex: parseInt(settings[`events_flex_${target}`] || settings.events_flex_all || String(DEFAULT_LAYOUT.events_flex), 10),
+    schedule_flex: parseInt(settings[`schedule_flex_${target}`] || settings.schedule_flex_all || String(DEFAULT_LAYOUT.schedule_flex), 10),
+    current_flex: parseInt(settings[`current_flex_${target}`] || settings.current_flex_all || String(DEFAULT_LAYOUT.current_flex), 10),
+    upcoming_flex: parseInt(settings[`upcoming_flex_${target}`] || settings.upcoming_flex_all || String(DEFAULT_LAYOUT.upcoming_flex), 10),
+    ticker_height: parseInt(settings[`ticker_height_${target}`] || settings.ticker_height_all || String(DEFAULT_LAYOUT.ticker_height), 10),
+    headlines_height: parseInt(settings[`headlines_height_${target}`] || settings.headlines_height_all || String(DEFAULT_LAYOUT.headlines_height), 10),
+    breaking_height: parseInt(settings[`breaking_height_${target}`] || settings.breaking_height_all || String(DEFAULT_LAYOUT.breaking_height), 10),
+  };
+}
+
+/**
+ * Batch-upsert all layout flex settings for a specific TV device (e.g. target = 'all' for global settings).
+ */
+export async function upsertLayoutSettings(
+  target: string,
+  layout: LayoutSettings
+): Promise<{ success: boolean; error?: string }> {
+  const entries = [
+    { key: `events_flex_${target}`, value: String(layout.events_flex) },
+    { key: `schedule_flex_${target}`, value: String(layout.schedule_flex) },
+    { key: `current_flex_${target}`, value: String(layout.current_flex) },
+    { key: `upcoming_flex_${target}`, value: String(layout.upcoming_flex) },
+    { key: `ticker_height_${target}`, value: String(layout.ticker_height) },
+    { key: `headlines_height_${target}`, value: String(layout.headlines_height) },
+    { key: `breaking_height_${target}`, value: String(layout.breaking_height) },
+  ];
+
+  const { error } = await cmsSupabase
+    .from('cms_tv_settings')
+    .upsert(entries, { onConflict: 'key' });
+
+  if (error) return { success: false, error: error.message };
+  return { success: true };
+}
+
 // ── Event CRUD ─────────────────────────────────────────
 
 export async function fetchAllEvents(): Promise<CmsTvEvent[]> {
