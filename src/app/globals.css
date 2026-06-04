@@ -257,3 +257,36 @@ table tbody tr:last-child td:last-child {
   color: #1E40AF;
   border: 1px solid #BFDBFE;
 }
+
+/* ==========================================
+   UX & Smooth Rendering Optimizations
+   ========================================== */
+
+html {
+  scroll-behavior: smooth;
+  text-rendering: optimizeLegibility;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+/* GPU Hardware Acceleration for Smooth Animations & Hover Transitions */
+.transition-all,
+.transition-transform,
+.transition-opacity,
+.transition-colors,
+.transition-shadow,
+.dashboard-card,
+.ctrl-card,
+.btn-primary,
+.btn-secondary,
+.btn-ghost {
+  backface-visibility: hidden;
+  transform: translate3d(0, 0, 0);
+  perspective: 1000px;
+}
+
+/* Defer rendering of off-screen components */
+.content-visibility-auto {
+  content-visibility: auto;
+  contain-intrinsic-size: auto 600px;
+}

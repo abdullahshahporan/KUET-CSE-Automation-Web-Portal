@@ -750,3 +750,38 @@ body,
     padding: 16px 18px 32px;
   }
 }
+
+/* ==========================================
+   UX & Hardware Acceleration Optimizations
+   ========================================== */
+
+/* Optimize fullscreen rendering and hardware acceleration on TV display */
+.player-screen,
+.player-screen *,
+.ctrl-page,
+.ctrl-page * {
+  backface-visibility: hidden;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+/* Force hardware-accelerated composite layers for animators */
+.animate-marquee,
+.animate-glow,
+.animate-shimmer,
+.animate-float,
+.animate-border-glow,
+.animate-breaking-pulse {
+  transform: translate3d(0, 0, 0);
+  will-change: transform, opacity;
+}
+
+/* GPU promotion for glassmorphic elements and cards */
+.glass,
+.glass-strong,
+.ctrl-card,
+.ctrl-status-item {
+  transform: translateZ(0);
+  backface-visibility: hidden;
+  will-change: transform;
+}

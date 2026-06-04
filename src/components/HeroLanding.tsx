@@ -153,7 +153,9 @@ const HeroLanding: React.FC = () => {
 
       {/* ── HOD MESSAGE ────────────────────────── */}
       {vis('hod_message') && data.hodMessage && (
-        <HodMessageSection hodMessage={data.hodMessage} sectionTitle={sec('hod_message')?.title || undefined} />
+        <div className="content-visibility-auto">
+          <HodMessageSection hodMessage={data.hodMessage} sectionTitle={sec('hod_message')?.title || undefined} />
+        </div>
       )}
 
       {/* ── NOTICES MARQUEE ────────────────────── */}
@@ -171,77 +173,97 @@ const HeroLanding: React.FC = () => {
       )}
 
       {/* ── STATS ──────────────────────────────── */}
-      {vis('stats') && <StatsSection stats={stats} />}
+      {vis('stats') && (
+        <div className="content-visibility-auto">
+          <StatsSection stats={stats} />
+        </div>
+      )}
 
       {/* ── QUICK NAVIGATION ───────────────────── */}
       {vis('quick_nav') && (
-        <QuickNavSection
-          links={quickNavLinks}
-          backgroundImagePath={data.heroSlides[1]?.image_path || data.heroSlides[0]?.image_path}
-          sectionTitle={sec('quick_nav')?.title || undefined}
-          sectionSubtitle={sec('quick_nav')?.subtitle || undefined}
-        />
+        <div className="content-visibility-auto">
+          <QuickNavSection
+            links={quickNavLinks}
+            backgroundImagePath={data.heroSlides[1]?.image_path || data.heroSlides[0]?.image_path}
+            sectionTitle={sec('quick_nav')?.title || undefined}
+            sectionSubtitle={sec('quick_nav')?.subtitle || undefined}
+          />
+        </div>
       )}
 
       {/* ── NEWS & EVENTS ──────────────────────── */}
       {vis('news') && (
-        <NewsSection
-          news={data.news}
-          sectionTitle={sec('news')?.title || undefined}
-          sectionSubtitle={sec('news')?.subtitle || undefined}
-        />
+        <div className="content-visibility-auto">
+          <NewsSection
+            news={data.news}
+            sectionTitle={sec('news')?.title || undefined}
+            sectionSubtitle={sec('news')?.subtitle || undefined}
+          />
+        </div>
       )}
 
       {/* ── RESEARCH ───────────────────────────── */}
       {vis('research') && (
-        <ResearchSection
-          research={data.research}
-          sectionTitle={sec('research')?.title || undefined}
-          sectionSubtitle={sec('research')?.subtitle || undefined}
-        />
+        <div className="content-visibility-auto">
+          <ResearchSection
+            research={data.research}
+            sectionTitle={sec('research')?.title || undefined}
+            sectionSubtitle={sec('research')?.subtitle || undefined}
+          />
+        </div>
       )}
 
       {/* ── LABS ───────────────────────────────── */}
       {vis('labs') && (
-        <LabsSection
-          labs={data.labs}
-          sectionTitle={sec('labs')?.title || undefined}
-          sectionSubtitle={sec('labs')?.subtitle || undefined}
-        />
+        <div className="content-visibility-auto">
+          <LabsSection
+            labs={data.labs}
+            sectionTitle={sec('labs')?.title || undefined}
+            sectionSubtitle={sec('labs')?.subtitle || undefined}
+          />
+        </div>
       )}
 
       {/* ── CLUBS ──────────────────────────────── */}
       {vis('clubs') && (
-        <ClubsSection
-          clubs={data.clubs}
-          sectionTitle={sec('clubs')?.title || undefined}
-          sectionSubtitle={sec('clubs')?.subtitle || undefined}
-        />
+        <div className="content-visibility-auto">
+          <ClubsSection
+            clubs={data.clubs}
+            sectionTitle={sec('clubs')?.title || undefined}
+            sectionSubtitle={sec('clubs')?.subtitle || undefined}
+          />
+        </div>
       )}
 
       {/* ── GALLERY ────────────────────────────── */}
       {vis('gallery') && (
-        <GallerySection
-          gallery={data.gallery}
-          sectionTitle={sec('gallery')?.title || undefined}
-          sectionSubtitle={sec('gallery')?.subtitle || undefined}
-        />
+        <div className="content-visibility-auto">
+          <GallerySection
+            gallery={data.gallery}
+            sectionTitle={sec('gallery')?.title || undefined}
+            sectionSubtitle={sec('gallery')?.subtitle || undefined}
+          />
+        </div>
       )}
 
       {/* ── PROGRAMS ───────────────────────────── */}
       {vis('programs') && (
-        <ProgramsSection
-          programs={data.programs}
-          sectionTitle={sec('programs')?.title || undefined}
-          sectionSubtitle={sec('programs')?.subtitle || undefined}
-        />
+        <div className="content-visibility-auto">
+          <ProgramsSection
+            programs={data.programs}
+            sectionTitle={sec('programs')?.title || undefined}
+            sectionSubtitle={sec('programs')?.subtitle || undefined}
+          />
+        </div>
       )}
 
       {/* ── CONTACT CTA ────────────────────────── */}
-      <ContactSection
-        backgroundImagePath={data.heroSlides[3]?.image_path || data.heroSlides[0]?.image_path}
-        email={dept['email'] || 'head@cse.kuet.ac.bd'}
-      />
+      <div className="content-visibility-auto">
+        <ContactSection
+          backgroundImagePath={data.heroSlides[3]?.image_path || data.heroSlides[0]?.image_path}
+          email={dept['email'] || 'head@cse.kuet.ac.bd'}
+        />
+      </div>
 
       {/* ── FOOTER ─────────────────────────────── */}
       <Footer departmentInfo={dept} socialLinks={socialLinks} navOf={navOf} />
