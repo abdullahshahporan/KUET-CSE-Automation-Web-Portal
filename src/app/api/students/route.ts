@@ -50,7 +50,7 @@ export async function POST(request: NextRequest) {
 
     // Generate UUID and password
     const tempUserId = crypto.randomUUID();
-    const initialPassword = getStudentInitialPassword(roll_no);
+    const initialPassword = getStudentInitialPassword();
     const passwordHash = await hashPassword(initialPassword);
 
     // 1. Create profile (auth only)
