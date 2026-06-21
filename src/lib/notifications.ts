@@ -343,6 +343,36 @@ export function notifyTeacherRoomRejected(opts: {
   });
 }
 
+export function notifyCRRoomRejected(opts: {
+  studentUserId: string;
+  courseCode: string;
+  roomNumber: string;
+  period: string;
+  dayName: string;
+  reason: string;
+  requestId?: string | null;
+}): Promise<string | null> {
+  const reason = cleanText(opts.reason) ?? 'No remarks provided.';
+  return createNotification({
+    type: 'room_request_rejected',
+    title: `Room Request Rejected — ${opts.courseCode}`,
+    body: `Your room booking request for ${opts.courseCode} in Room ${opts.roomNumber} on ${opts.dayName} (${opts.period}) was rejected. Reason: ${reason}`,
+    target_type: 'USER',
+    target_value: opts.studentUserId,
+    created_by: null,
+    created_by_role: 'ADMIN',
+    metadata: {
+      course_code: opts.courseCode,
+      room: opts.roomNumber,
+      period: opts.period,
+      day: opts.dayName,
+      reason,
+      ...(opts.requestId ? { request_id: opts.requestId } : {}),
+    },
+    dedupeKey: opts.requestId ? `cr-room-request:${opts.requestId}:rejected` : undefined,
+  });
+}
+
 export function notifyCRRoomRequestSubmitted(opts: {
   teacherUserId: string;
   courseCode: string;
