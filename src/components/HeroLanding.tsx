@@ -23,34 +23,6 @@ import { ArrowRight, Menu, X } from 'lucide-react';
 import Link from 'next/link';
 import React, { useEffect, useMemo, useState } from 'react';
 
-// ── Types ──────────────────────────────────────────
-
-interface DbStats {
-  students: number;
-  faculty: number;
-  courses: number;
-  labs: number;
-  alumni: number;
-  papers: number;
-}
-
-// ── Helpers ────────────────────────────────────────
-
-/** Build StatItem[] from live DB counts, falling back to CMS stats. */
-function buildStats(dbStats: DbStats | null, cmsStats: LandingPageData['stats']): StatItem[] {
-  if (dbStats) {
-    return [
-      { id: 'db-students', icon: 'graduation-cap', value: `${dbStats.students}+`, label: 'Students' },
-      { id: 'db-faculty',  icon: 'users',          value: `${dbStats.faculty}+`,  label: 'Faculty Members' },
-      { id: 'db-courses',  icon: 'book-open',      value: `${dbStats.courses}+`,  label: 'Courses' },
-      { id: 'db-labs',     icon: 'flask-conical',   value: `${dbStats.labs}+`,     label: 'Research Labs' },
-      { id: 'db-alumni',   icon: 'globe',           value: `${dbStats.alumni}+`,   label: 'Alumni Worldwide' },
-      { id: 'db-papers',   icon: 'file-text',       value: `${dbStats.papers}+`,   label: 'Research Papers' },
-    ];
-  }
-  return cmsStats.map(s => ({ id: s.id, icon: s.icon || 'graduation-cap', value: s.value, label: s.label }));
-}
-
 // ── Main Component ─────────────────────────────────
 
 const HeroLanding: React.FC = () => {
@@ -58,7 +30,6 @@ const HeroLanding: React.FC = () => {
   const [loading, setLoading] = useState(true);
   const [navScrolled, setNavScrolled] = useState(false);
   const [mobileMenu, setMobileMenu] = useState(false);
-  const [dbStats, setDbStats] = useState<DbStats | null>(null);
 
   // ── Data fetching ──
 
@@ -66,28 +37,6 @@ const HeroLanding: React.FC = () => {
     fetchLandingPageData()
       .then(d => { setData(d); setLoading(false); })
       .catch(() => setLoading(false));
-  }, []);
-
-  useEffect(() => {
-    async function fetchDbStats() {
-      try {
-        const [studentsRes, teachersRes, coursesRes, roomsRes] = await Promise.all([
-          supabase.from('students').select('*', { count: 'exact', head: true }),
-          supabase.from('teachers').select('*', { count: 'exact', head: true }),
-          supabase.from('courses').select('*', { count: 'exact', head: true }),
-          supabase.from('rooms').select('*', { count: 'exact', head: true }).eq('room_type', 'lab'),
-        ]);
-        setDbStats({
-          students: studentsRes.count || 0,
-          faculty: teachersRes.count || 0,
-          courses: coursesRes.count || 0,
-          labs: roomsRes.count || 0,
-          alumni: 5000,
-          papers: 500,
-        });
-      } catch { /* fallback to CMS stats */ }
-    }
-    fetchDbStats();
   }, []);
 
   // ── Navbar scroll ──
@@ -125,7 +74,12 @@ const HeroLanding: React.FC = () => {
   const uniName      = dept['university_name'] || 'KUET';
   const shortName    = dept['short_name'] || 'CSE, KUET';
 
-  const stats = buildStats(dbStats, data.stats);
+  const stats = data.stats.map(s => ({
+    id: s.id,
+    icon: s.icon || 'graduation-cap',
+    value: s.value,
+    label: s.label,
+  }));
 
   // ── Render ──
 

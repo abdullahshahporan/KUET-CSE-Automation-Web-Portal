@@ -35,6 +35,7 @@ export default function ClassRoutinePage() {
   const [showPrintModal, setShowPrintModal] = useState(false);
   const [teachers, setTeachers] = useState<TeacherWithAuth[]>([]);
   const [teachersLoading, setTeachersLoading] = useState(false);
+  const [deleteSlotIds, setDeleteSlotIds] = useState<string[] | null>(null);
   const [printInfo, setPrintInfo] = useState<RoutinePrintInfo>({
     revision: '',
     classStartingDate: '',
@@ -89,18 +90,8 @@ export default function ClassRoutinePage() {
    * Delete all slot IDs in a combined group.
    * For a normal slot this is just 1 ID; for combined it deletes both.
    */
-  const handleDeleteSlot = async (slotIds: string[]) => {
-    if (!confirm('Remove this slot?')) return;
-    let hasError = false;
-    for (const id of slotIds) {
-      const result = await deleteRoutineSlot(id);
-      if (!result.success) {
-        setError(result.error || 'Failed to delete');
-        hasError = true;
-        break;
-      }
-    }
-    if (!hasError) await loadRoutine();
+  const handleDeleteSlot = (slotIds: string[]) => {
+    setDeleteSlotIds(slotIds);
   };
 
   const handlePrintRoutine = (info: RoutinePrintInfo) => {
@@ -251,6 +242,54 @@ export default function ClassRoutinePage() {
         selectedSection={selectedSection}
         printInfo={printInfo}
       />
+
+      {/* Delete Slot Confirmation Modal */}
+      {deleteSlotIds && (
+        <div className="fixed inset-0 bg-black/70 backdrop-blur-sm flex items-center justify-center z-50" onClick={() => setDeleteSlotIds(null)}>
+          <motion.div 
+            initial={{ opacity: 0, scale: 0.95 }}
+            animate={{ opacity: 1, scale: 1 }}
+            className="bg-white dark:bg-[#161a1d] border border-gray-200 dark:border-[#3d4951] rounded-2xl p-6 w-full max-w-md mx-4"
+            onClick={(e) => e.stopPropagation()}
+          >
+            <div className="text-center">
+              <div className="w-12 h-12 bg-red-100 dark:bg-red-900/30 rounded-full flex items-center justify-center mx-auto mb-4">
+                <Trash2 className="w-6 h-6 text-red-600 dark:text-red-400" />
+              </div>
+              <h3 className="text-xl font-bold text-gray-800 dark:text-white mb-2">Remove Routine Slot</h3>
+              <p className="text-sm text-gray-500 dark:text-zinc-400 mb-6">Are you sure you want to remove this slot from the class routine?</p>
+              
+              <div className="flex gap-3">
+                <button
+                  onClick={() => setDeleteSlotIds(null)}
+                  className="flex-1 py-2.5 border border-gray-200 dark:border-[#3d4951] rounded-full text-gray-700 dark:text-[#d3d3d3] hover:bg-gray-50 dark:hover:bg-[#0b090a]"
+                >
+                  Cancel
+                </button>
+                <button
+                  onClick={async () => {
+                    const ids = deleteSlotIds;
+                    setDeleteSlotIds(null);
+                    let hasError = false;
+                    for (const id of ids) {
+                      const result = await deleteRoutineSlot(id);
+                      if (!result.success) {
+                        setError(result.error || 'Failed to delete');
+                        hasError = true;
+                        break;
+                      }
+                    }
+                    if (!hasError) await loadRoutine();
+                  }}
+                  className="flex-1 py-2.5 bg-red-600 text-white rounded-full hover:bg-red-700 transition-colors"
+                >
+                  Remove
+                </button>
+              </div>
+            </div>
+          </motion.div>
+        </div>
+      )}
     </div>
   );
 }
