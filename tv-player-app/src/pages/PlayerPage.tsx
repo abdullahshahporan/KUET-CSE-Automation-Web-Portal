@@ -11,7 +11,7 @@ import { useSearchParams } from 'react-router-dom';
 import { AnimatePresence, motion } from 'framer-motion';
 import {
   Calendar, ChevronLeft, ChevronRight, Clock,
-  GraduationCap, MapPin, Monitor, Radio, User, Zap,
+  GraduationCap, MapPin, Monitor, Radio, User, Zap, WifiOff,
 } from 'lucide-react';
 import {
   supabase,
@@ -24,7 +24,7 @@ import {
   type TvTarget,
   type RoutineSlotWithDetails,
 } from '../lib/supabase';
-import { cacheTvDisplayData, getCachedTvDisplayData } from '../lib/tvDisplayCache';
+import { cacheTvDisplayData, getCachedTvDisplayData, getCachedTvDisplayEntry } from '../lib/tvDisplayCache';
 
 // Color palette (matches the web TV display)
 const C = {
@@ -436,6 +436,21 @@ export default function PlayerPage() {
           </div>
         </div>
       </header>
+
+      {/* =========== OFFLINE STATUS WARNING BAR =========== */}
+      {wasOffline && (
+        <div 
+          className="flex-shrink-0 px-6 py-2 flex items-center justify-center gap-2 bg-gradient-to-r from-amber-600 to-amber-700 text-white text-xs font-bold tracking-wide transition-all z-20 border-b border-amber-800"
+        >
+          <WifiOff className="w-4 h-4 animate-pulse" />
+          <span>OFFLINE MODE &mdash; Displaying cached screen as of {
+            (() => {
+              const entry = getCachedTvDisplayEntry(target);
+              return entry ? new Date(entry.timestamp).toLocaleString() : 'recently';
+            })()
+          }</span>
+        </div>
+      )}
 
       {/* =========== MAIN CONTENT =========== */}
       <main className="flex-1 min-h-0 flex overflow-hidden">

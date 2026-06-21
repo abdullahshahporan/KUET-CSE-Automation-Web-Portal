@@ -13,7 +13,7 @@ import {
   fetchActiveDevices,
   fetchTvDisplayDataForTarget,
 } from '@/services/tvDisplayService';
-import { cacheTvDisplayData, getCachedTvDisplayData, useNetworkStatus } from '@/lib/tvDisplayCache';
+import { cacheTvDisplayData, getCachedTvDisplayData, getCachedTvDisplayEntry, useNetworkStatus } from '@/lib/tvDisplayCache';
 import type { CmsTvAnnouncement, CmsTvDevice, CmsTvEvent, CmsTvTicker } from '@/types/cms';
 import type { DBRoutineSlotWithDetails } from '@/types/database';
 import { AnimatePresence, motion } from 'framer-motion';
@@ -415,6 +415,21 @@ function TVPreview({ target, showRoomSchedule }: { target: string; showRoomSched
           <p className="text-[10px] tracking-wide mt-0.5" style={{ color: C.textMuted }}>{dateStr}</p>
         </div>
       </header>
+
+      {/* OFFLINE STATUS WARNING BAR */}
+      {wasOffline && (
+        <div 
+          className="flex-shrink-0 px-4 py-1.5 flex items-center justify-center gap-2 bg-gradient-to-r from-amber-600 to-amber-700 text-white text-[11px] font-bold tracking-wide transition-all z-20 border-b border-amber-800"
+        >
+          <WifiOff className="w-3.5 h-3.5 animate-pulse" />
+          <span>OFFLINE MODE &mdash; Displaying cached screen as of {
+            (() => {
+              const entry = getCachedTvDisplayEntry(target);
+              return entry ? new Date(entry.timestamp).toLocaleString() : 'recently';
+            })()
+          }</span>
+        </div>
+      )}
 
       {/* MAIN CONTENT */}
       <main className="flex-1 min-h-0 flex overflow-hidden">

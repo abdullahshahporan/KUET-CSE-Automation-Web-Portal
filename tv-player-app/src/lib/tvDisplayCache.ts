@@ -65,6 +65,23 @@ export function getCachedTvDisplayData(target: string): TvDisplayData | null {
 }
 
 /**
+ * Retrieve cached TV display entry including data and timestamp from localStorage
+ */
+export function getCachedTvDisplayEntry(target: string): { data: TvDisplayData; timestamp: number } | null {
+  try {
+    const cacheKey = `${CACHE_PREFIX}${target}`;
+    const stored = localStorage.getItem(cacheKey);
+    if (!stored) return null;
+
+    const entry: CacheEntry = JSON.parse(stored);
+    return entry;
+  } catch (err) {
+    console.warn('[Cache] Failed to retrieve cached entry:', err);
+    return null;
+  }
+}
+
+/**
  * Clear cached TV display data
  * @param target Optional device target. If omitted, clears all TV caches.
  */
