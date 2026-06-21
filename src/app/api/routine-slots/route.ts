@@ -7,6 +7,7 @@
 import { badRequest, conflict, guardSupabase, internalError, noContent, notFound, ok } from '@/lib/apiResponse';
 import { buildStudentAudience, createNotification, notifyTeacherScheduleChanged } from '@/lib/notifications';
 import { ROUTINE_SLOT_WITH_DETAILS } from '@/lib/queryConstants';
+import { requireServerSession } from '@/lib/serverAuth';
 import { isSupabaseConfigured, supabase } from '@/lib/supabase';
 import { requireField, requireFields } from '@/lib/validators';
 import { NextRequest, NextResponse } from 'next/server';
@@ -359,6 +360,10 @@ export async function GET(request: NextRequest) {
 // ── POST /api/routine-slots ────────────────────────────
 
 export async function POST(request: NextRequest) {
+  // ── Auth guard: admin/head only ──
+  const auth = requireServerSession(request, { adminLike: true });
+  if (auth.response) return auth.response;
+
   const guard = guardSupabase(isSupabaseConfigured());
   if (guard) return guard;
 
@@ -410,6 +415,10 @@ export async function POST(request: NextRequest) {
 // ── PATCH /api/routine-slots ───────────────────────────
 
 export async function PATCH(request: NextRequest) {
+  // ── Auth guard: admin/head only ──
+  const auth = requireServerSession(request, { adminLike: true });
+  if (auth.response) return auth.response;
+
   const guard = guardSupabase(isSupabaseConfigured());
   if (guard) return guard;
 
@@ -485,6 +494,10 @@ export async function PATCH(request: NextRequest) {
 // ── DELETE /api/routine-slots ──────────────────────────
 
 export async function DELETE(request: NextRequest) {
+  // ── Auth guard: admin/head only ──
+  const auth = requireServerSession(request, { adminLike: true });
+  if (auth.response) return auth.response;
+
   const guard = guardSupabase(isSupabaseConfigured());
   if (guard) return guard;
 
