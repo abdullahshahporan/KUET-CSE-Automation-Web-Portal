@@ -49,3 +49,8 @@ next-env.d.ts
 # tv-player build artifacts
 tv-player-app/release/
 tv-player-app/release.zip
+
+# Large binary files (not needed in deployment)
+eng.traineddata
+*.docx
+*.pdf
