@@ -8,22 +8,15 @@
 
 <br/><br/>
 
-# 🎓 KUET CSE Automation
+# 🎓 KUET CSE Automation Web Portal
 
-### Web Portal
-
-**A full-featured academic management system for the CSE Department**  
-**of Khulna University of Engineering & Technology**
-
-<br/>
+### **A full-featured, role-based academic management system for the CSE Department of Khulna University of Engineering & Technology (KUET)**
 
 [![GitHub Stars](https://img.shields.io/github/stars/abdullahshahporan/KUET-CSE-Automation-Web-Portal?style=social)](https://github.com/abdullahshahporan/KUET-CSE-Automation-Web-Portal)
 [![GitHub Forks](https://img.shields.io/github/forks/abdullahshahporan/KUET-CSE-Automation-Web-Portal?style=social)](https://github.com/abdullahshahporan/KUET-CSE-Automation-Web-Portal/fork)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 
-<br/>
-
-[Features](#-features) • [Tech Stack](#-tech-stack) • [Getting Started](#-getting-started) • [Architecture](#-architecture) • [API Reference](#-api-reference) • [Contributing](#-contributing)
+[Key Features](#-features) • [Tech Stack](#-tech-stack) • [Getting Started](#-getting-started) • [Architecture](#-architecture) • [API Reference](#-api-reference) • [Contributing](#-contributing)
 
 </div>
 
@@ -35,7 +28,34 @@ The **KUET CSE Automation Web Portal** is the administrative backbone of the KUE
 
 The portal connects directly to the same PostgreSQL database as the companion Flutter mobile app, ensuring data consistency across every touchpoint: from room booking and schedule management to geo-attendance, exam results, term upgrades, and push notifications.
 
-> The portal also ships with a **TV Display mode** — a real-time, full-screen room schedule displayed on department monitors — and a standalone **Electron-based TV Player app** for dedicated display hardware.
+> 📺 **TV Display Mode:** The portal also ships with a **TV Display mode** — a real-time, full-screen room schedule displayed on department monitors — and a standalone **Electron-based TV Player app** for dedicated display hardware.
+
+---
+
+## ⚡ Quick Demo & Visuals
+
+Here is a quick walkthrough of the web portal showing the main interface, animations, and the interactive features running locally:
+
+<div align="center">
+  <img src="public/assets/landing_page_walkthrough.webp" alt="Portal Walkthrough Demo" width="90%" style="border-radius: 8px; box-shadow: 0 4px 30px rgba(0, 0, 0, 0.15);" />
+</div>
+
+<br/>
+
+### 📸 Portal Screenshots
+
+<div align="center">
+  <table border="0">
+    <tr>
+      <td align="center"><strong>🏠 Public Landing Page</strong></td>
+      <td align="center"><strong>🔐 Sign In Portal</strong></td>
+    </tr>
+    <tr>
+      <td><img src="public/assets/landing_page.png" alt="Landing Page" width="100%" style="border-radius: 6px; border: 1px solid #ddd;" /></td>
+      <td><img src="public/assets/signin_page.png" alt="Sign In Page" width="100%" style="border-radius: 6px; border: 1px solid #ddd;" /></td>
+    </tr>
+  </table>
+</div>
 
 ---
 
@@ -45,14 +65,14 @@ The portal connects directly to the same PostgreSQL database as the companion Fl
 
 | Module | Highlights |
 |---|---|
-| Home / Landing | Hero section with department introduction and CMS-driven content |
-| About | Department history, vision, and mission |
-| Faculty Directory | Browse all faculty with profile cards |
-| Programs | Offered degree programs with details |
-| Research | Research groups and publications |
-| Gallery | Department photo gallery |
-| News & Notices | Latest news and public announcements |
-| Contact | Department contact information |
+| **Home / Landing** | Hero section with department introduction and CMS-driven content |
+| **About** | Department history, vision, and mission |
+| **Faculty Directory** | Browse all faculty with interactive profile cards |
+| **Programs** | Offered degree programs with details |
+| **Research** | Research groups and publications |
+| **Gallery** | Department photo gallery |
+| **News & Notices** | Latest news and public announcements |
+| **Contact** | Department contact information |
 
 ---
 
@@ -250,10 +270,10 @@ The portal connects directly to the same PostgreSQL database as the companion Fl
 
 | Channel | Mechanism |
 |---|---|
-| In-app inbox | `notifications` table with Supabase Realtime |
-| Push (closed app) | FCM HTTP v1 via `notification_push_outbox` |
-| Background dispatch | Immediate server dispatch with Supabase Edge Function fallback |
-| Target types | COURSE, YEAR_TERM, SECTION, TEACHER, USER |
+| **In-app inbox** | `notifications` table with Supabase Realtime |
+| **Push (closed app)** | FCM HTTP v1 via `notification_push_outbox` |
+| **Background dispatch** | Immediate server dispatch with Supabase Edge Function fallback |
+| **Target types** | `COURSE`, `YEAR_TERM`, `SECTION`, `TEACHER`, `USER` |
 
 ---
 
@@ -263,33 +283,33 @@ The portal connects directly to the same PostgreSQL database as the companion Fl
 
 | Layer | Technology |
 |---|---|
-| Framework | Next.js 15 (App Router) |
-| Language | TypeScript 5 |
-| Styling | Tailwind CSS 3.4 |
-| Animations | Framer Motion 12 + GSAP 3 |
-| Icons | Lucide React |
-| 3D / WebGL | OGL |
+| **Framework** | Next.js 15 (App Router) |
+| **Language** | TypeScript 5 |
+| **Styling** | Tailwind CSS 3.4 |
+| **Animations** | Framer Motion 12 + GSAP 3 |
+| **Icons** | Lucide React |
+| **3D / WebGL** | OGL |
 
 ### Backend & Data
 
 | Layer | Technology |
 |---|---|
-| Runtime | Node.js (Next.js API Routes) |
-| Database | PostgreSQL via Supabase |
-| ORM / Client | `@supabase/supabase-js` |
-| Auth | bcryptjs |
-| File parsing | PapaParse (CSV), Mammoth (DOCX), Tesseract OCR |
+| **Runtime** | Node.js (Next.js API Routes) |
+| **Database** | PostgreSQL via Supabase |
+| **ORM / Client** | `@supabase/supabase-js` |
+| **Auth** | bcryptjs |
+| **File parsing** | PapaParse (CSV), Mammoth (DOCX), Tesseract OCR |
 
 ### Infrastructure & Tooling
 
 | Layer | Technology |
 |---|---|
-| Deployment | Vercel (serverless) |
-| Analytics | Vercel Analytics |
-| PDF Generation | jsPDF + jsPDF-AutoTable |
-| Image Processing | Sharp |
-| Linting | ESLint + TypeScript ESLint |
-| CSS Processing | PostCSS + Autoprefixer |
+| **Deployment** | Vercel (serverless) |
+| **Analytics** | Vercel Analytics |
+| **PDF Generation** | jsPDF + jsPDF-AutoTable |
+| **Image Processing** | Sharp |
+| **Linting** | ESLint + TypeScript ESLint |
+| **CSS Processing** | PostCSS + Autoprefixer |
 
 ---
 
@@ -299,10 +319,10 @@ The portal connects directly to the same PostgreSQL database as the companion Fl
 
 | Requirement | Version |
 |---|---|
-| Node.js | 18 or higher |
-| npm | 9 or higher |
-| Git | Latest |
-| Supabase account | [supabase.com](https://supabase.com) |
+| **Node.js** | 18 or higher |
+| **npm** | 9 or higher |
+| **Git** | Latest |
+| **Supabase account** | [supabase.com](https://supabase.com) |
 
 ### 1 — Clone the Repository
 
@@ -419,7 +439,8 @@ kuet-cse-automation-web/
 │   ├── main_db.sql                  ← Full PostgreSQL schema
 │   └── cms_table.sql                ← CMS content tables
 │
-├── public/                          ← Static assets
+├── public/                          ← Static assets & Screenshots
+│   └── assets/                      ← README demo screenshots & walkthrough
 │
 ├── src/
 │   ├── app/                         ← Next.js App Router
@@ -626,13 +647,13 @@ All API routes live under `/src/app/api/`. Each folder maps to a Next.js Route H
 
 ## 🎨 UI / UX Highlights
 
-- **Fully Responsive** — desktop, tablet, and mobile layouts  
-- **Dark Mode** — integrated theme toggle persisted via context  
-- **Smooth Animations** — Framer Motion page transitions + GSAP scroll effects  
-- **Real-time Updates** — Supabase Realtime subscriptions in TV Display and notification inbox  
-- **PDF Export** — Class routine and result sheets exportable as PDF  
-- **CSV Import** — Bulk student addition via CSV upload (PapaParse)  
-- **OCR Support** — Scanned document text extraction (Tesseract via `eng.traineddata`)  
+- 📱 **Fully Responsive** — Desktop, tablet, and mobile layouts  
+- 🌓 **Dark Mode** — Integrated theme toggle persisted via context  
+- ⚡ **Smooth Animations** — Framer Motion page transitions + GSAP scroll effects  
+- 🔄 **Real-time Updates** — Supabase Realtime subscriptions in TV Display and notification inbox  
+- 📄 **PDF Export** — Class routine and result sheets exportable as PDF  
+- 📊 **CSV Import** — Bulk student addition via CSV upload (PapaParse)  
+- 🔍 **OCR Support** — Scanned document text extraction (Tesseract via API)  
 
 ---
 
@@ -640,13 +661,13 @@ All API routes live under `/src/app/api/`. Each folder maps to a Next.js Route H
 
 | Measure | Implementation |
 |---|---|
-| Password hashing | bcryptjs (server-side) |
-| Service role isolation | `SUPABASE_SERVICE_ROLE_KEY` used only in server routes |
-| Row-Level Security | Supabase RLS policies on all sensitive tables |
-| Input validation | Schema-level constraints + API-layer checks |
-| XSS protection | React's built-in escaping + Content Security Policy headers |
-| CSRF protection | Next.js built-in SameSite cookie handling |
-| Secret management | All keys in `.env.local` (gitignored) |
+| **Password hashing** | bcryptjs (server-side) |
+| **Service role isolation** | `SUPABASE_SERVICE_ROLE_KEY` used only in server routes |
+| **Row-Level Security** | Supabase RLS policies on all sensitive tables |
+| **Input validation** | Schema-level constraints + API-layer checks |
+| **XSS protection** | React's built-in escaping + Content Security Policy headers |
+| **CSRF protection** | Next.js built-in SameSite cookie handling |
+| **Secret management** | All keys in `.env.local` (gitignored) |
 
 ---
 
@@ -659,8 +680,6 @@ npm run lint
 # Production build (catches TypeScript errors)
 npm run build
 ```
-
-> Full unit and integration test suites are planned for a future release.
 
 ---
 
@@ -767,6 +786,6 @@ CSE Department, Khulna University of Engineering & Technology
 
 <div align="center">
 
-**[⬆ Back to Top](#-kuet-cse-automation)**
+**[⬆ Back to Top](#-kuet-cse-automation-web-portal)**
 
 </div>
