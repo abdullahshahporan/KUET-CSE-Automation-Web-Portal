@@ -6,6 +6,7 @@ import { AnimatePresence, motion } from 'framer-motion';
 import { useCallback, useEffect, useState } from 'react';
 import { Check, Search, UserPlus, Upload } from 'lucide-react';
 import { FileUploadModal, courseAllocationUploadConfig } from '@/components/upload';
+import { Select } from '@/components/ui/FormPicker';
 
 // Types for API responses
 interface TeacherProfile {
@@ -592,17 +593,17 @@ export default function CourseAllocationPage() {
 
       {/* Filters */}
       <div className="flex flex-col sm:flex-row gap-4">
-        <select
+        <Select
           value={filterType}
           onChange={(e) => setFilterType(e.target.value)}
-          className="px-4 py-2 border border-gray-200 dark:border-[#3d4951] rounded-lg bg-white dark:bg-[#0b090a] text-gray-700 dark:text-white focus:ring-2 focus:ring-indigo-300 dark:focus:ring-red-400 focus:border-transparent"
+          wrapperClassName="w-full sm:w-48"
         >
-          <option value="all" className="bg-white dark:bg-[#161a1d]">All Types</option>
-          <option value="Theory" className="bg-white dark:bg-[#161a1d]">Theory</option>
-          <option value="Lab" className="bg-white dark:bg-[#161a1d]">Lab / Sessional</option>
-          <option value="Thesis" className="bg-white dark:bg-[#161a1d]">Thesis</option>
-          <option value="Project" className="bg-white dark:bg-[#161a1d]">Project</option>
-        </select>
+          <option value="all">All Types</option>
+          <option value="Theory">Theory</option>
+          <option value="Lab">Lab / Sessional</option>
+          <option value="Thesis">Thesis</option>
+          <option value="Project">Project</option>
+        </Select>
       </div>
 
       {/* Allocation Table */}
