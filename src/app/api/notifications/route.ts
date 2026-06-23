@@ -9,6 +9,7 @@ import { requireServerSession } from '@/lib/serverAuth';
 import { isSupabaseConfigured, supabase } from '@/lib/supabase';
 import { requireFields } from '@/lib/validators';
 import { NextRequest, NextResponse } from 'next/server';
+import { withAdminRateLimit } from '@/lib/withRateLimit';
 
 // ── Types ──────────────────────────────────────────────────────────────────────
 
@@ -153,7 +154,7 @@ export async function GET(request: NextRequest) {
 
 // ── POST /api/notifications — Create a notification ───────────────────────────
 
-export async function POST(request: NextRequest) {
+export const POST = withAdminRateLimit(async function POST(request: NextRequest) {
   const auth = requireServerSession(request, { adminLike: true });
   if (auth.response) return auth.response;
 
@@ -205,7 +206,7 @@ export async function POST(request: NextRequest) {
     const msg = error instanceof Error ? error.message : 'Failed to create notification';
     return internalError(msg);
   }
-}
+});
 
 // ── PATCH /api/notifications — Mark notifications as read ─────────────────────
 

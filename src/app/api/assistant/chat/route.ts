@@ -5,6 +5,7 @@ import { NextRequest, NextResponse } from 'next/server';
 import { detectAdminCommand, executeAdminCommand } from './adminCommands';
 import { answerSystemInfoSearch, detectSystemInfoSearch } from './systemInfoSearch';
 import { answerTeacherDataIntent, detectTeacherDataIntent } from './teacherAssistantData';
+import { withAdminRateLimit } from '@/lib/withRateLimit';
 
 type ChatRole = 'admin' | 'teacher' | 'head';
 type AiProvider = 'gemini' | 'openai';
@@ -161,7 +162,7 @@ async function askConfiguredModel(input: ChatRequest): Promise<string> {
   return getAiProvider() === 'openai' ? askOpenAI(input) : askGemini(input);
 }
 
-export async function POST(request: NextRequest) {
+export const POST = withAdminRateLimit(async function POST(request: NextRequest) {
   // ── Auth guard: only admin/teacher/head ──
   const auth = requireServerSession(request, { roles: ['admin', 'teacher', 'head'] });
   if (auth.response) return auth.response;
@@ -215,4 +216,4 @@ export async function POST(request: NextRequest) {
     console.error('[Assistant Chat]', message);
     return internalError(message);
   }
-}
+});

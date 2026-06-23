@@ -9,6 +9,7 @@ import { isSupabaseConfigured, supabase } from '@/lib/supabase';
 import { requireFields } from '@/lib/validators';
 import { notificationBroker } from '@/lib/notificationBroker';
 import { NextRequest, NextResponse } from 'next/server';
+import { withAdminRateLimit } from '@/lib/withRateLimit';
 
 // ── GET /api/cr-room-requests ──────────────────────────
 
@@ -198,7 +199,7 @@ export async function POST(request: NextRequest) {
 
 // ── PATCH /api/cr-room-requests — Admin Review ──────────
 
-export async function PATCH(request: NextRequest) {
+export const PATCH = withAdminRateLimit(async function PATCH(request: NextRequest) {
   // ── Auth guard: admin/head only ──
   const auth = requireServerSession(request, { adminLike: true });
   if (auth.response) return auth.response;
@@ -368,7 +369,7 @@ export async function PATCH(request: NextRequest) {
     const message = error instanceof Error ? error.message : 'Failed to update room request';
     return internalError(message);
   }
-}
+});
 
 
 

@@ -338,6 +338,59 @@ export async function GET(request: NextRequest) {
       } catch (mergeErr) {
         console.error('Merge teacher bookings into schedule failed:', mergeErr);
       }
+
+      // ── Merge admin direct bookings (admin_direct_bookings table) ──
+      try {
+        const { data: adminBookings } = await supabase
+          .from('admin_direct_bookings')
+          .select('id, room_number, day_of_week, start_time, end_time, label, booking_type, booking_date')
+          .eq('booking_date', forDate)
+          .eq('status', 'approved');
+
+        if (adminBookings && adminBookings.length > 0) {
+          for (const ab of adminBookings) {
+            // Skip if already covered by another synced slot
+            const alreadySynced = filtered.some((s: Record<string, unknown>) =>
+              s.room_number === ab.room_number &&
+              s.start_time === ab.start_time &&
+              s.end_time === ab.end_time &&
+              s.valid_from != null
+            );
+            if (alreadySynced) continue;
+
+            filtered.push({
+              id: `ab-${ab.id}`,
+              offering_id: '',
+              room_number: ab.room_number,
+              day_of_week: dow,
+              start_time: ab.start_time,
+              end_time: ab.end_time,
+              section: null,
+              valid_from: ab.booking_date,
+              valid_until: ab.booking_date,
+              created_at: ab.booking_date,
+              rrule: null,
+              booking_type: ab.booking_type,
+              course_offerings: {
+                id: '',
+                term: '',
+                session: '',
+                batch: null,
+                courses: {
+                  code: ab.label || 'Reserved',
+                  title: ab.label || 'Admin Booking',
+                  credit: 0,
+                  course_type: 'Reserved',
+                },
+                teachers: null,
+              },
+              rooms: { room_type: null, room_number: ab.room_number },
+            });
+          }
+        }
+      } catch (mergeErr) {
+        console.error('Merge admin direct bookings into schedule failed:', mergeErr);
+      }
     } else {
       // No date given: return only permanent slots (exclude date-scoped bookings)
       filtered = filtered.filter((slot: Record<string, unknown>) => !slot.valid_from);
