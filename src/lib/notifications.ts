@@ -38,6 +38,7 @@ export type NotificationType =
   | 'makeup_class'
   | 'geo_attendance_open'
   | 'optional_course'
+  | 'course_assigned'
   | 'cr_room_request_submitted'
   | 'room_request_submitted'
   | 'attendance_marking_reminder'
@@ -685,8 +686,11 @@ export function notifyTeacherCourseAssigned(opts: {
   assignedBy?: string | null;
 }): Promise<string | null> {
   const sectionLabel = opts.section?.trim() ? ` (Section ${opts.section.trim()})` : '';
+  // Use 'course_assigned' type so the mobile app can apply a distinct icon.
+  // Include section in the dedupeKey so re-assigning with a new section
+  // always fires a fresh notification instead of being silently deduplicated.
   return createNotification({
-    type: 'announcement',
+    type: 'course_assigned',
     title: `New Course Assigned — ${opts.courseCode}`,
     body: `You have been assigned to teach ${opts.courseCode}: ${opts.courseTitle} for Term ${opts.term}${sectionLabel}.`,
     target_type: 'USER',
@@ -699,7 +703,7 @@ export function notifyTeacherCourseAssigned(opts: {
       term: opts.term,
       ...(opts.section?.trim() ? { section: opts.section.trim() } : {}),
     },
-    dedupeKey: `course-assigned:${opts.teacherUserId}:${opts.courseCode}:${opts.term}`,
+    dedupeKey: `course-assigned:${opts.teacherUserId}:${opts.courseCode}:${opts.term}:${opts.section?.trim() ?? 'all'}`,
   });
 }
 
@@ -779,8 +783,9 @@ export function notifyStudentCourseAssigned(opts: {
     section: opts.section,
   });
   const teacherPart = opts.teacherName?.trim() ? ` — taught by ${opts.teacherName.trim()}` : '';
+  // Include section in dedupeKey so re-assigning a section always fires a fresh notification.
   return createNotification({
-    type: 'announcement',
+    type: 'course_assigned',
     title: `Course Available — ${opts.courseCode}`,
     body: `${opts.courseTitle}${teacherPart} has been added to your curriculum for Term ${opts.term}.`,
     target_type: audience.targetType,

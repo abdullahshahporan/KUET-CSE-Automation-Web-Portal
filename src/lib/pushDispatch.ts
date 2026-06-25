@@ -293,6 +293,38 @@ export async function dispatchPendingPushNotifications(
         continue;
       }
 
+      // Try invoking the Supabase Edge Function first (uses centralized FCM keys on Supabase)
+      let edgeSuccess = false;
+      try {
+        const dispatchKey = process.env.NOTIFICATION_DISPATCH_KEY || process.env.NOTIFICATION_CRON_KEY || '';
+        const headers: Record<string, string> = {};
+        if (dispatchKey) {
+          headers['x-notification-dispatch-key'] = dispatchKey;
+        }
+
+        const { data: edgeRes, error: edgeErr } = await db.functions.invoke('send-push-notification', {
+          body: { notification_id: notification.id },
+          headers,
+        });
+
+        if (edgeErr) {
+          console.warn(`[dispatchPendingPushNotifications] Edge function failed for ${notification.id}, falling back to local:`, edgeErr.message);
+        } else if (edgeRes && edgeRes.success) {
+          edgeSuccess = true;
+          sent += 1;
+          tokens += edgeRes.tokens || 0;
+        } else {
+          console.warn(`[dispatchPendingPushNotifications] Edge function returned success=false for ${notification.id}, falling back to local:`, edgeRes);
+        }
+      } catch (edgeExc) {
+        console.warn(`[dispatchPendingPushNotifications] Edge function exception for ${notification.id}, falling back to local:`, edgeExc);
+      }
+
+      if (edgeSuccess) {
+        continue;
+      }
+
+      // Local Fallback:
       const recipients = await resolveRecipients(notification);
       const tokenRows = await loadActiveFcmTokens(recipients);
       const uniqueTokenRows = new Map<string, DeviceTokenRow>();

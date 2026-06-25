@@ -9,6 +9,7 @@ import { badRequest, conflict, internalError, ok } from '@/lib/apiResponse';
 import { requireField, requireFields } from '@/lib/validators';
 import { COURSE_OFFERING_WITH_DETAILS } from '@/lib/queryConstants';
 import { notifyTeacherCourseAssigned, notifyStudentCourseAssigned } from '@/lib/notifications';
+import { dispatchPendingPushNotifications } from '@/lib/pushDispatch';
 import { getSupabaseAdmin, isSupabaseAdminConfigured } from '@/lib/supabaseAdmin';
 import { requireServerSession } from '@/lib/serverAuth';
 import { hashPassword } from '@/lib/passwordUtils';
@@ -245,6 +246,11 @@ export const POST = withAdminRateLimit(async function POST(request: NextRequest)
           section: section ?? null,
         }),
       ]);
+      // Force immediate FCM delivery — don't rely solely on the inline dispatch
+      // inside createNotification which can fail silently.
+      dispatchPendingPushNotifications(10).catch((err: unknown) => {
+        console.error('[course-offerings POST] push dispatch error:', err);
+      });
     } catch (notifErr) {
       // Non-critical: log but don't fail the assignment
       console.error('[course-offerings] Failed to send assignment notification:', notifErr);
@@ -313,6 +319,10 @@ export const PATCH = withAdminRateLimit(async function PATCH(request: NextReques
             section: sec,
           }),
         ]);
+        // Force immediate FCM delivery.
+        dispatchPendingPushNotifications(10).catch((err: unknown) => {
+          console.error('[course-offerings PATCH] push dispatch error:', err);
+        });
       } catch (notifErr) {
         console.error('[course-offerings] Failed to send reassignment notification:', notifErr);
       }

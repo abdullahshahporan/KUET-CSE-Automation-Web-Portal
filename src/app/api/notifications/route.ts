@@ -34,6 +34,8 @@ export type NotificationType =
   | 'makeup_class'
   | 'geo_attendance_open'
   | 'optional_course'
+  | 'course_assigned'
+  | 'room_request_submitted'
   | 'cr_room_request_submitted'
   | 'attendance_marking_reminder'
   | 'course_anomaly_alert';
