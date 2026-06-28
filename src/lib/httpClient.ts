@@ -81,7 +81,13 @@ class HttpClient {
         signal: options?.signal,
       });
       if (!response.ok) return [];
-      return await response.json() ?? [];
+      const json = await response.json();
+      if (json && typeof json === 'object') {
+        if (Array.isArray(json.data)) {
+          return json.data;
+        }
+      }
+      return Array.isArray(json) ? json : [];
     } catch {
       return [];
     }

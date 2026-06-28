@@ -349,10 +349,10 @@ export default function CourseAllocationPage() {
         teachersRes.json(),
         offeringsRes.json(),
       ]);
-      setCourses(coursesData);
+      setCourses(Array.isArray(coursesData) ? coursesData : []);
       // Teachers API returns array of teacher objects with profile data
       // Map to our expected shape
-      const mappedTeachers: TeacherData[] = (teachersData || []).map((t: any) => ({
+      const mappedTeachers: TeacherData[] = (Array.isArray(teachersData) ? teachersData : []).map((t: any) => ({
         user_id: t.user_id,
         full_name: t.full_name || 'Unknown',
         phone: t.phone || null,
@@ -365,7 +365,7 @@ export default function CourseAllocationPage() {
         },
       }));
       setTeachers(mappedTeachers);
-      setOfferings(offeringsData || []);
+      setOfferings(Array.isArray(offeringsData) ? offeringsData : []);
       setError(null);
     } catch {
       setError('Failed to load data');
