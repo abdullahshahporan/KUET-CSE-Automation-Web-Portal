@@ -54,3 +54,6 @@ tv-player-app/release.zip
 eng.traineddata
 *.docx
 *.pdf
+
+# Temporary scratch scripts
+/scratch/
