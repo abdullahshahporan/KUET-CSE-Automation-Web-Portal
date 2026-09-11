@@ -325,6 +325,12 @@ Here is a quick walkthrough of the web portal showing the main interface, animat
 
 ## 🚀 Getting Started
 
+See the [verification coverage and release requirements](docs/REVISION_VERIFICATION.md)
+before treating a source download as a complete installation capsule. The SQL set
+used for the reported 24-test local run is distributed separately; a public clone
+skips the database test and cannot pass `npm run verify:release` until the
+manifest-matched SQL files are restored.
+
 ### Prerequisites
 
 | Requirement | Version |
@@ -367,7 +373,7 @@ NODE_ENV=development
 FCM_PROJECT_ID=your_firebase_project_id
 FCM_CLIENT_EMAIL=your_firebase_service_account_email
 FCM_PRIVATE_KEY="-----BEGIN PRIVATE KEY-----\n...\n-----END PRIVATE KEY-----\n"
-NOTIFICATION_DISPATCH_KEY=optional_shared_secret
+NOTIFICATION_DISPATCH_KEY=required_private_shared_secret_if_push_is_enabled
 ```
 
 > ⚠️ **The `SUPABASE_SERVICE_ROLE_KEY` has elevated privileges. Never expose it in client-side code.**
@@ -375,6 +381,15 @@ NOTIFICATION_DISPATCH_KEY=optional_shared_secret
 ### 4 — Set Up the Database
 
 Use the ordered files in `supabase/migrations/` for a new empty database. See [database installation and existing-deployment migration](docs/SETUP.md#database-installation) before applying anything to an existing project. Root-level SQL snapshots and old permissive-policy scripts are historical references. Never rerun them after the security boundary migrations.
+
+**The public clone is incomplete for database installation:** only two of the ten
+academic migrations are tracked, and the separate CMS security boundary is also
+absent. Obtain the exact nine missing files listed in
+[the manifest](docs/migration-manifest.json) from the maintainers, then run
+`npm run check:migrations` before installation. In particular, the sequence
+includes `20260905005000_manual_attendance.sql` and
+`20260905006000_solver_run_evidence.sql`; do not omit either. Historical duplicate
+schema files cannot substitute for the missing baseline or security migrations.
 
 ### 5 — Deploy the Push Edge Function
 
@@ -654,7 +669,7 @@ All API routes live under `/src/app/api/`. Each folder maps to a Next.js Route H
 |---|---|
 | **Password hashing** | bcryptjs (server-side) |
 | **Service role isolation** | `SUPABASE_SERVICE_ROLE_KEY` used only in server routes |
-| **Row-Level Security** | Explicit grants and scoped policies; local tests cover selected tables and operations. See [verification coverage](docs/REVISION_VERIFICATION.md). Full hosted policy and Storage coverage is not certified. |
+| **Row-Level Security** | The database test targets `profiles`, `students`, `notifications`, `device_push_tokens`, `geo_attendance_logs`, and `password_recovery_tokens`, including selected grants and ownership checks. It skips when the separately supplied SQL is absent. See [verification coverage and release requirements](docs/REVISION_VERIFICATION.md); full hosted policy and Storage coverage is not certified. |
 | **Input validation** | Schema-level constraints + API-layer checks |
 | **XSS protection** | React's built-in escaping; no enforced Content Security Policy is claimed |
 | **Session cookies** | Application-set `HttpOnly`, `SameSite=Lax`, and production `Secure`; this is not a complete CSRF audit |
